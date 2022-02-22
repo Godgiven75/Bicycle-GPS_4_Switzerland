@@ -5,10 +5,10 @@ public final class Ch1903 {
 
 
     /**
-     * Returns the east coordinate (CH1903+) of a point given in WGS 84 coordinates
+     * Retourne la coordonée est (E) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      * @param lon longitude
      * @param lat longitude
-     * @return the coordinate E of the point originally in WGS 84 coordinates
+     * @return la coordonée est (E) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      */
     public static double e(double lon, double lat) {
         //double l1 = Math.pow(10,-4)*(3600*Math.toDegrees(lon) - 26_782.5);
@@ -19,10 +19,10 @@ public final class Ch1903 {
         return 28600072.37 + 211455.93 * l1 - 10938.51 * l1 * phi1 - 0.36 * l1 * phi1 * phi1 - 44.54 * Math.pow(l1,3);
     }
     /**
-     * Returns the east coordinate (CH1903+) of a point given in WGS 84 coordinates
+     * Retourne la coordonnée nord (N) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      * @param lon longitude
      * @param lat longitude
-     * @return the coordinate E of the point originally in WGS 84 coordinates
+     * @return la coordonnée nord (N) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      */
     public static double n(double lon, double lat) {
         double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
@@ -32,10 +32,10 @@ public final class Ch1903 {
     }
 
     /**
-     * Returns the longitude (WGS 84) of a point given in CH1903 coordinates
-     * @param e East coordinate
-     * @param n North coordinate
-     * @return the longitude of a point
+     * Retourne la longitude (système WGS84) d'un point donné en coordonnées CH1903+
+     * @param e coordonnée est (E)
+     * @param n coordonnée nord (N)
+     * @return la longitude (système WGS84) d'un point donné en coordonnées CH1903+
      */
     public static double lon(double e, double n) {
         double x = 1e-6 * (e - 2600000);
@@ -46,10 +46,10 @@ public final class Ch1903 {
 
     }
     /**
-     * Returns the longitude (WGS 84) of a point given in CH1903 coordinates
-     * @param e East coordinate
-     * @param n North coordinate
-     * @return the longitude of a point
+     * Retourne la latitude (système WGS84) d'un point donné en coordonnées CH1903+
+     * @param e coordonnée est (E)
+     * @param n coordonnée nord (N)
+     * @return la latitude (système WGS84) d'un point donné en coordonnées CH1903+
      */
     public static double lat(double e, double n) {
         double x = 1e-6 * (e - 2600000);
