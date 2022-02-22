@@ -8,11 +8,12 @@ public final class Math2 {
     private Math2() {}
 
     static int ceilDiv(int x, int y) {
+        if( x < 0 || y <= 0 ) throw new IllegalArgumentException();
         return (x + y - 1) / y;
     }
 
     static double interpolate(double y0, double y1, double x) {
-
+        return Math.fma(y1 - y0, x, y0);
     }
 
     static int clamp(int min, int v, int max) {
@@ -30,7 +31,7 @@ public final class Math2 {
     }
 
     static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + x*x));
+        return Math.log(x + Math.sqrt(1 + x * x));
     }
 
     static double dotProduct(double uX, double uY, double vX, double vY){
@@ -38,7 +39,7 @@ public final class Math2 {
     }
 
     double squaredNorm(double uX, double uY) {
-
+        return uX * uX + uY * uY;
     }
 
     double Norm(double uX, double uY){
