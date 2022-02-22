@@ -1,5 +1,7 @@
 package epfl.javelo;
 
+import static java.lang.Math.fma;
+
 public final class Math2 {
 
     /**
@@ -13,7 +15,7 @@ public final class Math2 {
     }
 
     static double interpolate(double y0, double y1, double x) {
-        return Math.fma(y1 - y0, x, y0);
+        return fma(y1 - y0, x, y0);
     }
 
     static int clamp(int min, int v, int max) {
@@ -35,7 +37,8 @@ public final class Math2 {
     }
 
     static double dotProduct(double uX, double uY, double vX, double vY){
-        return uX*vX + uY*vY;
+        //return fma(uX*vX,1.0,uY*vY);
+        return fma(uX,vX,uY*vY);
     }
 
     double squaredNorm(double uX, double uY) {
