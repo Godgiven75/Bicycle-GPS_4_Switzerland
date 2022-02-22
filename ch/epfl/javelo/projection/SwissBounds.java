@@ -1,4 +1,5 @@
 package epfl.javelo.projection;
 
-public class SwissBounds {
+public final class SwissBounds {
+    double MIN_E = 2_485_
 }
