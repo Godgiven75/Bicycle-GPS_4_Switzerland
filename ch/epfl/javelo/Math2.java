@@ -97,6 +97,7 @@ public final class Math2 {
      * @return the norm of the vector (uX, uY)
      */
     double Norm(double uX, double uY){
+        //devrions-nous plutôt utiliser Math.hypot()
         return Math.sqrt(squaredNorm(uX, uY));
     }
 
