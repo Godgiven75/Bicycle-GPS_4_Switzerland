@@ -47,6 +47,10 @@ public final class Math2 {
     }
 
     double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY ) {
+        double AB_x = bX - aX;
+        double AB_y = bY - aY;
+        double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY )/ squaredNorm(AB_x, AB_y);
 
+        return Norm(q * AB_x, q * AB_y);
     }
 }
