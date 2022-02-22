@@ -34,7 +34,7 @@ public final class Math2 {
     }
 
     static double dotProduct(double uX, double uY, double vX, double vY){
-
+        return uX*vX + uY*vY;
     }
 
     double squaredNorm(double uX, double uY) {
