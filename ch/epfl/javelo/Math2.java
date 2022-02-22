@@ -16,15 +16,21 @@ public final class Math2 {
     }
 
     static int clamp(int min, int v, int max) {
-
+        if (min > max) throw new IllegalArgumentException();
+        if (v < min) return min;
+        if (v > max) return max;
+        return v;
     }
 
     static double clamp(double min, double v, double max) {
-
+        if (min > max) throw new IllegalArgumentException();
+        if (v < min) return min;
+        if (v > max) return max;
+        return v;
     }
 
     static double asinh(double x) {
-
+        return Math.log(x + Math.sqrt(1 + x*x));
     }
 
     static double dotProduct(double uX, double uY, double vX, double vY){
