@@ -26,11 +26,11 @@ public record PointCh(double e, double n ) {
     }
 
     /**
-     * Retourne la longitude du PointCh
+     * Retourne la longitude du PointCh (en degrés)
      * @return la longitude du PointCh
      */
     public double lon()  {
-        return Math.toRadians(Ch1903.lon(e, n));
+        return Ch1903.lon(e, n);
     }
 
     /**
@@ -38,7 +38,7 @@ public record PointCh(double e, double n ) {
      * @return la latitude du PointCh
      */
     public double lat() {
-        return Math.toRadians(Ch1903.lat(e, n));
+        return Ch1903.lat(e, n);
 
     }
 }
