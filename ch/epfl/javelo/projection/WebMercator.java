@@ -11,7 +11,7 @@ public final class WebMercator {
      * @return la coordonnée x (dans le système WebMercator) d'un point (donnée en WGS 84) se trouvant à la longitude lon, donnée en radians
      */
     public static double x(double lon) {
-        return (Math.toDegrees(lon) + Math.PI) / (2 * Math.PI);
+        return (lon + Math.PI) / (2 * Math.PI);
     }
 
     /**
@@ -20,7 +20,7 @@ public final class WebMercator {
      * @return la coordonnée y (dans le système WebMercator) d'un point (donnée en WGS 84) se trouvant à la latitude lat, donnée en radians
      */
     public static double y(double lat) {
-        return (Math.PI - Math2.asinh( Math.tan(Math.toDegrees(lat)) ) ) / (2 * Math.PI);
+        return (Math.PI - Math2.asinh( Math.tan(lat) ) ) / (2 * Math.PI);
     }
 
     /**
