@@ -52,7 +52,7 @@ public final class Math2 {
      * @param max maximum de l'intervalle
      * @return v si  min <= v <= max , min si v < min et max si v > max
      */
-    static double clamp(double min, double v, double max) {
+    public static double clamp(double min, double v, double max) {
         if (min > max) throw new IllegalArgumentException();
         if (v < min) return min;
         if (v > max) return max;
@@ -64,7 +64,7 @@ public final class Math2 {
      * @param x
      * @return le sinus hyperbolique inverse de la valeur x
      */
-    static double asinh(double x) {
+    public static double asinh(double x) {
         return Math.log(x + Math.sqrt(1 + x * x));
     }
 
@@ -76,7 +76,7 @@ public final class Math2 {
      * @param vY composante y du second vecteur
      * @return le produit scalaire des vecteurs (uX, vX) et (uY, vY)
      */
-    static double dotProduct(double uX, double uY, double vX, double vY){
+    public static double dotProduct(double uX, double uY, double vX, double vY){
         return fma(uX,vX,uY*vY);
     }
 
@@ -86,7 +86,7 @@ public final class Math2 {
      * @param uY composante y du vecteur
      * @return le carré de la norme du vecteur (uX, uY)
      */
-    double squaredNorm(double uX, double uY) {
+    public static double squaredNorm(double uX, double uY) {
         return uX * uX + uY * uY;
     }
 
@@ -96,7 +96,7 @@ public final class Math2 {
      * @param uY composante y du vecteur
      * @return la norme du vecteur (uX, uY)
      */
-    double Norm(double uX, double uY){
+    public static double norm(double uX, double uY){
         //devrions-nous plutôt utiliser Math.hypot()
         return Math.sqrt(squaredNorm(uX, uY));
     }
@@ -111,11 +111,11 @@ public final class Math2 {
      * @param pY ordonnée du point P
      * @return la norme de la projection de AP sur AB
      */
-    double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY ) {
+    public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY ) {
         double AB_x = bX - aX;
         double AB_y = bY - aY;
         double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY )/ squaredNorm(AB_x, AB_y);
 
-        return Norm(q * AB_x, q * AB_y);
+        return norm(q * AB_x, q * AB_y);
     }
 }

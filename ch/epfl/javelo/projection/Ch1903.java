@@ -16,7 +16,7 @@ public final class Ch1903 {
         //double phi1 = Math.pow(10,-4)*(3600*Math.toDegrees(lat) - 169_028.66);
         double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);
 
-        return 28600072.37 + 211455.93 * l1 - 10938.51 * l1 * phi1 - 0.36 * l1 * phi1 * phi1 - 44.54 * Math.pow(l1,3);
+        return 2600072.37 + 211455.93 * l1 - 10938.51 * l1 * phi1 - 0.36 * l1 * phi1 * phi1 - 44.54 * l1 * l1 * l1;
     }
     /**
      * Retourne la coordonnée nord (N) (dans le système (CH1903+) d'un point donné dans le système WGS 84
@@ -40,9 +40,9 @@ public final class Ch1903 {
     public static double lon(double e, double n) {
         double x = 1e-6 * (e - 2600000);
         double y = 1e-6 * (n - 1200000);
-        double l0 = 2.6779094 + 4.728982 * x + 0.791484 * x * y + 0.1306 * x * y * y - 0.00436 * x * x * x;
+        double l0 = 2.6779094 + 4.728982 * x + 0.791484 * x * y + 0.1306 * x * y * y - 0.0436 * x * x * x;
 
-        return l0 * 100/36;
+        return Math.toRadians(l0 * 100.0/36.0);
 
     }
     /**
@@ -52,10 +52,10 @@ public final class Ch1903 {
      * @return la latitude (système WGS84) d'un point donné en coordonnées CH1903+
      */
     public static double lat(double e, double n) {
-        double x = 1e-6 * (e - 2600000);
-        double y = 1e-6 * (n - 1200000);
-        double phi0 = 16.9023892 - 0.270978 * x * x - 0.002528 * y * y - 0.0447 * x * x * y - 0.0140 * y * y * y;
+        double x = 1e-6 * (e - 2600000.0);
+        double y = 1e-6 * (n - 1200000.0);
+        double phi0 = 16.9023_892  + 3.238272 * y - 0.270978 * x * x - 0.002528 * y * y - 0.0447 * x * x * y - 0.0140 * y * y * y;
 
-        return phi0 * 100/36;
+        return Math.toRadians(phi0 * 100.0/36.0);
     }
 }
