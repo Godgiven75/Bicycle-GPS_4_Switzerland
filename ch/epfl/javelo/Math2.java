@@ -87,7 +87,8 @@ public final class Math2 {
      * @return le carré de la norme du vecteur (uX, uY)
      */
     public static double squaredNorm(double uX, double uY) {
-        return uX * uX + uY * uY;
+        double norm = norm(uX, uY);
+        return norm * norm;
     }
 
     /**
@@ -97,12 +98,11 @@ public final class Math2 {
      * @return la norme du vecteur (uX, uY)
      */
     public static double norm(double uX, double uY){
-        //devrions-nous plutôt utiliser Math.hypot()
-        return Math.sqrt(squaredNorm(uX, uY));
+        return Math.hypot(uX, uY);
     }
 
     /**
-     * Retourne la norme de la  rojection d'un vecteur (AP) sur un autre (AB)
+     * Retourne la norme de la  projection d'un vecteur (AP) sur un autre (AB)
      * @param aX abscisse du point A
      * @param aY ordonnée du point A
      * @param bX abscisse du point B
