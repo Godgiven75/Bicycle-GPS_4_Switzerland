@@ -39,6 +39,5 @@ public record PointCh(double e, double n ) {
      */
     public double lat() {
         return Ch1903.lat(e, n);
-
     }
 }

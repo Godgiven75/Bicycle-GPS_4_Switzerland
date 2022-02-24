@@ -16,7 +16,7 @@ public final class WebMercator {
 
     /**
      * Retourne la coordonnée y (dans le système WebMercator) d'un point (donnée en WGS 84) se trouvant à la latitude lat, donnée en radians
-     * @param lat
+     * @param lat latitude
      * @return la coordonnée y (dans le système WebMercator) d'un point (donnée en WGS 84) se trouvant à la latitude lat, donnée en radians
      */
     public static double y(double lat) {
