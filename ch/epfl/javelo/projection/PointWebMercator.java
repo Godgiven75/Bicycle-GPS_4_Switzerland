@@ -6,8 +6,12 @@ public record PointWebMercator(double x, double y) {
     }
 
     public static PointWebMercator of(int zoomLevel, double x, double y ) {
-        double imageSize = Math.pow(2, 8 + zoomLevel);
-        return new PointWebMercator(x/imageSize, y/imageSize);
+        if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
+
+        //double imageSize = Math.pow(2, 8 + zoomLevel);
+        double scaledX = Math.scalb(x,-(zoomLevel + 8) );
+        double scaledY = Math.scalb(y,-(zoomLevel + 8) );
+        return new PointWebMercator(scaledX, scaledY);
     }
 
     public static PointWebMercator ofPointCh(PointCh pointCh) {
@@ -21,10 +25,12 @@ public record PointWebMercator(double x, double y) {
     }
 
     public double xAtZoomLevel(int zoomLevel) {
+        if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
         return Math.scalb(x, zoomLevel + 8 );
     }
 
     public double yAtZoomLevel(int zoomLevel) {
+        if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
         return Math.scalb(y, zoomLevel + 8 );
 
     }

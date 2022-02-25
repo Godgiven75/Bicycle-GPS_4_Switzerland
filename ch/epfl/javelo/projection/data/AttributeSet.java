@@ -18,7 +18,7 @@ public record AttributeSet(long bits) {
         }*/
     }
 
-    public static AttributeSet of(Attribute... attributes) {
+    /*public static AttributeSet of(Attribute... attributes) {
         EnumSet<Attribute> e_set = EnumSet.allOf(Attribute.class);
         return e_set;
     }
@@ -42,5 +42,5 @@ public record AttributeSet(long bits) {
         }
 
         return j.toString();
-    }
+    }*/
 }
