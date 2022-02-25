@@ -1,5 +1,4 @@
 package epfl.javelo.projection.data;
 
-public class AttributeSet {
-
+public record AttributeSet() {
 }
