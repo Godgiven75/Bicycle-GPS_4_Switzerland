@@ -1,26 +1,23 @@
 package epfl.javelo.projection.data;
-
+/*
 import java.util.EnumSet;
 import java.util.StringJoiner;
 
 public record AttributeSet(long bits) {
 
     public AttributeSet {
-        /*
-        String stringBits = Long.toString(bits);
-        int length = (int) (Math.log10(bits)+1);
-        if (length > Attribute.values().length) {
-            for (int i=Attribute.values().length; i < length; i++) {
-                if (stringBits.charAt(i) == 1) {
-                    throw new IllegalArgumentException();
-                }
-            }
-        }*/
+        return checkArgument
     }
 
-    /*public static AttributeSet of(Attribute... attributes) {
-        EnumSet<Attribute> e_set = EnumSet.allOf(Attribute.class);
-        return e_set;
+    public static AttributeSet of(Attribute... attributes) {
+        long nb = 0L << Attribute.values().length;
+        for (Attribute a : attributes) {
+            long mask = 1L << a.ordinal();
+            nb |= mask;
+            mask = 0L;
+        }
+
+        return new AttributeSet(nb);
     }
 
     public boolean contains(Attribute attribute) {
@@ -38,9 +35,11 @@ public record AttributeSet(long bits) {
         for (int i = 0; i < ) {
             if (AttributeSet == 1)
             Attribute a =
-            j.add(a.key() + " = " + a.value());
+            j.add(a.key() + "=" + a.value());
         }
 
         return j.toString();
-    }*/
+    }
 }
+
+ */
