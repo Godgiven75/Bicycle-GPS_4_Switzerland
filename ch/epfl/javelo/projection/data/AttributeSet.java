@@ -2,8 +2,6 @@ package epfl.javelo.projection.data;
 
 import epfl.javelo.Preconditions;
 
-import java.util.EnumSet;
-import java.util.List;
 import java.util.StringJoiner;
 
 import static epfl.javelo.projection.data.Attribute.ALL;
