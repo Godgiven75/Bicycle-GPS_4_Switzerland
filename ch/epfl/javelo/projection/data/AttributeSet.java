@@ -1,46 +1,43 @@
 package epfl.javelo.projection.data;
 
-import java.util.EnumSet;
+import epfl.javelo.Preconditions;
+
 import java.util.StringJoiner;
+
+import static epfl.javelo.projection.data.Attribute.ALL;
 
 public record AttributeSet(long bits) {
 
     public AttributeSet {
-        /*
-        String stringBits = Long.toString(bits);
-        int length = (int) (Math.log10(bits)+1);
-        if (length > Attribute.values().length) {
-            for (int i=Attribute.values().length; i < length; i++) {
-                if (stringBits.charAt(i) == 1) {
-                    throw new IllegalArgumentException();
-                }
-            }
-        }*/
+        Preconditions.checkArgument((bits << Attribute.values().length) == 0L);
     }
 
-    /*public static AttributeSet of(Attribute... attributes) {
-        EnumSet<Attribute> e_set = EnumSet.allOf(Attribute.class);
-        return e_set;
+    public static AttributeSet of(Attribute... attributes) {
+        long nb = 0L;
+        for (Attribute a : attributes) {
+            long mask = 1L << a.ordinal();
+            nb |= mask;
+        }
+        return new AttributeSet(nb);
     }
 
     public boolean contains(Attribute attribute) {
-        return this.contains(attribute);
+        return (this.bits << attribute.ordinal()) == 1;
     }
 
     public boolean intersects(AttributeSet that) {
-
+        return (this.bits & that.bits) != 0L;
     }
 
     @Override
     public String toString() {
         StringJoiner j = new StringJoiner(",", "{", "}");
-
-        for (int i = 0; i < ) {
-            if (AttributeSet == 1)
-            Attribute a =
-            j.add(a.key() + " = " + a.value());
+        for (int i = 0; i < 64; i++) {
+            if ( ( (bits >> i) % 2 == 1 ) ) {
+                j.add(ALL.get(i).key()).add(ALL.get(i).value());
+            }
         }
-
         return j.toString();
-    }*/
+    }
 }
+
