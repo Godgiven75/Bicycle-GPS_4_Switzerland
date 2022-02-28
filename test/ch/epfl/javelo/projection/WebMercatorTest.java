@@ -1,5 +1,6 @@
-package ch.epfl.javelo.projection.data;
+package ch.epfl.javelo.projection;
 
+import epfl.javelo.projection.WebMercator;
 import org.junit.jupiter.api.Test;
 
 import static epfl.javelo.projection.WebMercator.*;
