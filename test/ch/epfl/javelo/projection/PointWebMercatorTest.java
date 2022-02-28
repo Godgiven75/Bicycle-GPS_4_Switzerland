@@ -10,6 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PointWebMercatorTest {
 
+    // Constructeur
+    @Test
+    public void isExceptionThrown() {
+
+    }
+
     @Test
     public void checkOf() {
         PointWebMercator a = new PointWebMercator(69_561_722, 47_468_099);
