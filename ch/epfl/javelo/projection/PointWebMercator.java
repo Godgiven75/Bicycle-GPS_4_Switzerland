@@ -18,7 +18,7 @@ public record PointWebMercator(double x, double y) {
      * @param y coordonnée y du point
      */
     public PointWebMercator {
-        Preconditions.checkArgument( !(0 <= x && x <= 1) || !(0 <= y && y <= 1));
+        Preconditions.checkArgument( (0 <= x && x <= 1) && (0 <= y && y <= 1) );
     }
 
     /**
