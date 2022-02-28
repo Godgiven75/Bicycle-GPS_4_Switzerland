@@ -33,13 +33,7 @@ public record PointWebMercator(double x, double y) {
 
         double scaledX = Math.scalb(x, - (zoomLevel + BASE_ZOOM_LEVEL));
         double scaledY = Math.scalb(y, - (zoomLevel + BASE_ZOOM_LEVEL));
-        PointWebMercator a = new PointWebMercator(scaledX, scaledY);
-        System.out.println(a.x + " " + a.y);
         return new PointWebMercator(scaledX, scaledY);
-    }
-
-    public static void main(String[] args) {
-        of(19, 0.518275214444, 0.353664894749);
     }
 
     /**
