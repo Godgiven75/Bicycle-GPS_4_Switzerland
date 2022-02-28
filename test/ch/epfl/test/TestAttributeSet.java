@@ -3,13 +3,15 @@ package ch.epfl.test;
 import epfl.javelo.projection.data.Attribute;
 import epfl.javelo.projection.data.AttributeSet;
 import org.junit.jupiter.api.Test;
-import static epfl.javelo.projection.data.Attribute.HIGHWAY_TRACK;
-import static epfl.javelo.projection.data.Attribute.TRACKTYPE_GRADE1;
+
+import static epfl.javelo.projection.data.Attribute.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TestAttributeSet {
 
+    //Le constructeur
     @Test
     public void throwsExceptionIfGivenAttributeHas1NotCorrespondingToAnyAttribute() {
         long bits = Long.MIN_VALUE;
@@ -20,6 +22,19 @@ public final class TestAttributeSet {
         assertThrows(IllegalArgumentException.class, () ->
         {AttributeSet set = new AttributeSet(bits);
         });
+    }
+
+    //Méthode of
+    @Test
+    public void givesArgumentAttributesBack() {
+        assertEquals(new AttributeSet(7L),
+                AttributeSet.of(HIGHWAY_SERVICE, HIGHWAY_TRACK, HIGHWAY_RESIDENTIAL));
+    }
+
+    //Méthode contains
+    @Test
+    public void checkIfContains() {
+        assertTrue((new AttributeSet(15L).contains(HIGHWAY_RESIDENTIAL)));
     }
 
     @Test
