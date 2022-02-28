@@ -4,15 +4,30 @@ import epfl.javelo.Math2;
 
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * Classe publique finale et non instanciable contenant des méthodes permettant de créer des objets représentants des
+ * fonctions mathématiques R -> R (c-à-d des réels vers les réels).
+ */
 public final class Functions {
     private Functions() {}
 
 
-
+    /**
+     * Retourne une fonction constante, dont la valeur est toujours y
+     * @param y valeur (double) de la fonction
+     * @return une fonctions constante, dont la valeur est toujotus y
+     */
     public static DoubleUnaryOperator constant(double y ) {
         return new Constant(y);
     }
 
+    /**
+     * Retourne une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés régulièrement
+     * sur l'intervalle allant de 0 à xMax
+     * @param samples tableau d'échantillons
+     * @param xMax abscisse maximale
+     * @return une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés régulièrement
+     */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
         return new Sampled(samples, xMax);
     }

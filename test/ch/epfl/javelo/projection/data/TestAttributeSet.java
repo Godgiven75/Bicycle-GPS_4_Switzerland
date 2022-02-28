@@ -1,4 +1,4 @@
-package ch.epfl.test;
+package ch.epfl.javelo.projection.data;
 
 import epfl.javelo.projection.data.Attribute;
 import epfl.javelo.projection.data.AttributeSet;
