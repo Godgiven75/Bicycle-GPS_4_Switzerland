@@ -6,7 +6,7 @@ import static epfl.javelo.projection.data.Attribute.ALL;
 /**
  * Enregistrement représentant un ensemble d'attributs OpenStreetMap. Possède un unique attribut : le long bits,
  * qui représente le contenu de l'ensemble au moyen d'un bit par valeur possible; càd que le bit d'index b de cette
- * valeur est 1 si et seulement si l'attribut b est contenu dans l'ensemble.
+ * valeur est 1 si et seulement si l'attribut b est contenu dans l'ensemble
  */
 public record AttributeSet(long bits) {
 
@@ -16,7 +16,7 @@ public record AttributeSet(long bits) {
      * @param bits
      */
     public AttributeSet {
-        Preconditions.checkArgument((bits << Attribute.values().length) == 0L);
+        Preconditions.checkArgument((bits >>> Attribute.values().length) == 0L);
     }
 
     /**

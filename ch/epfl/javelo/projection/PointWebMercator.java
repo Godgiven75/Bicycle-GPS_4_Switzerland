@@ -67,7 +67,6 @@ public record PointWebMercator(double x, double y) {
     public double yAtZoomLevel(int zoomLevel) {
         if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
         return Math.scalb(y, zoomLevel + BASE_ZOOM_LEVEL );
-
     }
 
     /**
@@ -98,13 +97,5 @@ public record PointWebMercator(double x, double y) {
         double n = Ch1903.n(lon, lat);
 
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
-
     }
-
-
-
-
-
-
-
 }

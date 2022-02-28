@@ -6,7 +6,7 @@ package epfl.javelo;
 public final class Q28_4 {
     private Q28_4() {}
 
-    // scalb et l'opérateur de décalage renvoient une interprétation non-signée, ce qui doit être compensé en soustreyant
+    // scalb et l'opérateur de décalage renvoient une interprétation non-signée, ce qui doit être compensé en soustrayant
     // 16. Y a-t-il une meilleure façon de faire cela ?
 
     /**
@@ -22,7 +22,7 @@ public final class Q28_4 {
      * Retourne la valeur de type double égale à la valeur Q28.4 donnée
      * @param q28_4 valeur donnée
      * @return la valeur de type double égale à la valeur Q28.4 donnée
-     */
+     *
     public static double asDouble(int q28_4) {
         return Math.scalb(q28_4, -4) - 16 ;
     }
