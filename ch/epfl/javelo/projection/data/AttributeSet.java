@@ -21,7 +21,7 @@ public record AttributeSet(long bits) {
 
     /**
      * Retourne un ensemble contenant uniquement les attributs passés en argument
-     * @param attributes
+     * @param attributes ensemble d'attributs
      * @return un nouvel AttributeSet
      */
     public static AttributeSet of(Attribute... attributes) {
@@ -35,17 +35,18 @@ public record AttributeSet(long bits) {
 
     /**
      * Retourne vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
-     * @param attribute
+     * @param attribute attribut
      * @return vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
      */
     public boolean contains(Attribute attribute) {
-        return (this.bits << attribute.ordinal()) == 1;
+        System.out.println(Long.toBinaryString(this.bits >>> attribute.ordinal()));
+        return ( (this.bits >>> attribute.ordinal()) % 2 == 1);
     }
 
     /**
      * Retourne vrai si et seulement si l'intersection de l'ensemble récepteur (this) avec celui passé en argument (that)
      * n'est pas vide
-     * @param that
+     * @param that ensemble d'attributs
      * @return vrai si et seulement si l'intersection de l'ensemble récepteur (this) avec celui passé en argument (that)
      * n'est pas vide
      */
