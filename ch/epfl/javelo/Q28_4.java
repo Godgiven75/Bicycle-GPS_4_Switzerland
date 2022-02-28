@@ -18,6 +18,6 @@ public final class Q28_4 {
     }
 
     public static float asFloat(int q28_4) {
-        return Math.scalb(q28_4, -4) - 16;
+        return Math.scalb(q28_4, -4) - 16 ;
     }
 }
