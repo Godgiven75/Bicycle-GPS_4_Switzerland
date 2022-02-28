@@ -3,8 +3,8 @@ package epfl.javelo.projection;
 import epfl.javelo.Preconditions;
 
 /**
- * Enregistrement représentant un point dans le système Web Mervator
- * Ses attributs sont :  double x, la coordonnée x du point; double y la coordonée y du point.
+ * Enregistrement représentant un point dans le système Web Mercator
+ * Ses attributs sont : double x, la coordonnée x du point; double y la coordonnée y du point.
  */
 public record PointWebMercator(double x, double y) {
 
