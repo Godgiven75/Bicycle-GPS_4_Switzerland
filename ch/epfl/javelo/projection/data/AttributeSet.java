@@ -39,7 +39,7 @@ public record AttributeSet(long bits) {
      * @return vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
      */
     public boolean contains(Attribute attribute) {
-        System.out.println(Long.toBinaryString(this.bits >>> attribute.ordinal()));
+        //System.out.println(Long.toBinaryString(this.bits >>> attribute.ordinal()));
         return ( (this.bits >>> attribute.ordinal()) % 2 == 1);
     }
 
@@ -66,7 +66,7 @@ public record AttributeSet(long bits) {
         StringJoiner j = new StringJoiner(",", "{", "}");
         for (int i = 0; i < 64; i++) {
             if ( ( (bits >> i) % 2 == 1 ) ) {
-                j.add(ALL.get(i).key()).add(ALL.get(i).value());
+                j.add(ALL.get(i).keyValue());
             }
         }
         return j.toString();
