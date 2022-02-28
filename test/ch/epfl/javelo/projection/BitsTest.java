@@ -52,7 +52,7 @@ public class BitsTest {
     @Test
     void extractUnsignedThrowsOnIllegalRange() {
         assertThrows(IllegalArgumentException.class, () ->
-        {Bits.extractUnsigned(27, 2, 34);
+        {Bits.extractUnsigned(27, 2, 31);
         });
     }
 
@@ -72,14 +72,9 @@ public class BitsTest {
         int actual = Bits.extractSigned(i, 5, 4);
         assertEquals(expected, actual);
 
-        i = Integer.MAX_VALUE; // i = 01111111111111111111111111111111
-        i = 0B1111111111111111111111111111111;
-        System.out.println(Integer.toBinaryString(i).length());
+        i = Integer.MAX_VALUE;
         expected = Integer.MAX_VALUE ;
-        System.out.println(i);
-        actual = Bits.extractSigned(i,1, 31);
-        System.out.println(Integer.toBinaryString(actual));
-        System.out.println(Integer.toBinaryString(expected));
+        actual = Bits.extractSigned(i,0, 32);
         assertEquals(expected, actual);
     }
 
@@ -99,8 +94,8 @@ public class BitsTest {
         assertEquals(expected, actual);
 
         i = Integer.MAX_VALUE;
-        expected = 0b0_111_111_111;
-        actual = Bits.extractUnsigned(i,1, 10);
+        expected = 0b0_111_111_1111;
+        actual = Bits.extractUnsigned(i,5, 10);
         assertEquals(expected, actual);
     }
 }
