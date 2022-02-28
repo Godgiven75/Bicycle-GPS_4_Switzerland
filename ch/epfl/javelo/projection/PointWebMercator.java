@@ -103,7 +103,7 @@ public record PointWebMercator(double x, double y) {
         double lat = lat();
         double e = Ch1903.e(lon, lat);
         double n = Ch1903.n(lon, lat);
-
+        // null ???
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
     }
 }

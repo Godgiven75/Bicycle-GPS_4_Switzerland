@@ -1,26 +1,22 @@
 package ch.epfl.javelo.projection;
 
+import ch.epfl.test.TestRandomizer;
+import epfl.javelo.Bits;
+import epfl.javelo.Math2;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static epfl.javelo.Q28_4.asDouble;
-import static epfl.javelo.Q28_4.ofInt;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.IOException;
+
+import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizer.newRandom;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class Q28_4Test {
 
-    //Méthode ofInt
     @Test
-    public void checkOfInt() {
-        assertEquals(80, ofInt(5));
-        assertEquals(48, ofInt(3));
-        assertEquals(0, ofInt(0));
-    }
 
-    //Méthode ofDouble
-    @Test
-    public void checkAsDouble() {
-        //assertEquals(, asDouble(6));
-        System.out.println(asDouble(0b10011100));
-    }
 
 }

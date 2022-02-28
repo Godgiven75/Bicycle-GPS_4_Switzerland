@@ -1,9 +1,12 @@
 package epfl.javelo.projection;
 
+/**
+ * Classe finale et non-instanciable contenant des constantes et des méthodes liées aux limites de la Suisse
+ */
 public final class SwissBounds {
     private SwissBounds() {}
 
-    //demander si static ok
+
     /**
      * La plus petite coordonnée E (c-à-d coordonnée est) de Suisse
      */

@@ -1,5 +1,9 @@
 package epfl.javelo.projection;
 
+/**
+ * Classe finale et non-instanciable, offrant des méthodes statiques permettant de convertir entre les coordonnées WGS84
+ * et les coordonnées suisses
+ */
 public final class Ch1903 {
     private Ch1903() {}
 
