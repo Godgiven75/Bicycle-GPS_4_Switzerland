@@ -10,6 +10,11 @@ import static epfl.javelo.projection.data.Attribute.ALL;
  */
 public record AttributeSet(long bits) {
 
+    /**
+     * Constructeur compact lève une exception si la valeur passée au constructeur contient un bit à 1 qui ne correspond
+     * à aucun attribut valide
+     * @param bits
+     */
     public AttributeSet {
         Preconditions.checkArgument((bits << Attribute.values().length) == 0L);
     }
