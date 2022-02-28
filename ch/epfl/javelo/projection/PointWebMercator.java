@@ -2,6 +2,8 @@ package epfl.javelo.projection;
 
 import epfl.javelo.Preconditions;
 
+import static java.util.stream.DoubleStream.of;
+
 /**
  * Enregistrement représentant un point dans le système Web Mercator
  * Ses attributs sont : double x, la coordonnée x du point; double y la coordonnée y du point.
@@ -16,7 +18,7 @@ public record PointWebMercator(double x, double y) {
      * @param y coordonnée y du point
      */
     public PointWebMercator {
-        Preconditions.checkArgument( !(0 <= x && x <= 1) || !(0 <= y && y <= 1));
+        Preconditions.checkArgument( (0 <= x && x <= 1) || !(0 <= y && y <= 1));
     }
 
     /**
@@ -27,11 +29,17 @@ public record PointWebMercator(double x, double y) {
      * @return le point dont les coordonnées x et y sont au niveau de zoom zoomLevel
      */
     public static PointWebMercator of(int zoomLevel, double x, double y ) {
-        Preconditions.checkArgument(!(zoomLevel >= 0 && zoomLevel <= 20));
+        Preconditions.checkArgument(zoomLevel >= 0 && zoomLevel <= 20);
 
         double scaledX = Math.scalb(x, - (zoomLevel + BASE_ZOOM_LEVEL));
         double scaledY = Math.scalb(y, - (zoomLevel + BASE_ZOOM_LEVEL));
+        PointWebMercator a = new PointWebMercator(scaledX, scaledY);
+        System.out.println(a.x + " " + a.y);
         return new PointWebMercator(scaledX, scaledY);
+    }
+
+    public static void main(String[] args) {
+        of(19, 0.518275214444, 0.353664894749);
     }
 
     /**
