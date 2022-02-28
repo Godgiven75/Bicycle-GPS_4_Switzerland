@@ -2,6 +2,9 @@ package epfl.javelo.projection.data;
 
 import java.util.List;
 
+/**
+ * Type énuméré représentant les différents attributs OpenStreetMap attachés aux éléments (noeuds, voies et relations)
+ */
 public enum Attribute {
     // See https://wiki.openstreetmap.org/wiki/Map_features
     // and https://taginfo.openstreetmap.ch/
