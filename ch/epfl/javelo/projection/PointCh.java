@@ -1,23 +1,26 @@
 package epfl.javelo.projection;
 
 
+import epfl.javelo.Preconditions;
+
 /**
  * Enregistrement représentant un point dans le système de coordonnées suisse
  */
 public record PointCh(double e, double n ) {
 
     /**
-     *
-     * @param e
-     * @param n
+     * Permet de construire un PointCh, lance une exception si les coordonnées ne respectent pas les conditions définies
+     * par Swissbounds
+     * @param e coordonnée est du point
+     * @param n coordonnée nord du point
      */
     public PointCh {
-        if(!SwissBounds.containsEN(e, n)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 
     /**
      * Retourne la distance au carré entre ce PointCh et un autre PointCh
-     * @param that autre PointCj
+     * @param that autre PointCh
      * @return la distance au carré entre ce PointCh et un autre PointCh
      */
     public double squaredDistanceTo(PointCh that) {

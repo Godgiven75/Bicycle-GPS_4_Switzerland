@@ -1,5 +1,8 @@
 package epfl.javelo;
 
+/**
+ * Classe utilitaire, finale et non-instanciable, offrant une méthode de validation d'argument
+ */
 public final class Preconditions {
     private Preconditions() {}
 

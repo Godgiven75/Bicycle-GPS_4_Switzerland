@@ -2,11 +2,12 @@ package epfl.javelo;
 
 import static java.lang.Math.fma;
 
+/**
+ * Claxse finale et non-instanciable permettant d'effectuer des opérations mathématiques
+ */
 public final class Math2 {
 
-    /**
-     * Cette classe de doit pas être instanciée
-     */
+
     private Math2() {}
 
     /**
@@ -16,7 +17,7 @@ public final class Math2 {
      * @return la division entière par excès de x par y
      */
     public static int ceilDiv(int x, int y) {
-        if( x < 0 || y <= 0 ) throw new IllegalArgumentException();
+        Preconditions.checkArgument(x >= 0 && y >= 0 );
         return (x + y - 1) / y;
     }
 
@@ -39,7 +40,7 @@ public final class Math2 {
      * @return v si  min <= v <= max , min si v < min et max si v > max
      */
     public static int clamp(int min, int v, int max) {
-        if (min > max) throw new IllegalArgumentException();
+        Preconditions.checkArgument(min <= max);
         if (v < min) return min;
         if (v > max) return max;
         return v;

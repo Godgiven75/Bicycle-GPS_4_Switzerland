@@ -2,6 +2,10 @@ package epfl.javelo.projection;
 
 import epfl.javelo.Math2;
 
+/**
+ * Classe finale et non-instanciable permettant diverses conversions entre les coordonnées WGS 84 et les coordonnées
+ * WebMercator
+ */
 public final class WebMercator {
     private WebMercator() {}
 
