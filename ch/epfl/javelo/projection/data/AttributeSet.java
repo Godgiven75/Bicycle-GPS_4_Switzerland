@@ -40,7 +40,7 @@ public record AttributeSet(long bits) {
      */
     public boolean contains(Attribute attribute) {
         //System.out.println(Long.toBinaryString(this.bits >>> attribute.ordinal()));
-        return ( (this.bits >>> attribute.ordinal()) % 2 == 1);
+        return ( ( this.bits >>> attribute.ordinal() & 1 ) == 1);
     }
 
     /**
@@ -65,7 +65,7 @@ public record AttributeSet(long bits) {
     public String toString() {
         StringJoiner j = new StringJoiner(",", "{", "}");
         for (int i = 0; i < 64; i++) {
-            if ( ( (bits >> i) % 2 == 1 ) ) {
+            if ( ( ((bits >> i) & 1) == 1 ) ) {
                 j.add(ALL.get(i).keyValue());
             }
         }
