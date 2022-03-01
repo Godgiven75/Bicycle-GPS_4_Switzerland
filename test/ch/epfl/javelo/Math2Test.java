@@ -1,7 +1,7 @@
 package ch.epfl.javelo;
 
 import ch.epfl.test.TestRandomizer;
-import epfl.javelo.Math2;
+import ch.epfl.javelo.Math2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

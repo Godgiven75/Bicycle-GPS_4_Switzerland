@@ -1,6 +1,6 @@
 package ch.epfl.javelo.projection;
 
-import epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

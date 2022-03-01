@@ -1,4 +1,4 @@
-package epfl.javelo.projection.data;
+package ch.epfl.javelo.projection.data;
 
 import java.util.List;
 

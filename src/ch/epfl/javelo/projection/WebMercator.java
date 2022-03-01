@@ -1,6 +1,6 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
-import epfl.javelo.Math2;
+import ch.epfl.javelo.Math2;
 
 /**
  * Classe finale et non-instanciable permettant diverses conversions entre les coordonnées WGS 84 et les coordonnées
@@ -28,18 +28,18 @@ public final class WebMercator {
     }
 
     /**
-     * Retourne la longitude lon (dans le système WGS 84) d'un point (donnée en WebMercator) se trouvant à l'abscisse x, donnée en radians
+     * Retourne la longitude lon convertie en WGS 84 d'un point se trouvant à l'abscisse x (en WebMercator), donnée en radians
      * @param x
-     * @return la longitude lon (dans le système WGS 84) d'un point (donnée en WebMercator) se trouvant à l'abscisse x, donnée en radians
+     * @return la longitude lon convertie en WGS 84 d'un point se trouvant à l'abscisse x (en WebMercator), donnée en radians
      */
     public static double lon(double x) {
         return 2.0 * Math.PI * x - Math.PI;
     }
 
     /**
-     * Retourne la latitude lat (dans le système WGS 84) d'un point (donnée en WebMercator) se trouvant à l'ordonnée y, donnée en radians
+     * Retourne la latitude lat convertie en WGS 84 d'un point se trouvant à l'ordonnée y (en WebMercator), donnée en radians
      * @param y
-     * @return la latitude lat (dans le système WGS 84) d'un point (donnée en WebMercator) se trouvant à l'ordonnée y, donnée en radians
+     * @return la latitude lat convertie en WGS 84 d'un point se trouvant à l'ordonnée y (en WebMercator), donnée en radians
      */
     public static double lat(double y) {
         return Math.atan( Math2.asinh(Math.PI - 2.0 * Math.PI * y) );

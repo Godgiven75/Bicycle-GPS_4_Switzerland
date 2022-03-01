@@ -1,13 +1,13 @@
 package ch.epfl.javelo.projection;
 
-import epfl.javelo.Math2;
-import epfl.javelo.projection.PointCh;
-import epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 
-import static epfl.javelo.projection.PointWebMercator.ofPointCh;
+import static ch.epfl.javelo.projection.PointWebMercator.ofPointCh;
 import static java.util.stream.DoubleStream.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,6 +65,26 @@ public final class PointWebMercatorTest {
 
     // Méthode toPointCh
     @Test
-    public void
+    public void doesReturnSwissCoordinatesOfSamePoint() {
+        double x = 0.518275214444;
+        double y = 0.353664894749;
+        PointWebMercator p = new PointWebMercator(Math.toRadians(x),Math.toRadians(y));
+        double lon = 2.0 * Math.PI * x - Math.PI;
+        double lat = Math.atan( Math2.asinh(Math.PI - 2.0 * Math.PI * y) );
+        System.out.println(lon + " " + lat);
+        double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
+        double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);
+        double e = 2_600_072.37 + 211_455.93 * l1 - 10_938.51 * l1 * phi1 - 0.36 * l1 * phi1 * phi1 - 44.54 * l1 * l1 * l1;
+        double n = 1_200_147.07 + 308_807.95 * phi1 + 3_745.25 * l1 *l1 + 76.63 * phi1 * phi1 - 194.56 * l1 * l1 * phi1 + 119.79 * phi1 * phi1 * phi1;
+        System.out.println(e + " " + n);
+        assertEquals(new PointCh(e,n), p.toPointCh());
+    }
 
+    /*
+    @Test
+    public void doesReturnNullIfThisIsNotInSwissBounds() {
+        PointWebMercator p = new PointWebMercator(0.518275214444, 0.353664894749);
+        assertEquals(null, p.toPointCh());
+    }
+     */
 }

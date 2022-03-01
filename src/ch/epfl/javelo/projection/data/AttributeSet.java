@@ -1,7 +1,8 @@
-package epfl.javelo.projection.data;
-import epfl.javelo.Preconditions;
+package ch.epfl.javelo.projection.data;
+import ch.epfl.javelo.Preconditions;
 import java.util.StringJoiner;
-import static epfl.javelo.projection.data.Attribute.ALL;
+
+import static ch.epfl.javelo.projection.data.Attribute.ALL;
 
 /**
  * Enregistrement représentant un ensemble d'attributs OpenStreetMap. Possède un unique attribut : le long bits,

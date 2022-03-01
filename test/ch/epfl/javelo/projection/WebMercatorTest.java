@@ -1,9 +1,9 @@
 package ch.epfl.javelo.projection;
 
-import epfl.javelo.projection.WebMercator;
+import ch.epfl.javelo.projection.WebMercator;
 import org.junit.jupiter.api.Test;
 
-import static epfl.javelo.projection.WebMercator.*;
+import static ch.epfl.javelo.projection.WebMercator.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WebMercatorTest {

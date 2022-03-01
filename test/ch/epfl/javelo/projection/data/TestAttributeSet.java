@@ -1,10 +1,11 @@
 package ch.epfl.javelo.projection.data;
 
-import epfl.javelo.projection.data.Attribute;
-import epfl.javelo.projection.data.AttributeSet;
+import ch.epfl.javelo.projection.data.Attribute;
+import ch.epfl.javelo.projection.data.AttributeSet;
 import org.junit.jupiter.api.Test;
 
-import static epfl.javelo.projection.data.Attribute.*;
+
+import static ch.epfl.javelo.projection.data.Attribute.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,4 +1,4 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
 /**
  * Classe finale et non-instanciable, offrant des méthodes statiques permettant de convertir entre les coordonnées WGS84
@@ -47,7 +47,6 @@ public final class Ch1903 {
         double l0 = 2.6779094 + 4.728982 * x + 0.791484 * x * y + 0.1306 * x * y * y - 0.0436 * x * x * x;
 
         return Math.toRadians(l0 * 100.0/36.0);
-
     }
     /**
      * Retourne la latitude (système WGS84) d'un point donné en coordonnées CH1903+

@@ -1,6 +1,6 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
-import epfl.javelo.Math2;
+import ch.epfl.javelo.Math2;
 
 import java.util.function.DoubleUnaryOperator;
 

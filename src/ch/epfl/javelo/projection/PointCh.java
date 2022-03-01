@@ -1,7 +1,7 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
 
-import epfl.javelo.Preconditions;
+import ch.epfl.javelo.Preconditions;
 
 /**
  * Enregistrement représentant un point dans le système de coordonnées suisse

@@ -1,4 +1,4 @@
-package epfl.javelo;
+package ch.epfl.javelo;
 
 /**
  *  Classe non-instanciable et finale permettant d'extraire une séquence de bit d'un vecteur de 32 bits

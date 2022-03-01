@@ -1,4 +1,4 @@
-package epfl.javelo;
+package ch.epfl.javelo;
 
 import static java.lang.Math.fma;
 

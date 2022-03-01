@@ -1,4 +1,4 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
 /**
  * Classe finale et non-instanciable contenant des constantes et des méthodes liées aux limites de la Suisse

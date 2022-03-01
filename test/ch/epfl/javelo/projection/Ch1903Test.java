@@ -1,6 +1,6 @@
 package ch.epfl.javelo.projection;
 
-import epfl.javelo.projection.Ch1903;
+import ch.epfl.javelo.projection.Ch1903;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Ch1903Test {
     private static final double DELTA = 1e-7;
-
 
     @Test
     public void eWorksOnKnownValues() {

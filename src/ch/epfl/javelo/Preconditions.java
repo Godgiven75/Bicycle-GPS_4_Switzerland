@@ -1,4 +1,4 @@
-package epfl.javelo;
+package ch.epfl.javelo;
 
 /**
  * Classe utilitaire, finale et non-instanciable, offrant une méthode de validation d'argument

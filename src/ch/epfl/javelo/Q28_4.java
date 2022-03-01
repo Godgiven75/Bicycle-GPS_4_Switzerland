@@ -1,4 +1,4 @@
-package epfl.javelo;
+package ch.epfl.javelo;
 
 /**
  * Classe finale et non-instanciable permettant de convertir des nombres entre la représentation Q28_4 et d'autres représentations

@@ -1,6 +1,6 @@
-package epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
-import epfl.javelo.Preconditions;
+import ch.epfl.javelo.Preconditions;
 
 import static java.util.stream.DoubleStream.of;
 
@@ -95,9 +95,10 @@ public record PointWebMercator(double x, double y) {
     public PointCh toPointCh() {
         double lon = lon();
         double lat = lat();
+        System.out.println(lon + " " + lat);
         double e = Ch1903.e(lon, lat);
         double n = Ch1903.n(lon, lat);
-        // null ???
+        System.out.println(e + " " + n);
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
     }
 }
