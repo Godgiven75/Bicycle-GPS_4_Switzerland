@@ -68,9 +68,9 @@ public final class PointWebMercatorTest {
     public void doesReturnSwissCoordinatesOfSamePoint() {
         double x = 0.518275214444;
         double y = 0.353664894749;
-        PointWebMercator p = new PointWebMercator(Math.toRadians(x),Math.toRadians(y));
+        PointWebMercator p = new PointWebMercator(x,y);
         double lon = 2.0 * Math.PI * x - Math.PI;
-        double lat = Math.atan( Math2.asinh(Math.PI - 2.0 * Math.PI * y) );
+        double lat = Math.atan( Math.sinh(Math.PI - 2.0 * Math.PI * y) );
         System.out.println(lon + " " + lat);
         double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
         double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);

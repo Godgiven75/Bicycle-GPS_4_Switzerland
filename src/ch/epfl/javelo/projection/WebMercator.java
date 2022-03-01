@@ -42,7 +42,7 @@ public final class WebMercator {
      * @return la latitude lat convertie en WGS 84 d'un point se trouvant à l'ordonnée y (en WebMercator), donnée en radians
      */
     public static double lat(double y) {
-        return Math.atan( Math2.asinh(Math.PI - 2.0 * Math.PI * y) );
+        return Math.atan( Math.sinh(Math.PI - 2.0 * Math.PI * y) );
     }
 
 }
