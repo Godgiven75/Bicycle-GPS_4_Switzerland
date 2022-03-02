@@ -54,7 +54,7 @@ public final class Math2 {
      * @return v si  min <= v <= max , min si v < min et max si v > max
      */
     public static double clamp(double min, double v, double max) {
-        if (min > max) throw new IllegalArgumentException();
+        Preconditions.checkArgument (min <= max);
         if (v < min) return min;
         if (v > max) return max;
         return v;
