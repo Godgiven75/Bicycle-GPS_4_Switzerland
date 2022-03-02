@@ -38,8 +38,8 @@ public class GraphNodesTest {
 
     @Test
     public void returnsTheRightIdentityOfTheIthEdge() {
-        GraphNodes g = new GraphNodes(IntBuffer.wrap(new int[]{1, 2, 3}));
+        GraphNodes g = new GraphNodes(IntBuffer.wrap(new int[]{1, 2, 0b01100000000000000011000000000000}));
         int expected = 3004;
-        assertEquals(expected, g.nodeE(0));
+        assertEquals(expected, g.edgeId(0, 5));
     }
 }

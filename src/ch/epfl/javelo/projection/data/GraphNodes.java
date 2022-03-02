@@ -57,7 +57,9 @@ public record GraphNodes(IntBuffer buffer) {
      * @return l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
      */
     public int edgeId(int nodeId, int edgeIndex) {
-        assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
+        //assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
+        System.out.println(Integer.toBinaryString(
+                buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))));
         return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28)) << 4)
                 + edgeIndex - 1;
     }
