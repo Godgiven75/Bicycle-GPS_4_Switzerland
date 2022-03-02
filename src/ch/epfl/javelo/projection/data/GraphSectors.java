@@ -19,7 +19,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * égal au double de la distance donnée
      */
     public List<Sector> sectorsInArea(PointCh center, double distance) {
-
+        return null;
     }
 
     public record Sector(int startNodeId, int endNodeId) {
