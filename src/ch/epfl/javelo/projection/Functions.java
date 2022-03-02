@@ -36,29 +36,39 @@ public final class Functions {
 
     private record Constant(double constant) implements DoubleUnaryOperator {
         @Override
-        public double applyAsDouble(double constant) {
+        public double applyAsDouble(double operand) {
             return constant;
         }
     }
 
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
         //Je me demande s'il n'y a pas une meilleure façon d'écrire ce qui suit.
-        @Override
-        public double applyAsDouble(double preImage) {
-            double step = xMax / (double) (samples.length - 1);
 
-            for (int i = 0; i < samples.length - 1 ; ++i) {
+        @Override
+        public double applyAsDouble(double operand) {
+            double step = xMax / (double) (samples.length - 1);
+            //demander ppour l'éventuelle réécriture
+            System.out.println(operand / step);
+            double q = operand / step;
+            int x0 = (int)Math.floor(q);
+            int x1 = (int) Math.ceil(q);
+            System.out.println(x0 + " " +x1);
+
+            double y0 = samples[x0];
+            double y1 = samples[x1];
+            return Math2.interpolate(y0, y1, q - x0 );
+            /*for (int i = 0; i < samples.length - 1 ; ++i) {
                 double y0 = samples[i];
                 double y1 = samples[i + 1];
 
-                if (i * step < preImage && preImage <= (i + 1) * step) {
+                if (i * step < operand && operand <= (i + 1) * step) {
                     System.out.println(i);
-                    System.out.println(i + 1);
-                    //System.out.println(Math2.interpolate(5f, 17f, 1));
-                    return Math2.interpolate(y0, y1, preImage/step);
+                    int index1 =  (int)Math.ceil(operand / step);
+                    System.out.println(index1);
+                    return Math2.interpolate(y0, y1, operand / step);
                 }
-            }
-            return 0;
+            }*/
+
         }
     }
 }
