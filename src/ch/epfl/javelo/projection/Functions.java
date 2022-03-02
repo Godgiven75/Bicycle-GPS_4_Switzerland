@@ -47,13 +47,15 @@ public final class Functions {
         public double applyAsDouble(double preImage) {
             double step = xMax / (double) (samples.length - 1);
 
-            for (int i = 0; i < samples.length ; ++i) {
+            for (int i = 0; i < samples.length - 1 ; ++i) {
                 double y0 = samples[i];
                 double y1 = samples[i + 1];
-                if (i * step <= preImage && preImage < (i + 1) * step) {
+
+                if (i * step < preImage && preImage <= (i + 1) * step) {
                     System.out.println(i);
+                    System.out.println(i + 1);
                     //System.out.println(Math2.interpolate(5f, 17f, 1));
-                    return Math2.interpolate(y0, y1, preImage);
+                    return Math2.interpolate(y0, y1, preImage/step);
                 }
             }
             return 0;
