@@ -1,6 +1,10 @@
 package ch.epfl.javelo.projection.data;
 
+import ch.epfl.javelo.Bits;
+
 import java.nio.IntBuffer;
+
+import static ch.epfl.javelo.Bits.extractUnsigned;
 
 /**
  * Représente le tableau de tous les noeuds du graphe Javelo
@@ -16,7 +20,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return un entier correspond au nombre total de noeuds dans la mémoire tampon
      */
     public int count() {
-        return buffer.capacity()/3;
+        return buffer.capacity()/NODE_INTS;
     }
 
     /**
@@ -25,7 +29,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return la coordonnée E du noeud d'identité donnée
      */
     public double nodeE(int nodeId) {
-        return buffer.get(3 * nodeId + OFFSET_E);
+        return buffer.get(NODE_INTS * nodeId + OFFSET_E);
     }
 
     /**
@@ -34,7 +38,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return la coordonnée N du noeud d'identité donnée
      */
     public double nodeN(int nodeId) {
-        return buffer.get(3 * nodeId + OFFSET_N);
+        return buffer.get(NODE_INTS * nodeId + OFFSET_N);
     }
 
     /**
@@ -43,7 +47,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return le nombre d'arêtes sortant du noeud d'identité donné
      */
     public int outDegree(int nodeId) {
-        return buffer.get(3 * nodeId + OFFSET_OUT_EDGES);
+        return buffer.get(NODE_INTS * nodeId + OFFSET_OUT_EDGES) >>> 28;
     }
 
     /**
@@ -53,9 +57,11 @@ public record GraphNodes(IntBuffer buffer) {
      * @return l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
      */
     public int edgeId(int nodeId, int edgeIndex) {
-        assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
-        return buffer.get( (3 * nodeId + OFFSET_OUT_EDGES));
+        //assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
+        System.out.println(Integer.toBinaryString(
+                buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))));
+        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28)) << 4)
+                + edgeIndex - 1;
     }
-
 
 }
