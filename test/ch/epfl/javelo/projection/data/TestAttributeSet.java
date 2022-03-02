@@ -43,4 +43,21 @@ public final class TestAttributeSet {
         AttributeSet set = AttributeSet.of(TRACKTYPE_GRADE1, HIGHWAY_TRACK);
         assertEquals("{highway=track,tracktype=grade1}", set.toString());
     }
+
+    @Test
+    void attributeSetConstructorThrowsOnIllegalAttributeOrdinals() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AttributeSet(Long.MIN_VALUE);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AttributeSet(0b0100000000000000000000000000000000000000000000000000000000000000L);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AttributeSet(0b0100000000000000000000000010000000110000010000000000000000000000L);
+        });
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package ch.epfl.javelo.projection;
 
 
+import ch.epfl.javelo.Preconditions;
 import ch.epfl.test.TestRandomizer;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
@@ -37,8 +38,8 @@ public class FunctionsTest {
         double xMax = 10.0;
         //attention!!!!!!!!!!!
         DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
-        double actual = sampling.applyAsDouble(0);
-        double expected = 11.0;
+        double actual = sampling.applyAsDouble(5f);
+        double expected = 11f;
         assertEquals(expected, actual);
 
 

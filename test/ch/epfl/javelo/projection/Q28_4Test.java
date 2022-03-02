@@ -17,25 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Q28_4Test {
 
-    @Test
-    void ofIntThrowsOnIntegersThatExceed28Bits() {
-        var rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
-            int v1 = rng.nextInt(Integer.MIN_VALUE, 0b11111000000000000000000000000000 - 1);
-            int v2 = rng.nextInt(0b111111111111111111111111111 + 1, Integer.MAX_VALUE);
-            //Negative illegal values
-            assertThrows(IllegalArgumentException.class, () -> {
-                System.out.println(Integer.toBinaryString(v1));
-                Q28_4.ofInt(v1);
-            });
-            //Positive illegal values
-            assertThrows(IllegalArgumentException.class, () -> {
-                System.out.println(Integer.toBinaryString(v2));
-                Q28_4.ofInt(v2);
-            });
-
-        }
-    }
 
     @Test
     void ofIntThrowsOnALLIntegersThatExceed28Bits() {

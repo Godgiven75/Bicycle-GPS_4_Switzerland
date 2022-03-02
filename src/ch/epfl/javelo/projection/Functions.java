@@ -1,6 +1,7 @@
 package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.Preconditions;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -29,6 +30,7 @@ public final class Functions {
      * @return une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés régulièrement
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
+        Preconditions.checkArgument(samples.length >= 2 && xMax > 0);
         return new Sampled(samples, xMax);
     }
 
@@ -43,16 +45,14 @@ public final class Functions {
         //Je me demande s'il n'y a pas une meilleure façon d'écrire ce qui suit.
         @Override
         public double applyAsDouble(double preImage) {
-            if (preImage < 0) return samples[0];
-            if (preImage > xMax) return samples[samples.length - 1];
+            double step = xMax / (double) (samples.length - 1);
 
-            double step = xMax / samples.length;
-            for (int i = 0; i < samples.length; ++i) {
-
+            for (int i = 0; i < samples.length ; ++i) {
                 double y0 = samples[i];
                 double y1 = samples[i + 1];
-
-                if (i * step < preImage && preImage < (i + 1) * step) {
+                if (i * step <= preImage && preImage < (i + 1) * step) {
+                    System.out.println(i);
+                    //System.out.println(Math2.interpolate(5f, 17f, 1));
                     return Math2.interpolate(y0, y1, preImage);
                 }
             }
