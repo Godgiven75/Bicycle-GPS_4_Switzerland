@@ -47,27 +47,19 @@ public final class Functions {
         @Override
         public double applyAsDouble(double operand) {
             double step = xMax / (double) (samples.length - 1);
-            //demander ppour l'éventuelle réécriture
-            System.out.println(operand / step);
+
+            //ce clamp permet de prolonger la fonction en - l'infini et + l'infini (permet d'éviter les erreurs)
+            operand = Math2.clamp(0, operand, xMax);
+
             double q = operand / step;
+
             int x0 = (int)Math.floor(q);
             int x1 = (int) Math.ceil(q);
-            System.out.println(x0 + " " +x1);
-
             double y0 = samples[x0];
             double y1 = samples[x1];
-            return Math2.interpolate(y0, y1, q - x0 );
-            /*for (int i = 0; i < samples.length - 1 ; ++i) {
-                double y0 = samples[i];
-                double y1 = samples[i + 1];
 
-                if (i * step < operand && operand <= (i + 1) * step) {
-                    System.out.println(i);
-                    int index1 =  (int)Math.ceil(operand / step);
-                    System.out.println(index1);
-                    return Math2.interpolate(y0, y1, operand / step);
-                }
-            }*/
+            return Math2.interpolate(y0, y1, q - x0 );
+
 
         }
     }

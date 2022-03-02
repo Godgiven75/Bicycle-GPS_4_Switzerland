@@ -38,7 +38,7 @@ public class FunctionsTest {
         double xMax = 10.0;
         //attention!!!!!!!!!!!
         DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
-        double actual = sampling.applyAsDouble(2 );
+        double actual = sampling.applyAsDouble(-200 );
         double expected = 5.0f;
         assertEquals(expected, actual);
 
