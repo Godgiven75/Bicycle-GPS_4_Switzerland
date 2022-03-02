@@ -18,11 +18,11 @@ public record GraphSectors(ByteBuffer buffer) {
      * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné et de côté
      * égal au double de la distance donnée
      */
-    public List<Sector> sectorsInArea(PointCh center, double distance) {
+    /*public List<Sector> sectorsInArea(PointCh center, double distance) {
+        return null;
+    }*/
 
-    }
+    /*public record Sector(int startNodeId, int endNodeId) {
 
-    public record Sector(int startNodeId, int endNodeId) {
-
-    }
+    }*/
 }

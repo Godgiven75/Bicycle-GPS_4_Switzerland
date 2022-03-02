@@ -54,7 +54,7 @@ public record GraphNodes(IntBuffer buffer) {
      */
     public int edgeId(int nodeId, int edgeIndex) {
         assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
-        return buffer.get( (3 * nodeId + OFFSET_OUT_EDGES)
+        return buffer.get( (3 * nodeId + OFFSET_OUT_EDGES));
     }
 
 
