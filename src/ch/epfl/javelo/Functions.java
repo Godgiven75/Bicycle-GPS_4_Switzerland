@@ -42,7 +42,7 @@ public final class Functions {
     }
 
     private static class Sampled implements DoubleUnaryOperator {
-        //Je me demande s'il n'y a pas une meilleure façon d'écrire ce qui suit.
+
         private float[] samples;
         private double xMax;
         private double step;
@@ -57,7 +57,7 @@ public final class Functions {
 
         @Override
         public double applyAsDouble(double operand) {
-            //ce clamp permet de prolonger la fonction en - l'infini et + l'infini (permet d'éviter les erreurs)
+
             double q = operand / step;
 
             int x0 = (int) Math.floor(q);
