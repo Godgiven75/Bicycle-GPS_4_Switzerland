@@ -53,14 +53,12 @@ public final class Functions {
 
             double q = operand / step;
 
-            int x0 = (int)Math.floor(q);
+            int x0 = (int) Math.floor(q);
             int x1 = (int) Math.ceil(q);
             double y0 = samples[x0];
             double y1 = samples[x1];
 
             return Math2.interpolate(y0, y1, q - x0 );
-
-
         }
     }
 }
