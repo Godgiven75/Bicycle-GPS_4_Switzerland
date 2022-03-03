@@ -1,4 +1,4 @@
-package ch.epfl.javelo.projection.data;
+package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Bits;
 
