@@ -95,21 +95,11 @@ public record PointWebMercator(double x, double y) {
      *
      */
     public PointCh toPointCh() {
-        /*
         double lon = lon();
         double lat = lat();
-        System.out.println(lon + " " + lat);
         double e = Ch1903.e(lon, lat);
         double n = Ch1903.n(lon, lat);
-        System.out.println(e + " " + n);
-        return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
-         */
-        double lon = WebMercator.lon(this.x);
-        double lat = WebMercator.lat(this.y);
-        System.out.println(lon + " " + lat);
-        double e = Ch1903.e(lon, lat);
-        double n = Ch1903.n(lon, lat);
-        System.out.println(e + " " + n);
+
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
     }
 }
