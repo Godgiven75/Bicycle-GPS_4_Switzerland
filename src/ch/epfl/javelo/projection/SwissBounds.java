@@ -44,6 +44,6 @@ public final class SwissBounds {
      * @return vrai si et seulement si les coordonées E et N données sont dans les limites de la Suisse
      */
     public static boolean containsEN(double e, double n) {
-        return ((MIN_E < e) && (e < MAX_E) && (MIN_N < n) && (n < MAX_N));
+        return ((MIN_E <= e) && (e <= MAX_E) && (MIN_N <= n) && (n <= MAX_N));
     }
 }

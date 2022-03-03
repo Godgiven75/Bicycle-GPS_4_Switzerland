@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 
 import static ch.epfl.javelo.projection.PointWebMercator.ofPointCh;
+import static ch.epfl.javelo.projection.WebMercator.*;
 import static java.util.stream.DoubleStream.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,7 +61,7 @@ public final class PointWebMercatorTest {
     @Test
     public void retourneLatitudeEnRad() {
         PointWebMercator p = new PointWebMercator(0.518275214444, 0.353664894749);
-        assertEquals(Math.atan( Math2.asinh(Math.PI - 2.0 * Math.PI * 0.353664894749) ), p.lat());
+        assertEquals(Math.atan( Math.sinh(Math.PI - 2.0 * Math.PI * 0.353664894749) ), p.lat());
     }
 
     // Méthode toPointCh
@@ -80,11 +81,14 @@ public final class PointWebMercatorTest {
         assertEquals(new PointCh(e,n), p.toPointCh());
     }
 
-    /*
+
     @Test
     public void doesReturnNullIfThisIsNotInSwissBounds() {
-        PointWebMercator p = new PointWebMercator(0.518275214444, 0.353664894749);
+        PointCh ch = new PointCh(2_485_000, 1_075_000);
+        double lon = Ch1903.lon(2_485_001, 1_075_000);
+        double lat = Ch1903.lat(2_485_001, 1_075_001);
+        PointWebMercator p = new PointWebMercator(x(lon), y(lat));
         assertEquals(null, p.toPointCh());
     }
-     */
+
 }
