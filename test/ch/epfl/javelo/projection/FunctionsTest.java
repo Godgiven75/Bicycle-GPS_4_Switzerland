@@ -78,13 +78,16 @@ public class FunctionsTest {
         double y1 = arr[x1];
 
         double a = (y1 - y0) / (x1- x0);
-        double b = y0 - (a * x0);
+        double b = y1 - (a * x1);
 
-        double expected = a * x + b;
+        double expected = Math.fma(a, x, b);
         double actual = sampling.applyAsDouble(x);
         System.out.println((x));
-        System.out.println(Math.floor(x) +" "+ Math.ceil(x));
-        System.out.println( arr[(int)Math.floor(x)] + " " + arr[(int)Math.ceil(x)]);
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(x0 + " " + x1);
+        System.out.println(y0 +" "+ y1);
+
 
         assertEquals(expected, actual, DELTA);
 
