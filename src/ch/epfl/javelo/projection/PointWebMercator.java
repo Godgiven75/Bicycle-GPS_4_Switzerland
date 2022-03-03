@@ -11,6 +11,8 @@ import static java.util.stream.DoubleStream.of;
 public record PointWebMercator(double x, double y) {
 
     private static final int BASE_ZOOM_LEVEL = 8;
+    private static final int MIN_ZOOM_LEVEL = 0;
+    private static final int MAX_ZOOM_LEVEL = 20;
 
     /**
      * Constructeur validant les coordonnées x et y du point et levant une expressions si l'une d'elle n'est pas comprise dans l'intervalle [0;1]
@@ -29,7 +31,7 @@ public record PointWebMercator(double x, double y) {
      * @return le point dont les coordonnées x et y sont au niveau de zoom zoomLevel
      */
     public static PointWebMercator of(int zoomLevel, double x, double y ) {
-        Preconditions.checkArgument(zoomLevel >= 0 && zoomLevel <= 20);
+        Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
 
         double scaledX = Math.scalb(x, - (zoomLevel + BASE_ZOOM_LEVEL));
         double scaledY = Math.scalb(y, - (zoomLevel + BASE_ZOOM_LEVEL));
@@ -57,7 +59,7 @@ public record PointWebMercator(double x, double y) {
      * @return Retourne la coordonnée x du point au niveau de zoom donné
      */
     public double xAtZoomLevel(int zoomLevel) {
-        if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
         return Math.scalb(x, zoomLevel + BASE_ZOOM_LEVEL );
     }
 
@@ -67,8 +69,8 @@ public record PointWebMercator(double x, double y) {
      * @return Retourne la coordonnée x du point au niveau de zoom donné
      */
     public double yAtZoomLevel(int zoomLevel) {
-        if(!(zoomLevel >= 0 && zoomLevel <= 20)) throw new IllegalArgumentException();
-        return Math.scalb(y, zoomLevel + BASE_ZOOM_LEVEL );
+        Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
+        return Math.scalb(y, zoomLevel + BASE_ZOOM_LEVEL);
     }
 
     /**
