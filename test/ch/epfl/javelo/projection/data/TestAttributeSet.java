@@ -30,6 +30,8 @@ public final class TestAttributeSet {
     public void givesArgumentAttributesBack() {
         assertEquals(new AttributeSet(7L),
                 AttributeSet.of(HIGHWAY_SERVICE, HIGHWAY_TRACK, HIGHWAY_RESIDENTIAL));
+        assertEquals(new AttributeSet(7L),
+                AttributeSet.of(HIGHWAY_SERVICE, HIGHWAY_TRACK, HIGHWAY_RESIDENTIAL, HIGHWAY_TRACK));
     }
 
     //Méthode contains
@@ -42,6 +44,10 @@ public final class TestAttributeSet {
     public void checkStringRepresentation() {
         AttributeSet set = AttributeSet.of(TRACKTYPE_GRADE1, HIGHWAY_TRACK);
         assertEquals("{highway=track,tracktype=grade1}", set.toString());
+        AttributeSet set1 = AttributeSet.of(HIGHWAY_SERVICE);
+        assertEquals("{highway=service}", set1.toString());
+        AttributeSet set2 = AttributeSet.of(HIGHWAY_SERVICE, HIGHWAY_TRACK, HIGHWAY_TRACK);
+        assertEquals("{highway=service,highway=track}", set2.toString());
     }
 
     @Test

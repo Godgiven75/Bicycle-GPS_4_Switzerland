@@ -14,6 +14,8 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_N = OFFSET_E + 1;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
+    private static final int OFFSET_28 = 28;
+    private static final int OFFSET_4 = 4;
 
     /**
      * Retourne le nombre total de noeuds
@@ -60,7 +62,7 @@ public record GraphNodes(IntBuffer buffer) {
         //assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         System.out.println(Integer.toBinaryString(
                 buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))));
-        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28)) << 4)
+        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28)) << OFFSET_4)
                 + edgeIndex - 1;
     }
 
