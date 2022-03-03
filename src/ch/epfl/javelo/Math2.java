@@ -3,10 +3,9 @@ package ch.epfl.javelo;
 import static java.lang.Math.fma;
 
 /**
- * Claxse finale et non-instanciable permettant d'effectuer des opérations mathématiques
+ * Classe finale et non-instanciable permettant d'effectuer des opérations mathématiques
  */
 public final class Math2 {
-
 
     private Math2() {}
 

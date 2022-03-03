@@ -12,7 +12,6 @@ import java.util.function.DoubleUnaryOperator;
 public final class Functions {
     private Functions() {}
 
-
     /**
      * Retourne une fonction constante, dont la valeur est toujours y
      * @param y valeur (double) de la fonction
@@ -42,7 +41,6 @@ public final class Functions {
     }
 
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
-        //Je me demande s'il n'y a pas une meilleure façon d'écrire ce qui suit.
 
         @Override
         public double applyAsDouble(double operand) {
