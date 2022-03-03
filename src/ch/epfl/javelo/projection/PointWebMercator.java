@@ -33,8 +33,8 @@ public record PointWebMercator(double x, double y) {
     public static PointWebMercator of(int zoomLevel, double x, double y ) {
         Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
 
-        double scaledX = Math.scalb(x, - (zoomLevel + BASE_ZOOM_LEVEL));
-        double scaledY = Math.scalb(y, - (zoomLevel + BASE_ZOOM_LEVEL));
+        double scaledX = Math.scalb(x, - (actualZoomLevel(zoomLevel)));
+        double scaledY = Math.scalb(y, - (actualZoomLevel(zoomLevel)));
         return new PointWebMercator(scaledX, scaledY);
     }
 
@@ -60,7 +60,7 @@ public record PointWebMercator(double x, double y) {
      */
     public double xAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
-        return Math.scalb(x, zoomLevel + BASE_ZOOM_LEVEL );
+        return Math.scalb(x, actualZoomLevel(zoomLevel) );
     }
 
     /**
@@ -70,7 +70,7 @@ public record PointWebMercator(double x, double y) {
      */
     public double yAtZoomLevel(int zoomLevel) {
         Preconditions.checkArgument(zoomLevel >= MIN_ZOOM_LEVEL && zoomLevel <= MAX_ZOOM_LEVEL);
-        return Math.scalb(y, zoomLevel + BASE_ZOOM_LEVEL);
+        return Math.scalb(y, actualZoomLevel(zoomLevel));
     }
 
     /**
@@ -101,5 +101,14 @@ public record PointWebMercator(double x, double y) {
         double n = Ch1903.n(lon, lat);
 
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
+    }
+
+    /**
+     * Retourne le niveau de zoom de base additioné au niveau de zoom passé en paramètre
+     * @param zoomLevel niveau de zoom
+     * @return le niveau de zoom de base additioné au niveau de zoom passé en paramètre
+     */
+    private static int actualZoomLevel(int zoomLevel) {
+        return BASE_ZOOM_LEVEL + zoomLevel;
     }
 }

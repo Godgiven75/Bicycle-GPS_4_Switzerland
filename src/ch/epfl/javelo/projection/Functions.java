@@ -41,25 +41,33 @@ public final class Functions {
         }
     }
 
-    private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
+    private static class Sampled implements DoubleUnaryOperator {
         //Je me demande s'il n'y a pas une meilleure façon d'écrire ce qui suit.
+        private float[] samples;
+        private double xMax;
+        private double step;
+
+        public Sampled(float[] samples, double xMax)
+        {
+            this.samples = samples.clone();
+            this.xMax = xMax;
+            step = xMax /  (samples.length - 1);
+
+        }
 
         @Override
         public double applyAsDouble(double operand) {
-            double step = xMax / (double) (samples.length - 1);
-
             //ce clamp permet de prolonger la fonction en - l'infini et + l'infini (permet d'éviter les erreurs)
-            operand = Math2.clamp(0, operand, xMax);
-
             double q = operand / step;
 
-            int x0 = (int)Math.floor(q);
-            int x1 = (int) Math.ceil(q);
-            double y0 = samples[x0];
-            double y1 = samples[x1];
-
-            return Math2.interpolate(y0, y1, q - x0 );
-
+            int x0 = (int) Math.floor(q);
+            if(x0 < 0) {
+                return samples[0];
+            }
+            if(x0  < samples.length - 1 ) {
+                return Math2.interpolate(samples[x0], samples[x0 + 1], q - x0);
+            }
+            return samples[samples.length - 1];
 
         }
     }
