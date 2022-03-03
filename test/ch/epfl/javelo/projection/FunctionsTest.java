@@ -1,16 +1,9 @@
 package ch.epfl.javelo.projection;
 
 
-import ch.epfl.javelo.Preconditions;
-import ch.epfl.test.TestRandomizer;
-import ch.epfl.javelo.Bits;
-import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.projection.Functions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import ch.epfl.javelo.Functions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;

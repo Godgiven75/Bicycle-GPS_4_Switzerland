@@ -1,8 +1,6 @@
-package ch.epfl.javelo.projection.data;
+package ch.epfl.javelo.data;
 import ch.epfl.javelo.Preconditions;
 import java.util.StringJoiner;
-
-import static ch.epfl.javelo.projection.data.Attribute.ALL;
 
 /**
  * Enregistrement représentant un ensemble d'attributs OpenStreetMap. Possède un unique attribut : le long bits,
@@ -67,7 +65,7 @@ public record AttributeSet(long bits) {
         StringJoiner j = new StringJoiner(",", "{", "}");
         for (int i = 0; i < 64; i++) {
             if ( ( ((bits >> i) & 1) == 1 ) ) {
-                j.add(ALL.get(i).keyValue());
+                j.add(Attribute.ALL.get(i).keyValue());
             }
         }
         return j.toString();

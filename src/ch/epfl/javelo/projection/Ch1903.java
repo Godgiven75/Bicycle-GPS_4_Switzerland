@@ -7,7 +7,6 @@ package ch.epfl.javelo.projection;
 public final class Ch1903 {
     private Ch1903() {}
 
-
     /**
      * Retourne la coordonée est (E) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      * @param lon longitude
@@ -15,9 +14,7 @@ public final class Ch1903 {
      * @return la coordonée est (E) (dans le système (CH1903+) d'un point donné dans le système WGS 84
      */
     public static double e(double lon, double lat) {
-        //double l1 = Math.pow(10,-4)*(3600*Math.toDegrees(lon) - 26_782.5);
         double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
-        //double phi1 = Math.pow(10,-4)*(3600*Math.toDegrees(lat) - 169_028.66);
         double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);
 
         return 2600072.37 + 211455.93 * l1 - 10938.51 * l1 * phi1 - 0.36 * l1 * phi1 * phi1 - 44.54 * l1 * l1 * l1;
