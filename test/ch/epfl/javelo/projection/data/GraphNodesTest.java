@@ -1,5 +1,6 @@
 package ch.epfl.javelo.projection.data;
 
+import ch.epfl.javelo.data.GraphNodes;
 import org.junit.jupiter.api.Test;
 
 import java.nio.IntBuffer;
