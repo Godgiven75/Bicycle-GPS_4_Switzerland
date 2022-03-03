@@ -42,6 +42,8 @@ public final class TestAttributeSet {
     public void checkStringRepresentation() {
         AttributeSet set = AttributeSet.of(TRACKTYPE_GRADE1, HIGHWAY_TRACK);
         assertEquals("{highway=track,tracktype=grade1}", set.toString());
+        AttributeSet set1 = AttributeSet.of(HIGHWAY_SERVICE);
+        assertEquals("{highway=service}", set1.toString());
     }
 
     @Test
