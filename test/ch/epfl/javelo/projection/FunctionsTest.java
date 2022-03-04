@@ -49,8 +49,6 @@ public class FunctionsTest {
 
         assertEquals(expected, actual, 1e-6 );
 
-
-
     }
 
     @Test
@@ -73,21 +71,14 @@ public class FunctionsTest {
 
         double x = 100.5;
         double actual = sampling.applyAsDouble(x);
-
         int x0 = (int) Math.floor(x);
         int x1 = (int) Math.ceil(x);
-
         double y0 = arr[x0];
         double y1 = arr[x1];
-
         double slope = (y1 - y0) / (x1 - x0);
         double yIntercept = Math.fma(-slope, x1, y1);
-
         double expected = Math.fma(slope, x, yIntercept);
-
-
         assertEquals(expected, actual, DELTA);
-
         }
 
 
