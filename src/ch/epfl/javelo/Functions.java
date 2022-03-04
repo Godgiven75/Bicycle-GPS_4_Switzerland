@@ -1,4 +1,4 @@
-package ch.epfl.javelo.projection;
+package ch.epfl.javelo;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
