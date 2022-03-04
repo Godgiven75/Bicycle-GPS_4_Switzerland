@@ -1,17 +1,12 @@
 package ch.epfl.javelo.projection;
 
-import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.javelo.projection.PointWebMercator;
+
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 
 import static ch.epfl.javelo.projection.PointWebMercator.ofPointCh;
 import static ch.epfl.javelo.projection.WebMercator.*;
-import static java.util.stream.DoubleStream.of;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class PointWebMercatorTest {
 
@@ -47,7 +42,7 @@ public final class PointWebMercatorTest {
     @Test
     public void isYAtTheRightZoomLevel() {
         PointWebMercator p = new PointWebMercator(0.518275214444, 0.353664894749);
-        assertEquals(Math.scalb(0.353664894749, -19) , p.yAtZoomLevel(19));
+        assertEquals(Math.scalb(0.353664894749, 27) , p.yAtZoomLevel(19));
     }
 
     // Méthode lon
@@ -84,11 +79,10 @@ public final class PointWebMercatorTest {
 
     @Test
     public void doesReturnNullIfThisIsNotInSwissBounds() {
-        PointCh ch = new PointCh(2_485_000, 1_075_000);
         double lon = Ch1903.lon(2_485_001, 1_075_000);
         double lat = Ch1903.lat(2_485_001, 1_075_001);
         PointWebMercator p = new PointWebMercator(x(lon), y(lat));
-        assertEquals(null, p.toPointCh());
+        assertNull(p.toPointCh());
     }
 
 }

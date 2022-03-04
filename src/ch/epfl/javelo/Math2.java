@@ -16,7 +16,7 @@ public final class Math2 {
      * @return la division entière par excès de x par y
      */
     public static int ceilDiv(int x, int y) {
-        Preconditions.checkArgument(x >= 0 && y >= 0 );
+        Preconditions.checkArgument(x >= 0 && y > 0 );
         return (x + y - 1) / y;
     }
 

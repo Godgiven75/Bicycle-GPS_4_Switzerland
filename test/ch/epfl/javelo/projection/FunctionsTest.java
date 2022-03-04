@@ -49,17 +49,19 @@ public class FunctionsTest {
 
         assertEquals(expected, actual, 1e-6 );
 
+
+
     }
 
     @Test
     void sampledWorksOnLargeArray() {
         //Vérifications à faire manuellement pour ne pas utiliser la même méthode de calcul que dans la méthode...
         var rng = newRandom();
-        List<Float> l = new ArrayList<Float>();
+        List<Float> l = new ArrayList<>();
         for(int i = 0; i < RANDOM_ITERATIONS; ++i) {
-            l.add(rng.nextFloat(0, 10000));
+            l.add((float)rng.nextInt(0, 1000));
         }
-        double xMax = 1000;
+        float xMax = 1000;
 
         final float[] arr = new float[l.size()];
         int index = 0;
@@ -69,24 +71,19 @@ public class FunctionsTest {
 
         DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(arr ,xMax );
 
-        double x = rng.nextDouble(xMax);
-        double step = 1;
-        int x0 = (int) Math.floor(x/step);
-        int x1 = (int) Math.ceil(x/step);
+        double x = 100.5;
+        double actual = sampling.applyAsDouble(x);
+
+        int x0 = (int) Math.floor(x);
+        int x1 = (int) Math.ceil(x);
 
         double y0 = arr[x0];
         double y1 = arr[x1];
 
-        double a = (y1 - y0) / (x1- x0);
-        double b = y1 - (a * x1);
+        double slope = (y1 - y0) / (x1 - x0);
+        double yIntercept = Math.fma(-slope, x1, y1);
 
-        double expected = Math.fma(a, x, b);
-        double actual = sampling.applyAsDouble(x);
-        System.out.println((x));
-        System.out.println(a);
-        System.out.println(b);
-        System.out.println(x0 + " " + x1);
-        System.out.println(y0 +" "+ y1);
+        double expected = Math.fma(slope, x, yIntercept);
 
 
         assertEquals(expected, actual, DELTA);
