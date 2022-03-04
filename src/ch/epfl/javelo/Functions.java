@@ -1,8 +1,5 @@
 package ch.epfl.javelo;
 
-import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.Preconditions;
-
 import java.util.function.DoubleUnaryOperator;
 
 /**
