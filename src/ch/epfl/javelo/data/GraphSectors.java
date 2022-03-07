@@ -36,6 +36,8 @@ public record GraphSectors(ByteBuffer buffer) {
         int xMax = (int) ((distanceToSouthLimit + 2 * distance) / sectorLength);
         int yMax = (int) (distanceToSouthLimit/sectorLength);
 
+        // clamp à rajouter pour les x et y min/max
+
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
                 inArea.add(new Sector(buffer.getInt(6 * (x + y * 128)),
