@@ -1,10 +1,13 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Short.toUnsignedInt;
 
 /**
  * Représente le tableau contenant les 16384 secteurs de Javelo
@@ -32,17 +35,15 @@ public record GraphSectors(ByteBuffer buffer) {
         double distanceToWestLimit = leftSide - SWISS_E_MIN;
         double distanceToSouthLimit = lowerSide - SWISS_N_MIN;
 
-        int xMin = (int) (distanceToWestLimit/ SECTOR_WIDTH);
-        int yMin = (int) ( (distanceToWestLimit + 2 * distance) / SECTOR_WIDTH);
-        int xMax = (int) ( (distanceToSouthLimit + 2 * distance) / SECTOR_LENGTH);
-        int yMax = (int) (distanceToSouthLimit/ SECTOR_LENGTH);
-
-        // clamp à rajouter pour les x et y min/max
+        int xMin = Math2.clamp(0, (int) (distanceToWestLimit/ SECTOR_WIDTH), 128);
+        int yMin = Math2.clamp(0, (int) ( (distanceToWestLimit + 2 * distance) / SECTOR_WIDTH), 128);
+        int xMax = Math2.clamp(0, (int) ( (distanceToSouthLimit + 2 * distance) / SECTOR_LENGTH), 128);
+        int yMax = Math2.clamp(0, (int) (distanceToSouthLimit/ SECTOR_LENGTH), 128);
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
                 inArea.add(new Sector(buffer.getInt(OFFSET_SECTOR * (x + y * 128)),
-                        buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES) ));
+                        toUnsignedInt(buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES)) ));
             }
         }
         return inArea;
