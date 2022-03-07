@@ -36,10 +36,10 @@ public record GraphSectors(ByteBuffer buffer) {
         double distanceToWestLimit = leftSide - swissEmin;
         double distanceToSouthLimit = lowerSide - swissNmin;
 
-        int xMin = (int) Math.floor(distanceToWestLimit/sectorWidth);
-        int yMin = (int) Math.floor( (distanceToWestLimit + 2 * distance) / sectorWidth);
-        int xMax = (int) Math.floor( (distanceToSouthLimit + 2 * distance) / sectorLength);
-        int yMax = (int) Math.floor(distanceToSouthLimit/sectorLength);
+        int xMin = (int) (distanceToWestLimit/sectorWidth);
+        int yMin = (int) ((distanceToWestLimit + 2 * distance) / sectorWidth);
+        int xMax = (int) ((distanceToSouthLimit + 2 * distance) / sectorLength);
+        int yMax = (int) (distanceToSouthLimit/sectorLength);
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
