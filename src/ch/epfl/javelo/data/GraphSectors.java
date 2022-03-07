@@ -37,7 +37,8 @@ public record GraphSectors(ByteBuffer buffer) {
         int yMax = (int) (distanceToSouthLimit/sectorLength);
 
         // clamp à rajouter pour les x et y min/max
-        // constantes OFFSET à définir en bytes
+        // constantes OFFSET à définir en bytes et s'aider des cstes Short.BYTES et Integer.BYTES qui donnent le nb d'octets contenus resp.
+        // dans un entier de type short ou int
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
