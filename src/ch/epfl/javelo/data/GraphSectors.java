@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.UIManager.getInt;
+
 /**
  * Représente le tableau contenant les 16384 secteurs de Javelo
  */
@@ -35,15 +37,18 @@ public record GraphSectors(ByteBuffer buffer) {
         double distanceToSouthLimit = lowerSide - swissNmin;
 
         int xMin = (int) Math.floor(distanceToWestLimit/sectorWidth);
-        int yMin = (int) ( (distanceToWestLimit + 2 * distance) / sectorWidth);
-        int xMax = (int) ( (distanceToSouthLimit + 2 * distance) / sectorLength);
+        int yMin = (int) Math.floor( (distanceToWestLimit + 2 * distance) / sectorWidth);
+        int xMax = (int) Math.floor( (distanceToSouthLimit + 2 * distance) / sectorLength);
         int yMax = (int) Math.floor(distanceToSouthLimit/sectorLength);
 
-        for (int i = 0; i < 16384; i++) {
-
+        for (int x = xMin; x <= xMax; x++) {
+            for (int y = yMin; y <= yMax; y++) {
+                inArea.add(new Sector(buffer.getInt(6 * (x + y * 128)),
+                        buffer.getShort(6 * (x + y * 128) + 4) ));
+            }
         }
 
-        return
+        return inArea;
     }
 
     public record Sector(int startNodeId, int endNodeId) {
