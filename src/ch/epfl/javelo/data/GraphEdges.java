@@ -15,7 +15,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return vrai si et seulement si l'arête d'identité donnée va dans le sens inverse de la voie OSM dont elle provient
      */
     public boolean isInverted(int edgeId) {
-        return false;
+
     }
 
     /**
