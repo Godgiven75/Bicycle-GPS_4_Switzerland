@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Représente le tableau contenant les 16384 secteurs de Javelo
  */
-public record GraphSectors(ByteBuffer buffer) {
+public record   GraphSectors(ByteBuffer buffer) {
 
     /**
      * Retourne la liste de tous les secteurs ayant une intersection avec le carré centré au point donné et de côté

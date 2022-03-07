@@ -48,7 +48,7 @@ public final class Functions {
         {
             this.samples = samples.clone();
             this.xMax = xMax;
-            step = xMax / (samples.length);
+            step = xMax / (samples.length - 1);
 
         }
 

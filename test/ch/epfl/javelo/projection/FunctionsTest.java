@@ -2,6 +2,7 @@ package ch.epfl.javelo.projection;
 
 
 
+import ch.epfl.javelo.Functions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class FunctionsTest {
         for(int i = 0; i < RANDOM_ITERATIONS; ++i) {
             double rand = rng.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
 
-            DoubleUnaryOperator randConst = ch.epfl.javelo.projection.Functions.constant(rand);
+            DoubleUnaryOperator randConst = Functions.constant(rand);
             double actual = randConst.applyAsDouble(rng.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE));
             System.out.println(actual);
             assertEquals(rand, actual);
@@ -33,7 +34,7 @@ public class FunctionsTest {
     void sampledWorksOnNormalValues() {
         float[] samples = {5.0F, 17F, 23F, 2.34F, 55f, 11f};
         double xMax = 10.0;
-        DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, xMax);
+        DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
         double actual = sampling.applyAsDouble(1 );
         double expected = 11.0f;
 
@@ -69,18 +70,18 @@ public class FunctionsTest {
         int index = 0;
         for (final Float value: l) {
             arr[index++] = value;
-            System.out.println(index + " " + value);
+            //System.out.println(index + " " + value);
         }
 
 
 
-        DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(arr ,xMax );
+        DoubleUnaryOperator sampling = ch.epfl.javelo.Functions.sampled(arr ,xMax );
 
         double x = 100.5;
         double actual = sampling.applyAsDouble(x);
 
         int x0 = (int) Math.floor(x);
-        int x1 = (int) Math.ceil(x);
+        int x1 = x0 + 1;
 
         double y0 = arr[x0];
         double y1 = arr[x1];
@@ -88,12 +89,16 @@ public class FunctionsTest {
         System.out.println(y0);
         System.out.println(y1);
 
-        double slope = (y1 - y0) / (x1  - x0);
+        double step = xMax /  (arr.length -1) ;
+        System.out.println(xMax);
+        System.out.println(arr.length - 1);
+        System.out.println(step);
+        double slope = (y1 - y0) / (step);
         System.out.println("slope " +slope);
         double yIntercept = Math.fma(-slope, x1 , y1);
         System.out.println(yIntercept);
 
-        double expected = Math.fma(slope, x / 1.001001001001001001001001001001, yIntercept);
+        double expected = Math.fma(slope, x , yIntercept);
 
 
         assertEquals(expected, actual, DELTA);
@@ -105,7 +110,7 @@ public class FunctionsTest {
     void sampledWorksOnZero() {
         float[] samples = {5.0F, 17F, 23F, 2.34F, 55f, 11f };
         double xMax = 10.0;
-        DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, xMax);
+        DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
         double actual = sampling.applyAsDouble(0 );
         double expected = 5.0f;
 
@@ -115,7 +120,7 @@ public class FunctionsTest {
     void sampledWorksOnXMax() {
         float[] samples = {5.0F, 17F, 23F, 2.34F, 55f, 11f };
         double xMax = 10.0;
-        DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, xMax);
+        DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
         double actual = sampling.applyAsDouble(10 );
         double expected = 11.0f;
 
@@ -128,7 +133,7 @@ public class FunctionsTest {
         double xMax = 10.0;
 
         assertThrows(IllegalArgumentException.class, () -> {
-            DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, xMax);
+            DoubleUnaryOperator sampling = Functions.sampled(samples, xMax);
         });
 
     }
@@ -139,14 +144,14 @@ public class FunctionsTest {
         double xMax = 0;
         double finalXMax = xMax;
         assertThrows(IllegalArgumentException.class, () -> {
-            DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, finalXMax);
+            DoubleUnaryOperator sampling = Functions.sampled(samples, finalXMax);
 
         });
 
         xMax = -71f;
         double finalXMax1 = xMax;
         assertThrows(IllegalArgumentException.class, () -> {
-            DoubleUnaryOperator sampling = ch.epfl.javelo.projection.Functions.sampled(samples, finalXMax1);
+            DoubleUnaryOperator sampling = Functions.sampled(samples, finalXMax1);
 
         });
     }
