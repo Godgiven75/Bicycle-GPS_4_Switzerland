@@ -1,13 +1,10 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.swing.UIManager.getInt;
 
 /**
  * Représente le tableau contenant les 16384 secteurs de Javelo
@@ -16,9 +13,7 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final double sectorWidth = 349_000/128.0;
     private static final double sectorLength = 221_000/128.0;
     private static final double swissEmin = 2_485_000;
-    private static final double swissEmax = 2_834_000;
     private static final double swissNmin = 1_075_000;
-    private static final double swissNmax = 1_296_000;
 
     /**
      * Retourne la liste de tous les secteurs ayant une intersection avec le carré centré au point donné et de côté
@@ -47,11 +42,8 @@ public record GraphSectors(ByteBuffer buffer) {
                         buffer.getShort(6 * (x + y * 128) + 4) ));
             }
         }
-
         return inArea;
     }
 
-    public record Sector(int startNodeId, int endNodeId) {
-
-    }
+    public record Sector(int startNodeId, int endNodeId) {}
 }
