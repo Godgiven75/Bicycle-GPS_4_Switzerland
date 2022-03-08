@@ -6,8 +6,7 @@ package ch.epfl.javelo;
 public final class Q28_4 {
     private Q28_4() {}
 
-    // scalb et l'opérateur de décalage renvoient une interprétation non-signée, ce qui doit être compensé en soustrayant
-    // 16. Y a-t-il une meilleure façon de faire cela ?
+    private static final int SHIFT = 4;
 
     /**
      * Retourne la valeur Q28.4 correspondant à l'entier donné
@@ -15,7 +14,7 @@ public final class Q28_4 {
      * @return a valeur Q28.4 correspondant à l'entier donné
      */
     public static int ofInt(int i) {
-        return i << 4;
+        return i << SHIFT;
     }
 
     /**
@@ -25,7 +24,7 @@ public final class Q28_4 {
      */
 
     public static double asDouble(int q28_4) {
-        return Math.scalb((double) q28_4, -4);
+        return Math.scalb((double) q28_4, -SHIFT);
     }
 
     /**
@@ -34,6 +33,6 @@ public final class Q28_4 {
      * @return la valeur de type float égale à la valeur Q28.4 donnée
      */
     public static float asFloat(int q28_4) {
-        return Math.scalb(q28_4, -4);
+        return Math.scalb(q28_4, -SHIFT);
     }
 }

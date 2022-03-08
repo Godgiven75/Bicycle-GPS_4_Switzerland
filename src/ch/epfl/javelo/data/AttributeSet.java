@@ -38,7 +38,6 @@ public record AttributeSet(long bits) {
      * @return vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
      */
     public boolean contains(Attribute attribute) {
-        //System.out.println(Long.toBinaryString(this.bits >>> attribute.ordinal()));
         return ( ( this.bits >>> attribute.ordinal() & 1 ) == 1);
     }
 

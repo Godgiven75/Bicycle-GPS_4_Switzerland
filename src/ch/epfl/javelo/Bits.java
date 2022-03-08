@@ -15,9 +15,10 @@ public final class Bits {
      */
     public static int extractSigned (int value, int start, int length) {
         int rangeSize = start + length;
-        Preconditions.checkArgument(0 <= start && rangeSize <= 32 ); //demander pour la précondition
-        int leftShift = value << 32 - rangeSize;
-        return leftShift >> 32 - length;
+        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize <= Integer.SIZE ); //demander pour la précondition
+        int leftShift = value << Integer.SIZE - rangeSize;
+        return leftShift >> Integer.SIZE - length;
+
     }
 
     /**
@@ -29,9 +30,9 @@ public final class Bits {
      */
     public static int extractUnsigned(int value, int start, int length) {
         int rangeSize = start + length;
-        Preconditions.checkArgument(0 <= start && rangeSize < 32 );
-        int leftShift = value <<  32 - rangeSize;
-        return leftShift >>> 32 - length;
+        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize < Integer.SIZE );
+        int leftShift = value <<  Integer.SIZE - rangeSize;
+        return leftShift >>> Integer.SIZE - length;
     }
 
 }
