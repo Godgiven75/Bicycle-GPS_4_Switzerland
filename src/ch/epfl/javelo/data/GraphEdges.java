@@ -40,7 +40,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double length(int edgeId) {
-        short length = edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES);
+        int length = Q28_4.ofInt(edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES));
         return Q28_4.asDouble(length);
     }
 
@@ -50,7 +50,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le dénivelé positif, en mètres, de l'arête d'identité donnée
      */
     public double elevationGain(int edgeId) {
-        return Q28_4.asDouble(elevations.get(edgeId));
+        return Q28_4.asDouble(Q28_4.ofInt(elevations.get(edgeId)));
     }
 
     /**
@@ -77,8 +77,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         //Doit-on changer le traitement en fonction des types de données
         int lengthToQ28_4 = Q28_4.ofInt(edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES));
         int twoToQ28_4 = Q28_4.ofInt(2);
-        int numberOfSamples = 1 + Math2.ceilDiv( lengthToQ28_4, twoToQ28_4);
+        int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
 
+        
         float[] samples = new float[numberOfSamples];
 
         float firstSample = Q28_4.asFloat(elevations.get(edgeId));
