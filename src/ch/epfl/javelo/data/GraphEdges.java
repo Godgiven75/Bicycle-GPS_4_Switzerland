@@ -4,7 +4,6 @@ import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -14,7 +13,7 @@ import java.nio.ShortBuffer;
  */
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
 
-    //private final static int OFFSET_BYTE_BUFFER = 4;
+    private final static int OFFSET_EDGES_BUFFER = Integer. BYTES + Short.BYTES + Short.BYTES + Short.BYTES;
 
     /**
      * Retourne vrai si et seulement si l'arête d'identité donnée va dans le sens inverse de la voie OSM dont elle provient
@@ -22,7 +21,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return vrai si et seulement si l'arête d'identité donnée va dans le sens inverse de la voie OSM dont elle provient
      */
     public boolean isInverted(int edgeId) {
-        return edgesBuffer.getInt(edgeId * Integer.BYTES) < 0;
+        return edgesBuffer.get(edgeId * OFFSET_EDGES_BUFFER) < 0;
     }
 
     /**
@@ -31,8 +30,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return l'identité du noeud destination de l'arête d'identité donnée
      */
     public int targetNodeId(int edgeId) {
-        int i = edgesBuffer.getInt(edgeId * Integer.BYTES);
-        return (int) Short.toUnsignedInt((short) i);
+        int idWithEdgeDirection = edgesBuffer.getInt(edgeId * OFFSET_EDGES_BUFFER);
+        return  Bits.extractUnsigned(idWithEdgeDirection, 0,31);
+
     }
 
     /**
@@ -41,7 +41,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double length(int edgeId) {
-        int length = Q28_4.ofInt(edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES));
+        int shift = 4;
+        int length = Q28_4.ofInt(edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 4));
         return Q28_4.asDouble(length);
     }
 
@@ -51,7 +52,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le dénivelé positif, en mètres, de l'arête d'identité donnée
      */
     public double elevationGain(int edgeId) {
-        return Q28_4.asDouble(Q28_4.ofInt(elevations.get(edgeId)));
+        return edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 6);
     }
 
     /**
@@ -85,13 +86,14 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             case 3 -> profileType = profileTypes.COMPRESSED_Q04;
             default -> profileType = profileTypes.NO_PROFILE;
         }
-
-        int lengthToQ28_4 = Q28_4.ofInt(edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES));
+        int shift = 1;
+        int lengthToQ28_4 = Q28_4.ofInt(edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + shift));
         int twoToQ28_4 = Q28_4.ofInt(2);
 
         int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
+        int firstSampleToQ28_4 = Q28_4.ofInt(Bits.extractUnsigned(elevations.get(edgeId), 16, 16));
+        float firstSample = Q28_4.asFloat(firstSampleToQ28_4);
 
-        float firstSample = Q28_4.asFloat(Bits.extractSigned(elevations.get(edgeId), 16, 16));
         float[] samples = new float[numberOfSamples];
 
         samples[0] = firstSample;
@@ -109,7 +111,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             for (int j = 0; j < samplesPerShort; ++j) {
 
                 int start = j * length;
-                float difference = Q28_4.asFloat(Bits.extractSigned(elevations.get(edgeId + j), start, length));
+                int sampleToQ28_4 = Q28_4.ofInt(Bits.extractSigned(elevations.get(edgeId + i + j), start, length));
+                float difference = Q28_4.asFloat(sampleToQ28_4);
 
                 samples[i + j] = firstSample + difference;
                 ++i;
@@ -126,15 +129,14 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         COMPRESSED_Q04
     }
 
-
-
     /**
      * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
      * @param edgeId
      * @return l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
      */
     public int attributesIndex(int edgeId) {
-        return 0;
+        int shift = 8;
+        return edgesBuffer.getShort(edgeId * OFFSET_EDGES_BUFFER + 8);
     }
 }
 
