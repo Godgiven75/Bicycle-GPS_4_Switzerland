@@ -4,6 +4,7 @@ import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -62,7 +63,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int startOfRange = 30;
         int rangeLength = 2;
 
-        return Bits.extractUnsigned(edgeId, startOfRange, rangeLength ) != 0;
+        return Bits.extractUnsigned(edgeId, startOfRange, rangeLength ) != profileTypes.NO_PROFILE.ordinal();
     }
 
     /**
@@ -72,25 +73,60 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le tableau des échantillons du profil de l'arête d'identité donnée, qui est vide si l'arête ne possède
      */
     public float[] profileSamples(int edgeId) {
-
         if(!hasProfile(edgeId)) return new float[]{};
-        //Doit-on changer le traitement en fonction des types de données
+
+        int profileTypeValue = Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
+
+        profileTypes profileType;
+
+        switch (profileTypeValue) {
+            case 1 -> profileType = profileTypes.UNCOMPRESSED;
+            case 2 -> profileType = profileTypes.COMPRESSED_Q44;
+            case 3 -> profileType = profileTypes.COMPRESSED_Q04;
+            default -> profileType = profileTypes.NO_PROFILE;
+        }
+
         int lengthToQ28_4 = Q28_4.ofInt(edgesBuffer.getShort(Integer.BYTES * edgeId + Byte.BYTES));
         int twoToQ28_4 = Q28_4.ofInt(2);
+
         int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
 
-        
+        float firstSample = Q28_4.asFloat(Bits.extractSigned(elevations.get(edgeId), 16, 16));
         float[] samples = new float[numberOfSamples];
 
-        float firstSample = Q28_4.asFloat(elevations.get(edgeId));
         samples[0] = firstSample;
 
-        for(int i = 1; i < numberOfSamples; ++i) {
-            samples[i] = Q28_4.asFloat(elevations.get(edgeId + i));
+        int length = profileType == profileTypes.UNCOMPRESSED
+                ? 16
+                : profileType == profileTypes.COMPRESSED_Q44
+                ? 8
+                : 4;
+
+        int samplesPerShort = 16 / length;
+
+        int i = 1;
+        while(i < numberOfSamples) {
+            for (int j = 0; j < samplesPerShort; ++j) {
+
+                int start = j * length;
+                float difference = Q28_4.asFloat(Bits.extractSigned(elevations.get(edgeId + j), start, length));
+
+                samples[i + j] = firstSample + difference;
+                ++i;
+            }
         }
 
         return samples;
     }
+
+    private enum profileTypes {
+        NO_PROFILE,
+        UNCOMPRESSED,
+        COMPRESSED_Q44,
+        COMPRESSED_Q04
+    }
+
+
 
     /**
      * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
