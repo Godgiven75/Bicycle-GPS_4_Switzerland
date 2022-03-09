@@ -19,6 +19,9 @@ public class GraphSectorsTest {
     @Test
     public void sectorInAreaNormalCase() {
         byte[] testbuffer = new byte[6*16_384];
+        for (int i = 0; i < 16_384*6; i++) {
+            testbuffer[i] = 24;
+        }
         testbuffer[6*129+4] = 0b00000001;
         testbuffer[6*129+6] = 0b00000010;
         testbuffer[6*130+4] = 0b00000010;
@@ -44,7 +47,8 @@ public class GraphSectorsTest {
         temoin.set(258, new GraphSectors.Sector(5,6));
         temoin.set(259, new GraphSectors.Sector(6,7));
         System.out.println(temoin.size());
-        List<GraphSectors.Sector> test = buffer.sectorsInArea(new PointCh(2485000,1296000), 1500);
+        List<GraphSectors.Sector> test = buffer.sectorsInArea(new PointCh(2_485_000 + 1.5 * 349_000.0/128.0,
+                1_075_000 + 1.5 * 221_000.0/128.0 ), 3000);
         assertArrayEquals(temoin.toArray(), test.toArray());
     }
 
