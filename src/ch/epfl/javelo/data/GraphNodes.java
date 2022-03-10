@@ -4,8 +4,6 @@ import ch.epfl.javelo.Bits;
 
 import java.nio.IntBuffer;
 
-import static ch.epfl.javelo.Bits.extractUnsigned;
-
 /**
  * Représente le tableau de tous les noeuds du graphe Javelo
  */
@@ -14,8 +12,8 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_N = OFFSET_E + 1;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
-    private static final int OFFSET_28 = 28;
-    private static final int OFFSET_4 = 4;
+    private static final int OFFSET_INDEX = 28;
+    private static final int OFFSET_OUNTBOUND_EDGES = 4;
 
     /**
      * Retourne le nombre total de noeuds
@@ -49,7 +47,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return le nombre d'arêtes sortant du noeud d'identité donné
      */
     public int outDegree(int nodeId) {
-        return buffer.get(NODE_INTS * nodeId + OFFSET_OUT_EDGES) >>> 28;
+        return buffer.get(NODE_INTS * nodeId + OFFSET_OUT_EDGES) >>> OFFSET_INDEX;
     }
 
     /**
@@ -62,8 +60,8 @@ public record GraphNodes(IntBuffer buffer) {
         //assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         System.out.println(Integer.toBinaryString(
                 buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))));
-        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28)) << OFFSET_4)
-                + edgeIndex - 1;
+        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))
+                << OFFSET_OUNTBOUND_EDGES) + edgeIndex - 1;
     }
 
 }

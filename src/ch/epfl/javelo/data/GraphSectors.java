@@ -50,10 +50,10 @@ public record GraphSectors(ByteBuffer buffer) {
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-
+                System.out.println("Sector Index: " + (x + y * 128));
                 int startNodeId = buffer.getInt(OFFSET_SECTOR * (x + y * 128));
-                int endNodeId = buffer.getInt(OFFSET_SECTOR * (x + y * 128)
-                        + toUnsignedInt(buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES)));
+                int endNodeId = startNodeId
+                        + toUnsignedInt(buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES));
 
                 inArea.add(new Sector(startNodeId, endNodeId));
             }
