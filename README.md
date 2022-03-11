@@ -1,2 +1,2 @@
 # JaVelo
-CS-108 semestre project repository
+CS-108 semester project repository
