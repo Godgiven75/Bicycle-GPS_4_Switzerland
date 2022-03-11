@@ -41,7 +41,7 @@ public class GraphNodesTest {
         assertEquals(2, ns.count());
         assertEquals(2_536_263, ns.nodeE(0));
         assertEquals(1_215_736, ns.nodeN(0));
-        assertEquals(2, ns.outDegree(0));
+            assertEquals(2, ns.outDegree(0));
         assertEquals(0x918_1873, ns.edgeId(0, 0));
         assertEquals(Integer.valueOf(Integer.toHexString(0x918_1873 + 1),16),ns.edgeId(0, 1));
         assertEquals(1_297_183, ns.nodeE(1));

@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GraphSectorsTest {
 
-
     @Test
     // Devrait prendre les secteurs d'indice 0, 1, 2, 128, 129, 130, 256, 257, 258
     public void sectorInAreaNormalCase() {
