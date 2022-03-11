@@ -1,4 +1,4 @@
-package ch.epfl.javelo.projection.data;
+package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.data.GraphNodes;
 import ch.epfl.javelo.data.GraphSectors;
@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GraphSectorsTest {
 
-
     @Test
+    // Devrait prendre les secteurs d'indice 0, 1, 2, 128, 129, 130, 256, 257, 258
     public void sectorInAreaNormalCase() {
         byte[] testbuffer = new byte[6*16_384];
         for (int i = 0; i < 16_384*6; i++) {
@@ -61,6 +61,7 @@ public class GraphSectorsTest {
     }
 
     @Test
+    // Devrait prendre les secteurs d'indice 0, 1, 128 et 129
     public void sectorInAreaBottomLeft() {
         byte[] testbuffer = new byte[6*16_384];
         for (int i = 0; i < 16_384*6; i++) {

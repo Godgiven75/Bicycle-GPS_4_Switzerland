@@ -4,6 +4,8 @@ import ch.epfl.javelo.Bits;
 
 import java.nio.IntBuffer;
 
+import static ch.epfl.javelo.Q28_4.asDouble;
+
 /**
  * Représente le tableau de tous les noeuds du graphe Javelo
  */
@@ -13,7 +15,6 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
     private static final int OFFSET_INDEX = 28;
-    private static final int OFFSET_OUNTBOUND_EDGES = 4;
 
     /**
      * Retourne le nombre total de noeuds
@@ -29,7 +30,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return la coordonnée E du noeud d'identité donnée
      */
     public double nodeE(int nodeId) {
-        return buffer.get(NODE_INTS * nodeId + OFFSET_E);
+        return asDouble(buffer.get(NODE_INTS * nodeId + OFFSET_E));
     }
 
     /**
@@ -38,7 +39,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return la coordonnée N du noeud d'identité donnée
      */
     public double nodeN(int nodeId) {
-        return buffer.get(NODE_INTS * nodeId + OFFSET_N);
+        return asDouble(buffer.get(NODE_INTS * nodeId + OFFSET_N));
     }
 
     /**
@@ -58,10 +59,7 @@ public record GraphNodes(IntBuffer buffer) {
      */
     public int edgeId(int nodeId, int edgeIndex) {
         //assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
-        System.out.println(Integer.toBinaryString(
-                buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))));
-        return (buffer.get(Bits.extractUnsigned(NODE_INTS * nodeId + OFFSET_OUT_EDGES, 0, 28))
-                << OFFSET_OUNTBOUND_EDGES) + edgeIndex - 1;
+        return Bits.extractUnsigned(buffer.get(NODE_INTS * nodeId + OFFSET_OUT_EDGES), 0, 28) + edgeIndex;
     }
 
 }

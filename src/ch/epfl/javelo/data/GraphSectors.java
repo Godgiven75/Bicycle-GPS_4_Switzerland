@@ -36,24 +36,15 @@ public record GraphSectors(ByteBuffer buffer) {
         double distanceToSouthLimit = lowerSide - SWISS_N_MIN;
 
         int xMin = Math2.clamp(0, (int) (distanceToWestLimit/ SECTOR_WIDTH), 128);
-        System.out.println((int) (distanceToWestLimit/ SECTOR_WIDTH));
-        System.out.println("xMin: " + xMin);
         int xMax = Math2.clamp(0, (int) ( (distanceToWestLimit + 2 * distance) / SECTOR_WIDTH), 128);
-        System.out.println( (int) ((distanceToWestLimit + 2 * distance) / SECTOR_WIDTH) );
-        System.out.println("xMax: " + xMax);
         int yMin = Math2.clamp(0, (int) (distanceToSouthLimit/ SECTOR_LENGTH), 128);
-        System.out.println((int) (distanceToSouthLimit/ SECTOR_LENGTH));
-        System.out.println("yMin: " + yMin);
         int yMax = Math2.clamp(0, (int) ( (distanceToSouthLimit + 2 * distance) / SECTOR_LENGTH), 128);
-        System.out.println( (int) ( (distanceToSouthLimit + 2 * distance) / SECTOR_LENGTH));
-        System.out.println("yMax: " + yMax);
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-                System.out.println("Sector Index: " + (x + y * 128));
                 int startNodeId = buffer.getInt(OFFSET_SECTOR * (x + y * 128));
                 int endNodeId = startNodeId
-                        + toUnsignedInt(buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES));
+                                + toUnsignedInt(buffer.getShort(OFFSET_SECTOR * (x + y * 128) + Integer.BYTES));
 
                 inArea.add(new Sector(startNodeId, endNodeId));
             }
@@ -62,6 +53,10 @@ public record GraphSectors(ByteBuffer buffer) {
         return inArea;
     }
 
+    /**
+     * Représente un secteur par l'identité du premier noeud du secteur et l'identité du noeud situé juste après le
+     * dernier noeud du secteur
+     */
     public record Sector(int startNodeId, int endNodeId) {}
 
 }
