@@ -114,16 +114,16 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 : profileType == profileTypes.COMPRESSED_Q44
                 ? Byte.SIZE
                 : Byte.SIZE / 2;
-
+        System.out.println(length);
         int samplesPerShort = Short.SIZE / length; // nombre d'échantillon contenu dans un des short du buffer, dépend du format de compression
 
         boolean inverted = isInverted(edgeId);
 
-        /*int kInit = inverted ? numberOfSamples - 1 : 0;
+        int kInit = inverted ? numberOfSamples - 1 : 0;
         int k =  kInit;
 
         for(int i = 0; i < elevations().capacity() - 1; ++i) {
-            int start = inverted ? 0 : Short.SIZE  - length;
+            int start =  Short.SIZE  - length;
 
             int elevationsIndex =  firstProfileId + i ;
             int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
@@ -137,11 +137,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
             for(int j = 0; j < samplesPerShort; ++j) {
                 int sample =  Bits.extractSigned(s, start, length);
-                System.out.println("start " + start);
+
+                System.out.println("start " + start + " length " + length);
                 //System.out.println(start + "  "+ length);
                 //System.out.println(" p " + Integer.toHexString(sample));
 
-                if( ( k < 0 || k >= samples.length ) )
+                if( ( k < 0 || k >= samples.length ))
                 {
                     for (float f : samples) System.out.println(f);
                     return samples;
@@ -157,13 +158,13 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 //System.out.println(samples[1]);
                 k += inverted ? -1 : 1;
 
-                start += inverted  ?  length :  - length;
+                start -=  length;
             }
-        }*/
+        }
         //.for (float f : samples) System.out.println(f);
 
 
-        int k = 0;
+        /*int k = 0;
         for(int i =0; i < elevations.capacity(); ++i ) {
             int start = Short.SIZE  - length;
             int elevationsIndex =  firstProfileId + i ;
@@ -194,9 +195,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             }
         }
         return samples;
+*/
 
-
-
+    return samples;
     }
 
     public static float[] reverse(float[] array) { //attention, ne pas laisser en public
