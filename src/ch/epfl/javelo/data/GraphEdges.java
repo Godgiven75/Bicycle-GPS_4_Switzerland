@@ -7,6 +7,11 @@ import ch.epfl.javelo.Q28_4;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.security.spec.RSAOtherPrimeInfo;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Représente le tableau de toutes les arêtes du graphe JaVelo
@@ -31,7 +36,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     public int targetNodeId(int edgeId) {
         int idWithEdgeDirection = edgesBuffer.getInt(edgeId * OFFSET_EDGES_BUFFER);
-        return  Bits.extractUnsigned(idWithEdgeDirection, 0,31);
+        return isInverted(edgeId) ? ~idWithEdgeDirection : idWithEdgeDirection;
+
+        /*System.out.print(edgeId * OFFSET_EDGES_BUFFER);
+        int i = Bits.extractUnsigned(idWithEdgeDirection, 0, 31);
+        System.out.println(Integer.toBinaryString(i));
+        return  Bits.extractUnsigned(idWithEdgeDirection, 0, 31);//(Bits.extractUnsigned(idWithEdgeDirection, 0,32));*/
 
     }
 
@@ -42,7 +52,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     public double length(int edgeId) {
         int shift = 4;
-        int length = Q28_4.ofInt(edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 4));
+        int length = edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 4);//);
         return Q28_4.asDouble(length);
     }
 
@@ -52,7 +62,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le dénivelé positif, en mètres, de l'arête d'identité donnée
      */
     public double elevationGain(int edgeId) {
-        return edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 6);
+        return (edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 6) >>> 4);
     }
 
     /**
@@ -64,7 +74,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int startOfRange = 30;
         int rangeLength = 2;
 
-        return Bits.extractUnsigned(edgeId, startOfRange, rangeLength ) != profileTypes.NO_PROFILE.ordinal();
+        return Bits.extractUnsigned(profileIds.get(edgeId), startOfRange, rangeLength ) != profileTypes.NO_PROFILE.ordinal();
     }
 
     /**
@@ -77,49 +87,126 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         if(!hasProfile(edgeId)) return new float[]{};
 
         int profileTypeValue = Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
+        int firstProfileId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 29);
 
-        profileTypes profileType;
+        profileTypes profileType = profileTypeValue == 1
+                ? profileTypes.UNCOMPRESSED
+                : profileTypeValue == 2
+                ? profileTypes.COMPRESSED_Q44
+                : profileTypes.COMPRESSED_Q04;
 
-        switch (profileTypeValue) {
-            case 1 -> profileType = profileTypes.UNCOMPRESSED;
-            case 2 -> profileType = profileTypes.COMPRESSED_Q44;
-            case 3 -> profileType = profileTypes.COMPRESSED_Q04;
-            default -> profileType = profileTypes.NO_PROFILE;
-        }
-        int shift = 1;
-        int lengthToQ28_4 = Q28_4.ofInt(edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + shift));
+        int shift = 4;
+        int lengthToQ28_4 = (edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + shift));
         int twoToQ28_4 = Q28_4.ofInt(2);
-
         int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
-        int firstSampleToQ28_4 = Q28_4.ofInt(Bits.extractUnsigned(elevations.get(edgeId), 16, 16));
+
+        int firstSampleToQ28_4 = Short.toUnsignedInt(elevations.get(firstProfileId));
         float firstSample = Q28_4.asFloat(firstSampleToQ28_4);
 
-        float[] samples = new float[numberOfSamples];
 
-        samples[0] = firstSample;
+
+        float[] samples = new float[numberOfSamples];
+        //samples[0] = firstSample;
+
 
         int length = profileType == profileTypes.UNCOMPRESSED
-                ? 16
+                ? Short.SIZE
                 : profileType == profileTypes.COMPRESSED_Q44
-                ? 8
-                : 4;
+                ? Byte.SIZE
+                : Byte.SIZE / 2;
 
-        int samplesPerShort = 16 / length;
+        int samplesPerShort = Short.SIZE / length; // nombre d'échantillon contenu dans un des short du buffer, dépend du format de compression
 
-        int i = 1;
-        while(i < numberOfSamples) {
-            for (int j = 0; j < samplesPerShort; ++j) {
+        boolean inverted = isInverted(edgeId);
 
-                int start = j * length;
-                int sampleToQ28_4 = Q28_4.ofInt(Bits.extractSigned(elevations.get(edgeId + i + j), start, length));
-                float difference = Q28_4.asFloat(sampleToQ28_4);
+        /*int kInit = inverted ? numberOfSamples - 1 : 0;
+        int k =  kInit;
 
-                samples[i + j] = firstSample + difference;
-                ++i;
+        for(int i = 0; i < elevations().capacity() - 1; ++i) {
+            int start = inverted ? 0 : Short.SIZE  - length;
+
+            int elevationsIndex =  firstProfileId + i ;
+            int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
+
+            if (i == 0 && (start == Short.SIZE - length || start == 0))  {
+                System.out.println( Q28_4.asFloat(s));
+                samples[k] = Q28_4.asFloat(s);
+                k += inverted ? -1 : 1;
+                continue;
+            }
+
+            for(int j = 0; j < samplesPerShort; ++j) {
+                int sample =  Bits.extractSigned(s, start, length);
+                System.out.println("start " + start);
+                //System.out.println(start + "  "+ length);
+                //System.out.println(" p " + Integer.toHexString(sample));
+
+                if( ( k < 0 || k >= samples.length ) )
+                {
+                    for (float f : samples) System.out.println(f);
+                    return samples;
+                }
+
+                float difference = Q28_4.asFloat(sample);
+
+                int indexOfPreviousSample = inverted ?  k + 1 : k - 1;
+
+                //System.out.println(k);
+                samples[k] = difference + samples[indexOfPreviousSample];
+                System.out.println(k + " " + indexOfPreviousSample + " " + difference + " "+ samples[k]);
+                //System.out.println(samples[1]);
+                k += inverted ? -1 : 1;
+
+                start += inverted  ?  length :  - length;
+            }
+        }*/
+        //.for (float f : samples) System.out.println(f);
+
+
+        int k = 0;
+        for(int i =0; i < elevations.capacity(); ++i ) {
+            int start = Short.SIZE  - length;
+            int elevationsIndex =  firstProfileId + i ;
+            int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
+            if(i == 0)
+            {
+                samples[k] = Q28_4.asFloat(s);
+                k++;
+                continue;
+            }
+            for(int j = 0; j < samplesPerShort; ++j) {
+                int sample =  Bits.extractSigned(s, start, length);
+                int st = Bits.extractUnsigned(s, start, length);
+                if(k >= samples.length)
+                {
+                    if(inverted) return reverse(samples);
+                    return samples;
+
+
+                }
+                float difference = Q28_4.asFloat(sample);
+
+                int indexOfPreviousSample = k - 1;
+                samples[k] = difference + samples[indexOfPreviousSample];
+                System.out.println(start + " " + length + " "+ Integer.toHexString(s) + " "+ Integer.toHexString(st)+ " " + difference);
+                k++;
+                start -= length;
             }
         }
-
         return samples;
+
+
+
+    }
+
+    public static float[] reverse(float[] array) { //attention, ne pas laisser en public
+        float[] newArray = new float[array.length];
+
+        for (int i = 0; i < array.length; i++) {
+            newArray[array.length - 1 - i] = array[i];
+        }
+
+        return newArray;
     }
 
     private enum profileTypes {
