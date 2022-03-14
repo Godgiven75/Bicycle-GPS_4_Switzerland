@@ -9,6 +9,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * Représente le graphe JaVelo
+ */
 public class Graph {
     public final GraphNodes nodes;
     public final GraphSectors sectors;
