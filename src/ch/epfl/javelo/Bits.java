@@ -30,7 +30,7 @@ public final class Bits {
      */
     public static int extractUnsigned(int value, int start, int length) {
         int rangeSize = start + length;
-        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize <= Integer.SIZE );
+        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize < Integer.SIZE );
         int leftShift = value <<  Integer.SIZE - rangeSize;
         return leftShift >>> Integer.SIZE - length;
     }
