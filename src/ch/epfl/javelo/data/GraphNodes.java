@@ -43,9 +43,9 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * Retourne le nombre d'arêtes sortant du noeud d'identité donné
+     * Retourne le nombre d'arêtes sortant du noeud d'identité donnée
      * @param nodeId
-     * @return le nombre d'arêtes sortant du noeud d'identité donné
+     * @return le nombre d'arêtes sortant du noeud d'identité donnée
      */
     public int outDegree(int nodeId) {
         return buffer.get(NODE_INTS * nodeId + OFFSET_OUT_EDGES) >>> OFFSET_INDEX;
