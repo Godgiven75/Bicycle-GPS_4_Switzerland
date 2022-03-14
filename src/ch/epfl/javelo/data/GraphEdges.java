@@ -51,7 +51,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double length(int edgeId) {
-        int shift = 4;
+        //int shift = 4;
         int length = edgesBuffer.getShort(OFFSET_EDGES_BUFFER * edgeId + 4);//);
         return Q28_4.asDouble(length);
     }
@@ -114,6 +114,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 : profileType == profileTypes.COMPRESSED_Q44
                 ? Byte.SIZE
                 : Byte.SIZE / 2;
+
         System.out.println(length);
         int samplesPerShort = Short.SIZE / length; // nombre d'échantillon contenu dans un des short du buffer, dépend du format de compression
 
@@ -128,19 +129,16 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             int elevationsIndex =  firstProfileId + i ;
             int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
 
-            if (i == 0 && (start == Short.SIZE - length || start == 0))  {
-                System.out.println( Q28_4.asFloat(s));
+            if (i == 0 )  {
                 samples[k] = Q28_4.asFloat(s);
                 k += inverted ? -1 : 1;
                 continue;
             }
 
             for(int j = 0; j < samplesPerShort; ++j) {
-                int sample =  Bits.extractSigned(s, start, length);
 
                 System.out.println("start " + start + " length " + length);
-                //System.out.println(start + "  "+ length);
-                //System.out.println(" p " + Integer.toHexString(sample));
+
 
                 if( ( k < 0 || k >= samples.length ))
                 {
@@ -148,56 +146,21 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     return samples;
                 }
 
-                float difference = Q28_4.asFloat(sample);
-
-                int indexOfPreviousSample = inverted ?  k + 1 : k - 1;
-
-                //System.out.println(k);
-                samples[k] = difference + samples[indexOfPreviousSample];
-                System.out.println(k + " " + indexOfPreviousSample + " " + difference + " "+ samples[k]);
-                //System.out.println(samples[1]);
+                if(profileType == profileTypes.UNCOMPRESSED){
+                    samples[k] = Q28_4.asFloat(s);
+                } else{
+                    int sample =  Bits.extractSigned(s, start, length);
+                    float difference = Q28_4.asFloat(sample);
+                    int indexOfPreviousSample = inverted ?  k + 1 : k - 1;
+                    samples[k] = difference + samples[indexOfPreviousSample];
+                    System.out.println(k + " " + indexOfPreviousSample + " " + difference + " "+ samples[k]);
+                    start -=  length;
+                }
                 k += inverted ? -1 : 1;
-
-                start -=  length;
             }
         }
         //.for (float f : samples) System.out.println(f);
-
-
-        /*int k = 0;
-        for(int i =0; i < elevations.capacity(); ++i ) {
-            int start = Short.SIZE  - length;
-            int elevationsIndex =  firstProfileId + i ;
-            int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
-            if(i == 0)
-            {
-                samples[k] = Q28_4.asFloat(s);
-                k++;
-                continue;
-            }
-            for(int j = 0; j < samplesPerShort; ++j) {
-                int sample =  Bits.extractSigned(s, start, length);
-                int st = Bits.extractUnsigned(s, start, length);
-                if(k >= samples.length)
-                {
-                    if(inverted) return reverse(samples);
-                    return samples;
-
-
-                }
-                float difference = Q28_4.asFloat(sample);
-
-                int indexOfPreviousSample = k - 1;
-                samples[k] = difference + samples[indexOfPreviousSample];
-                System.out.println(start + " " + length + " "+ Integer.toHexString(s) + " "+ Integer.toHexString(st)+ " " + difference);
-                k++;
-                start -= length;
-            }
-        }
-        return samples;
-*/
-
-    return samples;
+     return samples;
     }
 
     public static float[] reverse(float[] array) { //attention, ne pas laisser en public
