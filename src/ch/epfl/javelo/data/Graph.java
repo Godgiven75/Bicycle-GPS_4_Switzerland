@@ -3,6 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -37,7 +38,18 @@ public class Graph {
      * @throws IOException
      */
     Graph loadFrom(Path basePath) throws IOException {
+        String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
 
+        for(String fileName : fileNames) {
+            Path currentPath = basePath.resolve(fileName);
+            try (FileChannel channel = FileChannel.open(currentPath)) {
+                osmIdBuffer = channel
+                        .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                        .asLongBuffer();
+            }
+        }
+
+        return new Graph()
     }
 
     /**
@@ -55,6 +67,52 @@ public class Graph {
      */
     public PointCh nodePoint(int nodeId) {
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
+    }
+
+    /**
+     * Retourne l'identité du noeud destination de l'arête d'identité donnée
+     * @param edgeId
+     * @return l'identité du noeud destination de l'arête d'identité donnée
+     */
+    public int edgeTargetNodeId(int edgeId) {
+        return edges.targetNodeId(edgeId);
+    }
+
+    /**
+     * Retourne vrai ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
+     * @param edgeId
+     * @return vrai ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
+     */
+    public boolean edgeIsInverted(int edgeId) {
+        return edges.isInverted(edgeId);
+    }
+
+    /**
+     * Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée
+     * @param edgeId
+     * @return l'ensemble des attributs OSM attachés à l'arête d'identité donnée
+     */
+    public AttributeSet edgeAttributes(int edgeId) {
+        int attributeSetId = edges.attributesIndex(edgeId);
+        return attributeSets.get(attributeSetId);
+    }
+
+    /**
+     * Retourne la longueur, en mètres, de l'arête d'identité donnée
+     * @param edgeId
+     * @return la longueur, en mètres, de l'arête d'identité donnée
+     */
+    public double edgeLength(int edgeId) {
+        return edges.length(edgeId);
+    }
+
+    /**
+     * Retourne le dénivelé positif total de l'arête d'identité donnée
+     * @param edgeId
+     * @return le dénivelé positif total de l'arête d'identité donnée
+     */
+    public double edgeElevationGain(int edgeId) {
+
     }
 
 }
