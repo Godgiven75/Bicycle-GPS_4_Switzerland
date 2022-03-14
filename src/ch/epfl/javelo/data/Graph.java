@@ -54,7 +54,7 @@ public class Graph {
      * @return la position du noeud d'identité donnée
      */
     public PointCh nodePoint(int nodeId) {
-        return new PointCh()
+        return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
 }
