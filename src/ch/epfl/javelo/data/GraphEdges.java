@@ -98,10 +98,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         float firstSample = Q28_4.asFloat(firstSampleToQ28_4);
 
 
-
         float[] samples = new float[numberOfSamples];
         //samples[0] = firstSample;
-
 
         int length = profileType == profileTypes.UNCOMPRESSED
                 ? Short.SIZE
@@ -117,7 +115,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int kInit = inverted ? numberOfSamples - 1 : 0;
         int k =  kInit;
 
-        for(int i = 0; i < elevations().capacity() - 1; ++i) {
+        for (int i = 0; i < elevations().capacity() - 1; ++i) {
             int start =  Short.SIZE  - length;
 
             int elevationsIndex =  firstProfileId + i ;
@@ -129,20 +127,20 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 continue;
             }
 
-            for(int j = 0; j < samplesPerShort; ++j) {
+            for (int j = 0; j < samplesPerShort; ++j) {
 
                 System.out.println("start " + start + " length " + length);
 
 
-                if( ( k < 0 || k >= samples.length ))
+                if (k < 0 || k >= samples.length)
                 {
                     for (float f : samples) System.out.println(f);
                     return samples;
                 }
 
-                if(profileType == profileTypes.UNCOMPRESSED){
+                if (profileType == profileTypes.UNCOMPRESSED){
                     samples[k] = Q28_4.asFloat(s);
-                } else{
+                } else {
                     int sample =  Bits.extractSigned(s, start, length);
                     float difference = Q28_4.asFloat(sample);
                     int indexOfPreviousSample = inverted ?  k + 1 : k - 1;
