@@ -1,11 +1,13 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 public class Graph {
     public final GraphNodes nodes;
@@ -40,15 +42,15 @@ public class Graph {
     Graph loadFrom(Path basePath) throws IOException {
         String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
 
-        for(String fileName : fileNames) {
+        /*for(String fileName : fileNames) {
             Path currentPath = basePath.resolve(fileName);
             try (FileChannel channel = FileChannel.open(currentPath)) {
                 osmIdBuffer = channel
                         .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
                         .asLongBuffer();
             }
-        }
-
+        }*/
+        Path attributesPath = basePath.resolve("attributes.")
         return new Graph()
     }
 
@@ -112,7 +114,18 @@ public class Graph {
      * @return le dénivelé positif total de l'arête d'identité donnée
      */
     public double edgeElevationGain(int edgeId) {
-
+        return edges.elevationGain(edgeId);
     }
 
+    /**
+     * Retourne le profil en long de l'arête d'identité donnée, sous la forme d'une fonction; si l'arête ne possède pas
+     * de profil, alors cette fonction doit retourner Double.NaN pour n'importe quel argument
+     * @param edgeId
+     * @return le profil en long de l'arête d'identité donnée, sous la forme d'une fonction; si l'arête ne possède pas
+     * de profil, alors cette fonction doit retourner Double.NaN pour n'importe quel argument
+     */
+    public DoubleUnaryOperator edgeProfile(int edgeId) {
+        float[] samples = edges.profileSamples(edgeId);
+        return edges.hasProfile(edgeId)? Functions.sampled(samples, edgeLength(edgeId)) : Functions.constant(Double.NaN);
+    }
 }
