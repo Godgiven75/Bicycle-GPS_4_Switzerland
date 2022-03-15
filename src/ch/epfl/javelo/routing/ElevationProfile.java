@@ -96,7 +96,10 @@ public class ElevationProfile {
      * supérieure à la longueur
      */
     public double elevationAt(double position) {
-
+        if (position < 0) return elevationSamples[0];
+        if (position > length) return elevationSamples[elevationSamples.length];
+        int indexOfAltitude = (int) Long.valueOf(Math.round(position)).doubleValue();
+        return elevationSamples[indexOfAltitude];
     }
 
 }
