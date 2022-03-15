@@ -21,7 +21,7 @@ public final class Math2 {
     }
 
     /**
-     * Retourne le point d'abscisse x appartenant à la droite passant par les points (0, y0) et (1, y1)
+     * Retourne l'ordonnée du point d'abscisse x appartenant à la droite passant par les points (0, y0) et (1, y1)
      * @param y0 ordonnée du point d'abscisse 0 par lequel passe la droite
      * @param y1 ordonnée du point d'abscisse 1 par lequel passe la droite
      * @param x abscisse du point dont on souhaite interpoler l'ordonnée

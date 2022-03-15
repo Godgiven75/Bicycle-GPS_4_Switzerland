@@ -44,12 +44,10 @@ public final class Functions {
         private double xMax;
         private double step;
 
-        public Sampled(float[] samples, double xMax)
-        {
+        public Sampled(float[] samples, double xMax) {
             this.samples = samples.clone();
             this.xMax = xMax;
             step = xMax / (samples.length - 1);
-
         }
 
         @Override
@@ -57,15 +55,15 @@ public final class Functions {
 
             double q = operand / step;
 
-            int x0 = (int) Math.floor(q);
-            if(x0 < 0) {
+            int x0 = (int) q;
+            if (x0 < 0) {
                 return samples[0];
             }
-            if(x0  < samples.length - 1 ) {
+            if (x0  < samples.length - 1) {
                 return Math2.interpolate(samples[x0], samples[x0 + 1], q - x0);
             }
             return samples[samples.length - 1];
-
         }
+
     }
 }

@@ -30,17 +30,34 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         return new Edge(fromNodeId, toNodeId, graph.nodePoint(fromNodeId), graph.nodePoint(toNodeId), graph.edgeLength(edgeId), graph.edgeProfile(edgeId));
     }
 
+    /**
+     * Retourne la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
+     * @param point
+     * @return la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
+     */
     public double positionClosestTo(PointCh point) {
 
-        return Math2.projectionLength()
+        return Math2.projectionLength();
 
     }
 
+    /**
+     * Retourne le point se trouvant à la position donnée sur l'arête, exprimée en mètres
+     * @param position
+     * @return le point se trouvant à la position donnée sur l'arête, exprimée en mètres
+     */
     public PointCh pointAt(double position) {
-
+        double n = Math2.interpolate(fromPoint.n(), toPoint.n(), position) * fromPoint.n();
+        double e = position * fromPoint.e();
+        return new PointCh(e,n);
     }
 
+    /**
+     * Retourne l'altitude, en mètres, à la position donnée sur l'arête
+     * @param position
+     * @return l'altitude, en mètres, à la position donnée sur l'arête
+     */
     public double elevationAt(double position) {
-
+        return profile.applyAsDouble(position);
     }
 }
