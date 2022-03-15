@@ -4,10 +4,7 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.ShortBuffer;
+import java.nio.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,11 +22,11 @@ public class Graph {
 
 
     /**
-     * Retourne le graphe avec les noeuds, secteurs, arêtes et ensemble d'attributs donnés
-     * @param nodes
-     * @param sectors
-     * @param edges
-     * @param attributeSets
+     * Retourne le graphe avec les noeuds, secteurs, arêtes et ensembles d'attributs donnés
+     * @param nodes noeuds
+     * @param sectors secteurs
+     * @param edges arêtes
+     * @param attributeSets ensembles d'attributs donnés
      */
     public Graph (GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
@@ -47,16 +44,13 @@ public class Graph {
      * n'existe pas.
      * @throws IOException
      */
-    Graph loadFrom(Path basePath) throws IOException {
-        String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
-
-
-
+    public Graph loadFrom(Path basePath) throws IOException {
 
         Path nodesPath = basePath.resolve("nodes.bin");
         IntBuffer nodesBuffer = mappedBuffer(nodesPath).asIntBuffer();
 
         GraphNodes nodes = new GraphNodes(nodesBuffer);
+
 
         Path sectorsPath = basePath.resolve("sectors.bin");
         ByteBuffer sectorsBuffer = mappedBuffer(sectorsPath);
@@ -75,13 +69,15 @@ public class Graph {
 
         GraphEdges edges = new GraphEdges(edgesBuffer, profileIds ,elevations);
 
+
         Path attributesPath = basePath.resolve("attributes.bin");
-        ByteBuffer attributes = mappedBuffer(attributesPath);
+        LongBuffer attributes = mappedBuffer(attributesPath).asLongBuffer();
 
         List<AttributeSet> attributeSets = new ArrayList<>();
 
-        for
-
+        for(long l : attributes.array()) {
+            attributeSets.add(new AttributeSet(l));
+        }
 
         return new Graph(nodes, sectors, edges, attributeSets);
     }
@@ -92,6 +88,7 @@ public class Graph {
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
     }
+
     /**
      * Retourne le nombre total de noeuds dans le graphe
      * @return le nombre total de noeuds dans le graphe
