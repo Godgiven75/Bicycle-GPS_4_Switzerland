@@ -4,8 +4,10 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -43,16 +45,19 @@ public class Graph {
      * @throws IOException
      */
     Graph loadFrom(Path basePath) throws IOException {
-        String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
 
-        /*for(String fileName : fileNames) {
+        HashMap<String, Buffer>  mappingBuffers = new HashMap<>();
+        String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
+        //Buffer[] buffers =
+        for(String fileName : fileNames) {
+            mappingBuffers.put(fileName, );
             Path currentPath = basePath.resolve(fileName);
             try (FileChannel channel = FileChannel.open(currentPath)) {
                 osmIdBuffer = channel
                         .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
                         .asLongBuffer();
             }
-        }*/
+        }
         Path attributesPath = basePath.resolve("attributes.")
         return new Graph()
     }
