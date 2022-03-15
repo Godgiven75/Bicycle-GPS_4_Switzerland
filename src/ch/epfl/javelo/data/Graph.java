@@ -4,7 +4,6 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
@@ -101,7 +100,19 @@ public class Graph {
      * @return
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
-
+        List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
+        double minDistance = 0, distance = 0;
+        int closestNodeId = -1;
+        for (GraphSectors.Sector s : closeSectors) {
+            for (int i = s.startNodeId(); i < s.endNodeId(); i++) {
+                distance = point.squaredDistanceTo(new PointCh(nodes.nodeE(i), nodes.nodeN(i)));
+                if (distance > minDistance) {
+                    minDistance = distance;
+                    closestNodeId = i;
+                }
+            } // DOIT RETOURNER -1 SI PAS DE NOEUDS
+        }
+        return closestNodeId;
     }
 
     /**
