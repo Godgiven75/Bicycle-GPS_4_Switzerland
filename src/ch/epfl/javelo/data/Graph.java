@@ -75,6 +75,36 @@ public class Graph {
     }
 
     /**
+     * Retourne le nombre d'arêtes sortant du noeud d'identité donnée
+     * @param nodeId
+     * @return le nombre d'arêtes sortant du noeud d'identité donnée
+     */
+    public int nodeOutDegree(int nodeId) {
+        return nodes.outDegree(nodeId);
+    }
+
+    /**
+     * Retourne l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
+     * @param nodeId
+     * @param edgeIndex
+     * @return l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
+     */
+    public int nodeOutEdgeId(int nodeId, int edgeIndex) {
+        return nodes.edgeId(nodeId, edgeIndex);
+    }
+
+    /**
+     * Retourne l'identité du noeud se trouvant le plus proche du point donné, à la distance maximale donnée (en mètres),
+     * ou -1 si aucun noeud ne correspond à ces critères
+     * @param point
+     * @param searchDistance
+     * @return
+     */
+    public int nodeClosestTo(PointCh point, double searchDistance) {
+
+    }
+
+    /**
      * Retourne l'identité du noeud destination de l'arête d'identité donnée
      * @param edgeId
      * @return l'identité du noeud destination de l'arête d'identité donnée
