@@ -137,11 +137,12 @@ public class Graph {
         double minDistance = 0, distance = 0;
         int closestNodeId = -1;
         for (GraphSectors.Sector s : closeSectors) {
-            for (int i = s.startNodeId(); i < s.endNodeId(); i++) {
-                distance = point.squaredDistanceTo(new PointCh(nodes.nodeE(i), nodes.nodeN(i)));
+            for (int nodeId = s.startNodeId(); nodeId < s.endNodeId(); nodeId++) {
+                PointCh comparedPoint = new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
+                distance = point.squaredDistanceTo(comparedPoint);
                 if (distance > minDistance) {
                     minDistance = distance;
-                    closestNodeId = i;
+                    closestNodeId = nodeId;
                 }
             } // DOIT RETOURNER -1 SI PAS DE NOEUDS
         }
