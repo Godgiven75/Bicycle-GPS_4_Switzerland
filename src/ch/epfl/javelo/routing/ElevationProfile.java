@@ -2,6 +2,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 
+import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 
 /**
@@ -20,7 +21,7 @@ public class ElevationProfile {
     public ElevationProfile(double length, float[] elevationSamples) {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
-        this.elevationSamples = elevationSamples;
+        this.elevationSamples = elevationSamples.clone(); // Vérifier que l'immuabilité est ici satisfaite
     }
 
     /**

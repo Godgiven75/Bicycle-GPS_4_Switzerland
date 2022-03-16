@@ -1,6 +1,5 @@
 package ch.epfl.javelo.routing;
 
-
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.List;
@@ -46,17 +45,17 @@ public interface Route {
      * Retourne l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
      * @return l'identité du noeud appartenant à l'itinéaire et se trouvant le plus proche de la position donnée
      */
-    double elevationAt();
+    double elevationAt(double position);
 
     /**
      * Retourne l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
      * @return l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
      */
-    int nodeClosestTo();
+    int nodeClosestTo(double position);
 
     /**
      * Retourne le point de l'itinéraire se trouvant le plus proche du point de référence donné
      * @return le point de l'itinéraire se trouvant le plus proche du point de référence donné
      */
-    RoutePoint pointClosestTo();
+    RoutePoint pointClosestTo(PointCh point);
 }
