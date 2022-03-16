@@ -96,10 +96,17 @@ public class ElevationProfile {
      * supérieure à la longueur
      */
     public double elevationAt(double position) {
+        // Ne poourrait-on pas utiliser clamp ?
         if (position < 0) return elevationSamples[0];
-        if (position > length) return elevationSamples[elevationSamples.length];
+        if (position > length) return elevationSamples[elevationSamples.length - 1];
         int indexOfAltitude = (int) Long.valueOf(Math.round(position)).doubleValue();
         return elevationSamples[indexOfAltitude];
+
+        /*return position < 0
+                ? elevationSamples[0]
+                : position > length
+                ? elevationSamples[elevationSamples.length - 1]
+                : elevationSamples[indexOfAltitude]*/
     }
 
 }
