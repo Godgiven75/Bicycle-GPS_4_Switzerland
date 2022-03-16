@@ -23,7 +23,8 @@ public class GraphTest {
     public void loadFromGiveTheRightGraph() throws IOException {
         Path basePath = Path.of("lausanne");
         Graph g = Graph.loadFrom(basePath);
-
-
     }
+
+    @Test
+
 }
