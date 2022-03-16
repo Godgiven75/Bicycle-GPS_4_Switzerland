@@ -4,7 +4,10 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
+import java.nio.*;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -19,11 +22,11 @@ public class Graph {
 
 
     /**
-     * Retourne le graphe avec les noeuds, secteurs, arêtes et ensemble d'attributs donnés
-     * @param nodes
-     * @param sectors
-     * @param edges
-     * @param attributeSets
+     * Retourne le graphe avec les noeuds, secteurs, arêtes et ensembles d'attributs donnés
+     * @param nodes noeuds
+     * @param sectors secteurs
+     * @param edges arêtes
+     * @param attributeSets ensembles d'attributs donnés
      */
     public Graph (GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
@@ -41,19 +44,49 @@ public class Graph {
      * n'existe pas.
      * @throws IOException
      */
-    Graph loadFrom(Path basePath) throws IOException {
-        String[] fileNames = {"attributes.bin", "edges.bin", "elevations.bin", "nodes.bin", "nodes_osmid.bin", "profile_ids.bin", "sectors.bin"};
+    public Graph loadFrom(Path basePath) throws IOException {
 
-        /*for(String fileName : fileNames) {
-            Path currentPath = basePath.resolve(fileName);
-            try (FileChannel channel = FileChannel.open(currentPath)) {
-                osmIdBuffer = channel
-                        .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                        .asLongBuffer();
-            }
-        }*/
-        Path attributesPath = basePath.resolve("attributes.")
-        return new Graph()
+        Path nodesPath = basePath.resolve("nodes.bin");
+        IntBuffer nodesBuffer = mappedBuffer(nodesPath).asIntBuffer();
+
+        GraphNodes nodes = new GraphNodes(nodesBuffer);
+
+
+        Path sectorsPath = basePath.resolve("sectors.bin");
+        ByteBuffer sectorsBuffer = mappedBuffer(sectorsPath);
+
+        GraphSectors sectors = new GraphSectors(sectorsBuffer);
+
+
+        Path edgesPath = basePath.resolve("edges.bin");
+        ByteBuffer edgesBuffer =  mappedBuffer(edgesPath);
+
+        Path profileIdsPath = basePath.resolve("profile_ids.bin");
+        IntBuffer profileIds  = mappedBuffer(profileIdsPath).asIntBuffer();
+
+        Path elevationsPath = basePath.resolve("elevations.bin");
+        ShortBuffer elevations =  mappedBuffer(elevationsPath).asShortBuffer();
+
+        GraphEdges edges = new GraphEdges(edgesBuffer, profileIds ,elevations);
+
+
+        Path attributesPath = basePath.resolve("attributes.bin");
+        LongBuffer attributes = mappedBuffer(attributesPath).asLongBuffer();
+
+        List<AttributeSet> attributeSets = new ArrayList<>();
+
+        for(long l : attributes.array()) {
+            attributeSets.add(new AttributeSet(l));
+        }
+
+        return new Graph(nodes, sectors, edges, attributeSets);
+    }
+
+    private MappedByteBuffer mappedBuffer(Path filePath) throws IOException {
+        try (FileChannel channel =  FileChannel.open(filePath)) {
+            return channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
     }
 
     /**
