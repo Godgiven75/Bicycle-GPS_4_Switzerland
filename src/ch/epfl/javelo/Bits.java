@@ -14,8 +14,8 @@ public final class Bits {
      * @return la séquence de bits du vecteur value commençant au bit d'index start de longueur length, extraite de manière signée
      */
     public static int extractSigned (int value, int start, int length) {
+        Preconditions.checkArgument(isBitRangeValid(value, start, length));
         int rangeSize = start + length;
-        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize <= Integer.SIZE ); //demander pour la précondition
         int leftShift = value << Integer.SIZE - rangeSize;
         return leftShift >> Integer.SIZE - length;
 
@@ -29,10 +29,17 @@ public final class Bits {
      * @return la séquence de bits du vecteur value commençant au bit d'index start de longueur length, extraite de manière non-signée
      */
     public static int extractUnsigned(int value, int start, int length) {
+        Preconditions.checkArgument(isBitRangeValid(value, start, length));
+        Preconditions.checkArgument(length < Integer.SIZE);
         int rangeSize = start + length;
-        Preconditions.checkArgument(0 <= start && length >= 1 && rangeSize < Integer.SIZE );
         int leftShift = value <<  Integer.SIZE - rangeSize;
         return leftShift >>> Integer.SIZE - length;
     }
+
+    private static boolean isBitRangeValid(int value, int start, int length) {
+        int rangeSize = start + length;
+        return 0 <= start && length >= 1 && rangeSize <= Integer.SIZE;
+    }
+
 
 }

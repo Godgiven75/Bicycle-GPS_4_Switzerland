@@ -142,11 +142,13 @@ public class Graph {
             for (int nodeId = s.startNodeId(); nodeId < s.endNodeId(); nodeId++) {
                 PointCh comparedPoint = new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
                 distance = point.squaredDistanceTo(comparedPoint);
+
+
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestNodeId = nodeId;
                 }
-            } // DOIT RETOURNER -1 SI PAS DE NOEUDS
+            }
         }
         return closestNodeId;
     }

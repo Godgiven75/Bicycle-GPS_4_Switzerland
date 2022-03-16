@@ -28,7 +28,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * égal au double de la distance donnée
      */
     public List<Sector> sectorsInArea(PointCh center, double distance) {
-        List<Sector> inArea = new ArrayList<Sector>();
+        List<Sector> inArea = new ArrayList<>();
 
         double leftSide = center.e() - distance;
         double lowerSide = center.n() - distance;

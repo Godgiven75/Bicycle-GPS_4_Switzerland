@@ -6,7 +6,9 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.channels.FileChannel;
@@ -22,7 +24,7 @@ public class GraphTest {
     public void loadFromThrowsExceptionIfFileDoesNotExist() throws IOException {
         Path basePath = Path.of("geneve");
         assertThrows(IOException.class, () ->
-            {Graph.loadFrom(basePath);} );
+        {Graph.loadFrom(basePath);} );
     }
 
     @Test
@@ -105,15 +107,37 @@ public class GraphTest {
 
         Path basePath = Path.of("lausanne");
         Graph g = Graph.loadFrom(basePath);
-        double x = 0.518_275_214_444;
-        double y = 0.353_664_894_749;
+        double x = 0.518275214444;
+        double y = 0.353664894749;
 
         PointWebMercator pwm = new PointWebMercator(x, y);
         PointCh napoleon = pwm.toPointCh();
 
-        int actual = g.nodeClosestTo(napoleon, 100);
+        int actual = g.nodeClosestTo(napoleon, 1 );
+        System.out.println(actual);
+        //int expected = 5981854153;
 
+    }
 
+    public static void main(String[] args) throws IOException {
+        Path filePath = Path.of("lausanne/nodes_osmid.bin");
+        LongBuffer osmIdBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            osmIdBuffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                    .asLongBuffer();
+        }
+        System.out.println(osmIdBuffer.get(153713));
+
+        try (InputStream s = new FileInputStream("lausanne/nodes_osmid.bin")) {
+            int b = 0, pos = 0;
+            while ((b = s.read()) != -1) {
+                if ((pos % 16) == 0)
+                    System.out.printf("%n%05d:", pos);
+                System.out.printf(" %3d", b);
+                pos += 1;
+            }
+        }
     }
 
 }

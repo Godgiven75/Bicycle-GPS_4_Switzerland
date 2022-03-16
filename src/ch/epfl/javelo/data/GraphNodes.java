@@ -21,7 +21,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return un entier correspond au nombre total de noeuds dans la mémoire tampon
      */
     public int count() {
-        return buffer.capacity()/NODE_INTS;
+        return buffer.capacity() / NODE_INTS;
     }
 
     /**

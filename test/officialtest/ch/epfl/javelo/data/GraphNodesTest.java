@@ -84,4 +84,6 @@ class GraphNodesTest {
                 assertEquals(firstEdgeId + i, graphNodes.edgeId(nodeId, i));
         }
     }
+
+
 }
