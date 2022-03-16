@@ -44,7 +44,7 @@ public class Graph {
      * n'existe pas.
      * @throws IOException
      */
-    public Graph loadFrom(Path basePath) throws IOException {
+    public static Graph loadFrom(Path basePath) throws IOException {
 
         Path nodesPath = basePath.resolve("nodes.bin");
         IntBuffer nodesBuffer = mappedBuffer(nodesPath).asIntBuffer();
@@ -75,14 +75,17 @@ public class Graph {
 
         List<AttributeSet> attributeSets = new ArrayList<>();
 
+        /*
         for(long l : attributes.array()) {
             attributeSets.add(new AttributeSet(l));
         }
 
+         */
+
         return new Graph(nodes, sectors, edges, attributeSets);
     }
 
-    private MappedByteBuffer mappedBuffer(Path filePath) throws IOException {
+    private static MappedByteBuffer mappedBuffer(Path filePath) throws IOException {
         try (FileChannel channel =  FileChannel.open(filePath)) {
             return channel
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
