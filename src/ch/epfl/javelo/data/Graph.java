@@ -136,13 +136,13 @@ public class Graph {
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
-        double minDistance = 0, distance = 0;
+        double minDistance = Double.POSITIVE_INFINITY, distance = 0;
         int closestNodeId = -1;
         for (GraphSectors.Sector s : closeSectors) {
             for (int nodeId = s.startNodeId(); nodeId < s.endNodeId(); nodeId++) {
                 PointCh comparedPoint = new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
                 distance = point.squaredDistanceTo(comparedPoint);
-                if (distance > minDistance) {
+                if (distance < minDistance) {
                     minDistance = distance;
                     closestNodeId = nodeId;
                 }
