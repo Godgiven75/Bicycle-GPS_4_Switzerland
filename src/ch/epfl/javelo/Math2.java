@@ -102,7 +102,7 @@ public final class Math2 {
     }
 
     /**
-     * Retourne la norme de la  projection d'un vecteur (AP) sur un autre (AB)
+     * Retourne la norme de la projection d'un vecteur (AP) sur un autre (AB)
      * @param aX abscisse du point A
      * @param aY ordonnée du point A
      * @param bX abscisse du point B
@@ -114,7 +114,7 @@ public final class Math2 {
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY ) {
         double AB_x = bX - aX;
         double AB_y = bY - aY;
-        double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY )/ squaredNorm(AB_x, AB_y);
+        double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY ) / squaredNorm(AB_x, AB_y);
 
         return norm(q * AB_x, q * AB_y);
     }
