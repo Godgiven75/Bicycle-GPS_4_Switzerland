@@ -3,6 +3,12 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.DoubleUnaryOperator;
+
+import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizer.newRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -52,6 +58,57 @@ public class ElevationProfileTest {
         assertEquals(expected, e.totalDescent(), 1e-2);
     }
 
+    @Test
+    public void elevationAtWorks() {
+        final double DELTA  = 1e-6;
+        //Vérifications à faire manuellement pour ne pas utiliser la même méthode de calcul que dans la méthode...
+        var rng = newRandom();
+        List<Float> l = new ArrayList<>();
+        for(int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            l.add((float)rng.nextInt(0, 1000));
+        }
+
+
+        float xMax = 1000;
+
+        final float[] arr = new float[l.size()];
+        int index = 0;
+        for (final Float value: l) {
+            arr[index++] = value;
+            //System.out.println(index + " " + value);
+        }
+
+
+
+        DoubleUnaryOperator sampling = ch.epfl.javelo.Functions.sampled(arr ,xMax );
+
+        double x = 100.5;
+        double actual = sampling.applyAsDouble(x);
+
+        int x0 = (int) Math.floor(x);
+        int x1 = x0 + 1;
+
+        double y0 = arr[x0];
+        double y1 = arr[x1];
+
+        System.out.println(y0);
+        System.out.println(y1);
+
+        double step = xMax /  (arr.length -1) ;
+        System.out.println(xMax);
+        System.out.println(arr.length - 1);
+        System.out.println(step);
+        double slope = (y1 - y0) / (step);
+        System.out.println("slope " +slope);
+        double yIntercept = Math.fma(-slope, x1 , y1);
+        System.out.println(yIntercept);
+
+        double expected = Math.fma(slope, x , yIntercept);
+
+
+        assertEquals(expected, actual, DELTA);
+
+    }
 
 
 
