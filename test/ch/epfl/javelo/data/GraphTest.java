@@ -28,6 +28,7 @@ public class GraphTest {
         {Graph.loadFrom(basePath);} );
     }
 
+    // En vérité testée dans les autres méthodes (indirectement ou directement)
     @Test
     public void loadFromGiveTheRightGraph() throws IOException {
         Path filePath = Path.of("lausanne/nodes_osmid.bin");
@@ -60,6 +61,7 @@ public class GraphTest {
         }
     }
 
+    // Marche normalement mais on ne peut mettre de delta
     @Test
     public void nodePointReturnsNodeIdPosition() throws IOException {
         Path basePath = Path.of("lausanne");

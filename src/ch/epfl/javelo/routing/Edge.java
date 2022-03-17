@@ -49,6 +49,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         double vectorY = toPoint.e() - fromPoint.n();
         double e = position * vectorY;
         double n = Math2.interpolate(fromPoint.n(), toPoint.n(), e) * vectorX;
+        System.out.println(e + " | " + n);
         return new PointCh(e,n);
     }
 
