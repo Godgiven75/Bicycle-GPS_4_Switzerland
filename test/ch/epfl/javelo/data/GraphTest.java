@@ -110,14 +110,22 @@ public class GraphTest {
         Graph g = Graph.loadFrom(basePath);
         double x = 0.518275214444;
         double y = 0.353664894749;
+        Path filePath = Path.of("lausanne/nodes_osmid.bin");
+        LongBuffer osmIdBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            osmIdBuffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                    .asLongBuffer();
+        }
 
         PointWebMercator pwm = new PointWebMercator(x, y);
         PointCh napoleon = pwm.toPointCh();
 
-        int actual = g.nodeClosestTo(napoleon, 1 );
-        System.out.println(actual);
-        //int expected = 5981854153;
-
+        int javeloNode = g.nodeClosestTo(napoleon, 0 );
+        long expected  = 417273475;
+        System.out.println(javeloNode);
+        long actual = osmIdBuffer.get(javeloNode);
+        assertEquals(expected, actual);
     }
 
     public static void main(String[] args) throws IOException {
