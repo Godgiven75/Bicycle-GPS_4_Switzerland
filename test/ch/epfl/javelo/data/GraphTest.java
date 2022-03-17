@@ -1,19 +1,23 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
 import static ch.epfl.test.TestRandomizer.newRandom;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GraphTest {
 
@@ -118,54 +122,94 @@ public class GraphTest {
         PointWebMercator pwm = new PointWebMercator(x, y);
         PointCh napoleon = pwm.toPointCh();
 
-        int javeloNode = g.nodeClosestTo(napoleon, 100 );
+        int javeloNode = g.nodeClosestTo(napoleon, 0 );
         long expected  = 417273475;
         System.out.println(javeloNode);
         long actual = osmIdBuffer.get(javeloNode);
         assertEquals(expected, actual);
-
-        Graph g2 = Graph.loadFrom(basePath);
-        System.out.println(WebMercator.x(Math.toRadians(6.6013034)) + " " + WebMercator.y(Math.toRadians(46.6326106)));
-        PointCh test2 = (new PointWebMercator(WebMercator.x(Math.toRadians(6.6013034)), WebMercator.y(Math.toRadians(46.6326106))).toPointCh());
-        System.out.println(osmIdBuffer.get(g.nodeClosestTo(test2, 100)));
-        assertEquals(310876657, osmIdBuffer.get(g.nodeClosestTo(test2, 100)));
     }
 
     @Test
-    public void nodeClosestToReturnsMinusOneWhenNoNode() throws IOException {
-        Path basePath = Path.of("lausanne");
-        Graph g = Graph.loadFrom(basePath);
-        double x = 0.518275214444;
-        double y = 0.353664894749;
-        Path filePath = Path.of("lausanne/nodes_osmid.bin");
-        LongBuffer osmIdBuffer;
-        try (FileChannel channel = FileChannel.open(filePath)) {
-            osmIdBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
+    public void edgeTargetNodeIdWorks() throws IOException{
+
+        var edgesCount = 1000_000;
+        var edgesBuffer = ByteBuffer.allocate(10 * edgesCount);
+        var profileIds = IntBuffer.allocate(edgesCount);
+        var elevations = ShortBuffer.allocate(10);
+        var rng = newRandom();
+        for (int targetNodeId = -10000; targetNodeId < 10000; targetNodeId += 1) {
+            var edgeId = rng.nextInt(edgesCount);
+            edgesBuffer.putInt(10 * edgeId, targetNodeId);
+            var graphEdges = new GraphEdges(edgesBuffer, profileIds, elevations);
+            Graph g = new Graph(null, null, graphEdges, null);
+            var expectedTargetNodeId = targetNodeId < 0 ? ~targetNodeId : targetNodeId;
+            System.out.println(expectedTargetNodeId + " " + g.edgeTargetNodeId(edgeId));
+            assertEquals(expectedTargetNodeId, g.edgeTargetNodeId(edgeId));
         }
 
-        PointWebMercator pwm = new PointWebMercator(x, y);
-        PointCh napoleon = pwm.toPointCh();
+    }
 
-        int actual = g.nodeClosestTo(napoleon, 1 );
-        long expected  = -1;
-        assertEquals(expected, actual);
+    @Test
+    public void IsInvertedWorksOnKnownValues() {
+        var edgesCount = 10_000;
+        var edgesBuffer = ByteBuffer.allocate(10 * edgesCount);
+        var profileIds = IntBuffer.allocate(edgesCount);
+        var elevations = ShortBuffer.allocate(10);
+        var rng = newRandom();
+        for (int targetNodeId = -100; targetNodeId < 100; targetNodeId += 1) {
+            var edgeId = rng.nextInt(edgesCount);
+            edgesBuffer.putInt(10 * edgeId, targetNodeId);
+            var graphEdges = new GraphEdges(edgesBuffer, profileIds, elevations);
+            Graph g = new Graph(null, null, graphEdges, null);
+            assertEquals(targetNodeId < 0, g.edgeIsInverted(edgeId));
+        }
+    }
+    @Test
+    public void isInvertedWorksOnActualData() throws IOException {
+        Path basePath = Path.of("lausanne");
+        Graph g = Graph.loadFrom(basePath);
+
+        Path edgesPath = basePath.resolve("edges.bin");
+        ByteBuffer edgesBuffer;
+        try (FileChannel channel =  FileChannel.open(edgesPath)) {
+            edgesBuffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
+        for(int i = 0; i < edgesBuffer.capacity() / 10; ++i) {
+            System.out.println(g.edgeIsInverted(i) + " " + (edgesBuffer.getInt(i * 10) < 0) );
+            assertEquals(g.edgeIsInverted(i), edgesBuffer.getInt(i * 10) < 0);
+        }
+    }
+
+    @Test
+    public void edgeAttributeSetWorksOnKnownValues() {
 
     }
 
     public static void main(String[] args) throws IOException {
-        Path filePath = Path.of("lausanne/nodes_osmid.bin");
+        /*Path filePath = Path.of("lausanne/nodes_osmid.bin");
         LongBuffer osmIdBuffer;
         try (FileChannel channel = FileChannel.open(filePath)) {
             osmIdBuffer = channel
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
                     .asLongBuffer();
         }
-        System.out.println(osmIdBuffer.get(153713) == 417273475);
+
+        System.out.println(osmIdBuffer.get(153713));*/
+
+        try (InputStream s = new FileInputStream("lausanne/edges.bin")) {
+            int b = 0, pos = 0;
+            while ((b = s.read()) != -1) {
+                if ((pos % 16) == 0)
+                    System.out.printf("%n%05d:", pos);
+                System.out.printf(" %3d", b);
+                pos += 1;
+            }
+        }
     }
-
-
 }
+
+
+
 
 
