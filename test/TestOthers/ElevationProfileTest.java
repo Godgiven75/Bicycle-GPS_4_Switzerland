@@ -81,8 +81,4 @@ public class ElevationProfileTest {
         assertEquals(5, ep.elevationAt(10));
     }
 
-
-
-
-
 }
