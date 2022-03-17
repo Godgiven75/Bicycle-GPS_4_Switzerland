@@ -26,7 +26,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @param toNodeId identité du nœud de destination
      * @return une instance de Edge dont les attributs fromNodeId et toNodeId  sont ceux donnés, les deux autres étant ceux de l'arête d'identité edgeId dans le graphe Graph
      */
-    public Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
+    public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
         return new Edge(fromNodeId, toNodeId, graph.nodePoint(fromNodeId), graph.nodePoint(toNodeId), graph.edgeLength(edgeId), graph.edgeProfile(edgeId));
     }
 

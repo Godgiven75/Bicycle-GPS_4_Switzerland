@@ -43,7 +43,7 @@ public class Graph {
      * n'existe pas.
      * @throws IOException
      */
-    public static  Graph loadFrom(Path basePath) throws IOException {
+    public static Graph loadFrom(Path basePath) throws IOException {
 
         Path nodesPath = basePath.resolve("nodes.bin");
         IntBuffer nodesBuffer = mappedBuffer(nodesPath).asIntBuffer();
