@@ -478,6 +478,7 @@ public class GraphTest {
         assertEquals(0, ep.elevationAt(10));
     }
 
+    // -0.0 & 0 bizarre
     @Test
     void TestWithCalculationsCst()
     {
