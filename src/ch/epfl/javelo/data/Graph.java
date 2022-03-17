@@ -15,10 +15,10 @@ import java.util.function.DoubleUnaryOperator;
  * Représente le graphe JaVelo
  */
 public class Graph {
-    public final GraphNodes nodes;
-    public final GraphSectors sectors;
-    public final GraphEdges edges;
-    public final List<AttributeSet> attributeSets;
+    private final GraphNodes nodes;
+    private final GraphSectors sectors;
+    private final GraphEdges edges;
+    private final List<AttributeSet> attributeSets;
 
     /**
      * Retourne le graphe avec les noeuds, secteurs, arêtes et ensembles d'attributs donnés
@@ -136,7 +136,7 @@ public class Graph {
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
-        double minDistance = Double.POSITIVE_INFINITY, distance = 0;
+        double minDistance = searchDistance * searchDistance, distance = 0;
         int closestNodeId = -1;
         for (GraphSectors.Sector s : closeSectors) {
             for (int nodeId = s.startNodeId(); nodeId < s.endNodeId(); nodeId++) {
