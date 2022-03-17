@@ -1,14 +1,11 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.channels.FileChannel;
@@ -121,11 +118,40 @@ public class GraphTest {
         PointWebMercator pwm = new PointWebMercator(x, y);
         PointCh napoleon = pwm.toPointCh();
 
-        int javeloNode = g.nodeClosestTo(napoleon, 0 );
+        int javeloNode = g.nodeClosestTo(napoleon, 100 );
         long expected  = 417273475;
         System.out.println(javeloNode);
         long actual = osmIdBuffer.get(javeloNode);
         assertEquals(expected, actual);
+
+        Graph g2 = Graph.loadFrom(basePath);
+        System.out.println(WebMercator.x(Math.toRadians(6.6013034)) + " " + WebMercator.y(Math.toRadians(46.6326106)));
+        PointCh test2 = (new PointWebMercator(WebMercator.x(Math.toRadians(6.6013034)), WebMercator.y(Math.toRadians(46.6326106))).toPointCh());
+        System.out.println(osmIdBuffer.get(g.nodeClosestTo(test2, 100)));
+        assertEquals(310876657, osmIdBuffer.get(g.nodeClosestTo(test2, 100)));
+    }
+
+    @Test
+    public void nodeClosestToReturnsMinusOneWhenNoNode() throws IOException {
+        Path basePath = Path.of("lausanne");
+        Graph g = Graph.loadFrom(basePath);
+        double x = 0.518275214444;
+        double y = 0.353664894749;
+        Path filePath = Path.of("lausanne/nodes_osmid.bin");
+        LongBuffer osmIdBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            osmIdBuffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                    .asLongBuffer();
+        }
+
+        PointWebMercator pwm = new PointWebMercator(x, y);
+        PointCh napoleon = pwm.toPointCh();
+
+        int actual = g.nodeClosestTo(napoleon, 1 );
+        long expected  = -1;
+        assertEquals(expected, actual);
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -136,9 +162,9 @@ public class GraphTest {
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
                     .asLongBuffer();
         }
-        System.out.println(osmIdBuffer.get(153713));
-
+        System.out.println(osmIdBuffer.get(153713) == 417273475);
     }
+
 
 }
 

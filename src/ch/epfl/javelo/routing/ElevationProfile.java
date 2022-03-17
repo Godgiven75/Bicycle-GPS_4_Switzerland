@@ -2,7 +2,6 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 
 /**
@@ -63,7 +62,7 @@ public class ElevationProfile {
      */
     public double totalAscent() {
         double totalAscent = 0;
-        for (int i = 0; i < elevationSamples.length; i++) {
+        for (int i = 0; i < elevationSamples.length - 1; i++) {
             double difference = elevationSamples[i+1] - elevationSamples[i];
             if (difference >= 0) {
                 totalAscent += difference;
@@ -77,14 +76,15 @@ public class ElevationProfile {
      * @return le dénivelé négatif total du profil, en mètres
      */
     public double totalDescent() {
-        double totalDescent = 0;
-        for (int i = 0; i < elevationSamples.length; i++) {
+        double negTotalDescent = 0;
+        for (int i = 0; i < elevationSamples.length - 1; i++) {
             double difference = elevationSamples[i+1] - elevationSamples[i];
+            System.out.println(difference);
             if (difference <= 0) {
-                totalDescent += difference;
+                negTotalDescent += difference;
             }
         }
-        return totalDescent;
+        return -negTotalDescent;
     }
 
     /**
@@ -97,7 +97,7 @@ public class ElevationProfile {
      * supérieure à la longueur
      */
     public double elevationAt(double position) {
-        // Ne poourrait-on pas utiliser clamp ?
+        // Ne pourrait-on pas utiliser clamp ?
         if (position < 0) return elevationSamples[0];
         if (position > length) return elevationSamples[elevationSamples.length - 1];
         int indexOfAltitude = (int) Long.valueOf(Math.round(position)).doubleValue();
