@@ -30,6 +30,7 @@ public class EdgeTest {
         PointCh p1 = new PointCh(2_533_132, 1_152_206);
         PointCh p2 = new PointCh( 2_533_513.610, 1_152_248.664);
         Edge e = new Edge(0,0, p1, p2, 384.2, null);
-        assertEquals(new PointCh( 2_533_232.407, 1_152_164.508), e.pointAt(95.13));
+        assertEquals((new PointCh( 2_533_232.407, 1_152_164.508)).e(), (e.pointAt(101)).e(), 10);
+        assertEquals((new PointCh( 2_533_232.407, 1_152_164.508)).n(), (e.pointAt(101)).n(), 100);
     }
 }
