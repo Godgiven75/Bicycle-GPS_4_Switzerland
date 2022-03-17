@@ -55,7 +55,8 @@ public final class Functions {
 
             double q = operand / step;
 
-            int x0 = (int) q;
+            int x0 = (int) Math.floor(q);
+
             if (x0 < 0) {
                 return samples[0];
             }
