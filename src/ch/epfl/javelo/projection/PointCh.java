@@ -25,7 +25,7 @@ public record PointCh(double e, double n ) {
      */
     public double squaredDistanceTo(PointCh that) {
         //return distanceTo(that) * distanceTo(that);
-        return Math.pow(that.e - this.e, 2) + Math.pow(that.n - this.n, 2);
+        return (that.e - this.e) * (that.e - this.e) + (that.n - this.n) * (that.n - this.n);
     }
 
     /**
