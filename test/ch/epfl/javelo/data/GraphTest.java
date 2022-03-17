@@ -182,9 +182,25 @@ public class GraphTest {
     }
 
     @Test
-    public void edgeAttributeSetWorksOnKnownValues() {
+    public void edgeAttributeSetWorksOnKnownValues() throws IOException {
+        Path basePath = Path.of("lausanne");
+        Path attributesPath = basePath.resolve("attributes.bin");
+
+        LongBuffer attributesBuffer;
+        try(FileChannel channel = FileChannel.open(attributesPath)) {
+            attributesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asLongBuffer();
+        }
+        Graph g = Graph.loadFrom(basePath);
+        for(int i = 0;  i < attributesBuffer.capacity(); ++i) {
+            AttributeSet expected = new AttributeSet(attributesBuffer.get(i));
+            AttributeSet actual =  g.edgeAttributes(i);
+            System.out.println(expected +  " " + actual);
+        }
+        //assertEquals(expected,actual);
 
     }
+
+
 
     public static void main(String[] args) throws IOException {
         /*Path filePath = Path.of("lausanne/nodes_osmid.bin");
@@ -197,7 +213,7 @@ public class GraphTest {
 
         System.out.println(osmIdBuffer.get(153713));*/
 
-        try (InputStream s = new FileInputStream("lausanne/edges.bin")) {
+        try (InputStream s = new FileInputStream("lausanne/attributes.bin")) {
             int b = 0, pos = 0;
             while ((b = s.read()) != -1) {
                 if ((pos % 16) == 0)
