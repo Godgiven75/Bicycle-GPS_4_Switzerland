@@ -79,7 +79,6 @@ public class ElevationProfile {
         double negTotalDescent = 0;
         for (int i = 0; i < elevationSamples.length - 1; i++) {
             double difference = elevationSamples[i+1] - elevationSamples[i];
-            System.out.println(difference);
             if (difference <= 0) {
                 negTotalDescent += difference;
             }
