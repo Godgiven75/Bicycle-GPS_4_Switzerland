@@ -22,7 +22,9 @@ public final class SingleRoute {
         this.edges = Collections.unmodifiableList(edges);
     }
 
-    
+    public int indexOfSegmentAt(double position) {
+
+    }
 
 
 }
