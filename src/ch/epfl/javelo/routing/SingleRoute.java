@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,7 +63,12 @@ public final class SingleRoute implements Route {
      */
     @Override
     public List<PointCh> points() {
-
+        List<PointCh> l = new ArrayList<>();
+        l.add(edges.get(0).fromPoint()); // Ajout du 1er point de la 1ère arête, puis du point d'arrivée de chaque arête
+        for (Edge e : edges) {
+            l.add(e.toPoint());
+        }
+        return l;
     }
 
     /**
@@ -86,13 +92,15 @@ public final class SingleRoute implements Route {
     }
 
     /**
-     * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant  cette position n'a pas de profil
+     * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
+     * cette position n'a pas de profil
      * @param position
-     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant cette position n'a pas de profil
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant
+     * cette position n'a pas de profil
      */
     @Override
     public double elevationAt(double position) {
-        return 0;
+
     }
 
     /**
