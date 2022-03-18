@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ public final class SingleRoute implements Route {
      */
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
-        this.edges = Collections.unmodifiableList(edges);
+        this.edges = List.copyOf(edges);
     }
 
     /**
@@ -41,17 +40,21 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double length() {
-
+        double totalLength = 0.0;
+        for (Edge e : edges) {
+            totalLength += e.length();
+        }
+        return totalLength;
     }
 
     @Override
     public List<Edge> edges() {
-        return null;
+        return edges;
     }
 
     @Override
     public List<PointCh> points() {
-        return null;
+
     }
 
     @Override
