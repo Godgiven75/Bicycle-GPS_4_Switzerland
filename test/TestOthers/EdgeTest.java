@@ -19,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EdgeTest {
 
     @Test
-
-    void EdgeIsFine(){
+    public void EdgeIsFine(){
         IntBuffer forNodes = IntBuffer.wrap(new int[]{
                 2_842_000 << 4,
                 1_197_000 << 4,
