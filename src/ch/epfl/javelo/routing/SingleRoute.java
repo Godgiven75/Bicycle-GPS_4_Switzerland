@@ -82,13 +82,15 @@ public final class SingleRoute implements Route {
     }
 
     /**
-     * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant  cette position n'a pas de profil
+     * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
+     * cette position n'a pas de profil
      * @param position
-     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant cette position n'a pas de profil
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant
+     * cette position n'a pas de profil
      */
     @Override
     public double elevationAt(double position) {
-        return 0;
+
     }
 
     /**
