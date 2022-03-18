@@ -83,7 +83,9 @@ public final class SingleRoute implements Route {
         double[] nodePositions = new double[nbEdges];
         int nodeId = 0;
         for(Edge e : edges) {
+            if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
+
         }
         int binarySearchResult = Arrays.binarySearch(nodePositions, position);
 
