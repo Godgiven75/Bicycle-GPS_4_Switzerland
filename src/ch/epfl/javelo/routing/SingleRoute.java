@@ -4,6 +4,7 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,12 +85,9 @@ public final class SingleRoute implements Route {
         for(Edge e : edges) {
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
 
-
-
-
-
-
+        return binarySearchResult >= 0 ?  edges.get(binarySearchResult).pointAt(position) : edges.get(-binarySearchResult - 2).pointAt(position);
     }
 
     /**
@@ -101,7 +99,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-
+        return 0;
     }
 
     /**
