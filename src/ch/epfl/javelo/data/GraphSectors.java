@@ -18,6 +18,7 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final double SWISS_E_MIN = 2_485_000;
     private static final double SWISS_N_MIN = 1_075_000;
     private static final int SUBDIVISIONS_PER_SIDE = 128;
+    private static final int SUBDIVISIONS_PER_SIDE_INDEX = SUBDIVISIONS_PER_SIDE - 1;
     private static final double SECTOR_WIDTH = SWISS_WIDTH / SUBDIVISIONS_PER_SIDE;
     private static final double SECTOR_HEIGHT = SWISS_HEIGHT / SUBDIVISIONS_PER_SIDE;
     private static final int OFFSET_SECTOR = Integer.BYTES + Short.BYTES;
@@ -37,11 +38,12 @@ public record GraphSectors(ByteBuffer buffer) {
         double lowerSide = center.n() - distance;
         double distanceToWestLimit = leftSide - SWISS_E_MIN;
         double distanceToSouthLimit = lowerSide - SWISS_N_MIN;
+        final double EDGE_LENGTH = 2 * distance;
 
-        int xMin = Math2.clamp(0, (int) (distanceToWestLimit / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE - 1);
-        int xMax = Math2.clamp(0, (int) ( (distanceToWestLimit + 2 * distance) / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE - 1);
-        int yMin = Math2.clamp(0, (int) (distanceToSouthLimit / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE - 1);
-        int yMax = Math2.clamp(0, (int) ( (distanceToSouthLimit + 2 * distance) / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE - 1);
+        int xMin = Math2.clamp(0, (int) (distanceToWestLimit / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE_INDEX);
+        int xMax = Math2.clamp(0, (int) ( (distanceToWestLimit + EDGE_LENGTH) / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE_INDEX);
+        int yMin = Math2.clamp(0, (int) (distanceToSouthLimit / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE_INDEX);
+        int yMax = Math2.clamp(0, (int) ( (distanceToSouthLimit + EDGE_LENGTH) / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE_INDEX);
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
