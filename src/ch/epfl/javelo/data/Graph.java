@@ -31,7 +31,7 @@ public class Graph {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;
-        this.attributeSets = attributeSets;
+        this.attributeSets = List.copyOf(attributeSets);
     }
 
     /**
