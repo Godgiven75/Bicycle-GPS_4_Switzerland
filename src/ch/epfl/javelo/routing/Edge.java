@@ -31,15 +31,6 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
-     * Retourne la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
-     * @param point
-     * @return la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
-     */
-    public double positionClosestTo(PointCh point) {
-        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
-    }
-
-    /**
      * Retourne le point se trouvant à la position donnée sur l'arête, exprimée en mètres
      * @param position
      * @return le point se trouvant à la position donnée sur l'arête, exprimée en mètres
@@ -48,6 +39,15 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         double e = Math2.interpolate(fromPoint.e(), toPoint.e(), position/length);
         double n = Math2.interpolate(fromPoint.n(), toPoint.n(), position/length);
         return new PointCh(e, n);
+    }
+
+    /**
+     * Retourne la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
+     * @param point
+     * @return la position le long de l'arête, en mètres, qui se trouve la plus proche du point donné
+     */
+    public double positionClosestTo(PointCh point) {
+        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
     }
 
     /**

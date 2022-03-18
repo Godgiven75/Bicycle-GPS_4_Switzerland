@@ -81,10 +81,10 @@ public class ElevationProfile {
         for (int i = 0; i < elevationSamples.length - 1; i++) {
             double difference = elevationSamples[i+1] - elevationSamples[i];
             if (difference <= 0) {
-                negTotalDescent += difference;
+                negTotalDescent -= difference;
             }
         }
-        return -negTotalDescent;
+        return negTotalDescent;
     }
 
     /**
