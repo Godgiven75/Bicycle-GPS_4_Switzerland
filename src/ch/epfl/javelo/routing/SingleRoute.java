@@ -18,9 +18,11 @@ public final class SingleRoute {
      * @param edges
      */
     public SingleRoute(List<Edge> edges) {
-        Preconditions.checkArgument();
+        Preconditions.checkArgument(!edges.isEmpty());
         this.edges = Collections.unmodifiableList(edges);
     }
+
+    
 
 
 }
