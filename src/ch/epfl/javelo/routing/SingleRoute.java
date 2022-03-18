@@ -9,7 +9,7 @@ import java.util.List;
  * Représente un itinéraire simple, càd reliant un point de départ à un point d'arrivée, sans point de passage
  * intermédiaire
  */
-public final class SingleRoute {
+public final class SingleRoute implements Route {
     private final List<Edge> edges;
 
     /**
@@ -22,7 +22,24 @@ public final class SingleRoute {
         this.edges = Collections.unmodifiableList(edges);
     }
 
+    /**
+     * Retourne l'index du segment de l'itinéraire contenant la position donnée, qui vaut toujours 0 dans le cas d'un
+     * itinéraire simple
+     * @param position
+     * @return l'index du segment de l'itinéraire contenant la position donnée, qui vaut toujours 0 dans le cas d'un
+     * itinéraire simple
+     */
+    @Override
     public int indexOfSegmentAt(double position) {
+        return 0;
+    }
+
+    /**
+     * Retourne la longueur de l'itinéraire, en mètres
+     * @return la longueur de l'itinéraire, en mètres
+     */
+    @Override
+    public double length() {
 
     }
 
