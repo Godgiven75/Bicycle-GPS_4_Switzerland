@@ -48,11 +48,19 @@ public final class SingleRoute implements Route {
         return totalLength;
     }
 
+    /**
+     * Retourne la totalité des arêtes de l'itinéraire
+     * @return la totalité des arêtes de l'itinéraire
+     */
     @Override
     public List<Edge> edges() {
         return edges;
     }
 
+    /**
+     * Retourne la totalité des points situés aux extrémités des arêtes de l'itinéraire
+     * @return la totalité des points situés aux extrémintés des arêtes de l'itinéraire
+     */
     @Override
     public List<PointCh> points() {
         List<PointCh> l = new ArrayList<>();
@@ -63,21 +71,41 @@ public final class SingleRoute implements Route {
         return l;
     }
 
+    /**
+     * Retourne le point se trouvant à la position donnée le long de l'itinéraire
+     * @param position
+     * @return le point se trouvant à la position donnée le long de l'itinéraire
+     */
     @Override
     public PointCh pointAt(double position) {
         return null;
     }
 
+    /**
+     * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant  cette position n'a pas de profil
+     * @param position
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant cette position n'a pas de profil
+     */
     @Override
     public double elevationAt(double position) {
         return 0;
     }
 
+    /**
+     * Retourne l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
+     * @param position
+     * @return l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
+     */
     @Override
     public int nodeClosestTo(double position) {
         return 0;
     }
 
+    /**
+     * Retourne le point de l'itinéraire se trouvant le plus proche du point de référence donné
+     * @param point
+     * @return le point de l'itinéraire se trouvant le plus proche du point de référence donné
+     */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         return null;
