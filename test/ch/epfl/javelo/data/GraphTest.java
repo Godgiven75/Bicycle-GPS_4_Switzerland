@@ -124,7 +124,7 @@ public class GraphTest {
         PointWebMercator pwm = new PointWebMercator(x, y);
         PointCh napoleon = pwm.toPointCh();
 
-        int javeloNode = g.nodeClosestTo(napoleon, 0 );
+        int javeloNode = g.nodeClosestTo(napoleon, 100);
         long expected  = 417273475;
         System.out.println(javeloNode);
         long actual = osmIdBuffer.get(javeloNode);
