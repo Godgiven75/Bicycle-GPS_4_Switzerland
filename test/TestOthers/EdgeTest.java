@@ -21,7 +21,7 @@ public class EdgeTest {
     @Test
     public void EdgeIsFine(){
         IntBuffer forNodes = IntBuffer.wrap(new int[]{
-                2_842_000 << 4,
+                2_700_000 << 4,
                 1_197_000 << 4,
                 0x2_800_0015,
                 2_657_112 << 4,

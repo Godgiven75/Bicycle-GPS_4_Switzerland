@@ -105,6 +105,8 @@ public class Graph {
      * @return la position du noeud d'identité donnée
      */
     public PointCh nodePoint(int nodeId) {
+        System.out.println(nodes.nodeE(nodeId));
+        System.out.println(nodes.nodeN(nodeId));
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
