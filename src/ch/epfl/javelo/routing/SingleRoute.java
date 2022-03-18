@@ -72,7 +72,17 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        return null;
+        int nbEdges = edges.size();
+        double[] edgeLengths = new double[nbEdges];
+
+        int edgeLengthIndex = 1;
+        for(Edge e : edges) {
+            if(edgeLengthIndex == 1) edgeLengths[edgeLengthIndex] = e.length();
+            else {
+                edgeLengths[edgeLengthIndex] = e.length() + edgeLengths[edgeLengthIndex - 1];
+            }
+            edgeLengthIndex++;
+        }
     }
 
     /**
