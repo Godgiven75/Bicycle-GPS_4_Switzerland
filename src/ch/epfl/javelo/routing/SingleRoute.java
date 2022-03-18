@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,7 +55,12 @@ public final class SingleRoute implements Route {
 
     @Override
     public List<PointCh> points() {
-
+        List<PointCh> l = new ArrayList<>();
+        l.add(edges.get(0).fromPoint()); // Ajout du 1er point de la 1ère arête, puis du point d'arrivée de chaque arête
+        for (Edge e : edges) {
+            l.add(e.toPoint());
+        }
+        return l;
     }
 
     @Override
