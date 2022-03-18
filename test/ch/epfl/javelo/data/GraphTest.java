@@ -15,7 +15,9 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.sql.SQLOutput;
 
+import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
 import static ch.epfl.test.TestRandomizer.newRandom;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +32,7 @@ public class GraphTest {
 
     // En vérité testée dans les autres méthodes (indirectement ou directement)
     @Test
-    public void loadFromGiveTheRightGraph() throws IOException {
+    public void loadFromGivesTheRightGraph() throws IOException {
         Path filePath = Path.of("lausanne/nodes_osmid.bin");
         LongBuffer osmIdBuffer;
         try (FileChannel channel = FileChannel.open(filePath)) {
@@ -64,6 +66,7 @@ public class GraphTest {
     // Marche normalement mais on ne peut mettre de delta
     @Test
     public void nodePointReturnsNodeIdPosition() throws IOException {
+        System.out.println("Supposed to fail, the values are in fact acceptable (very close)");
         Path basePath = Path.of("lausanne");
         Graph g = Graph.loadFrom(basePath);
         System.out.println(WebMercator.x(Math.toRadians(6.6013034)) + " " + WebMercator.y(Math.toRadians(46.6326106)));
@@ -183,7 +186,7 @@ public class GraphTest {
         }
     }
 
-    @Test
+    /*@Test
     public void edgeAttributeSetWorksOnKnownValues() throws IOException {
         Path basePath = Path.of("lausanne");
         Path attributesPath = basePath.resolve("attributes.bin");
@@ -199,13 +202,65 @@ public class GraphTest {
             System.out.println(expected +  " " + actual);
         }
         //assertEquals(expected,actual);
+        var edgesCount = 10_000;
+        var edgesBuffer = ByteBuffer.allocate(10 * edgesCount);
+        var profileIds = IntBuffer.allocate(edgesCount);
+        var elevations = ShortBuffer.allocate(10);
+        var rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
+            var edgeId = rng.nextInt(edgesCount);
+            var attributesIndex = rng.nextInt(1 << 16);
+            edgesBuffer.putShort(10 * edgeId + 8, (short) attributesIndex);
+            var graphEdges = new GraphEdges(edgesBuffer, profileIds, elevations);
+            Graph g = new Graph(null, null, graphEdges, null);
 
+            assertEquals(attributesIndex, g.edgeAttributes(edgeId));
+        }
+    }*/
+
+    @Test
+    public void edgeLengthWorks() {
+        var edgesCount = 10_000;
+        var edgesBuffer = ByteBuffer.allocate(10 * edgesCount);
+        var profileIds = IntBuffer.allocate(edgesCount);
+        var elevations = ShortBuffer.allocate(10);
+        var rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
+            var edgeId = rng.nextInt(edgesCount);
+            var length = rng.nextDouble(1 << 12);
+            var length_q12_4 = (int) Math.scalb(length, 4);
+            length = Math.scalb((double) length_q12_4, -4);
+            edgesBuffer.putShort(10 * edgeId + 4, (short) length_q12_4);
+            var graphEdges = new GraphEdges(edgesBuffer, profileIds, elevations);
+            Graph g = new Graph(null, null, graphEdges, null);
+            assertEquals(length, g.edgeLength(edgeId));
+        }
+    }
+
+    @Test
+    public void edgeElevationGainWorks() {
+        var edgesCount = 10_000;
+        var edgesBuffer = ByteBuffer.allocate(10 * edgesCount);
+        var profileIds = IntBuffer.allocate(edgesCount);
+        var elevations = ShortBuffer.allocate(10);
+        var rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
+            var edgeId = rng.nextInt(edgesCount);
+            var elevationGain = rng.nextDouble(1 << 12);
+            var elevationGain_q12_4 = (int) Math.scalb(elevationGain, 4);
+            elevationGain = Math.scalb((double) elevationGain_q12_4, -4);
+            edgesBuffer.putShort(10 * edgeId + 6, (short) elevationGain_q12_4);
+            var graphEdges = new GraphEdges(edgesBuffer, profileIds, elevations);
+            Graph g = new Graph(null, null, graphEdges, null);
+            assertEquals(elevationGain, g.edgeElevationGain(edgeId));
+        }
     }
 
 
 
-    public static void main(String[] args) throws IOException {
-        /*Path filePath = Path.of("lausanne/nodes_osmid.bin");
+
+    /*public static void main(String[] args) throws IOException {
+        Path filePath = Path.of("lausanne/nodes_osmid.bin");
         LongBuffer osmIdBuffer;
         try (FileChannel channel = FileChannel.open(filePath)) {
             osmIdBuffer = channel
@@ -213,7 +268,7 @@ public class GraphTest {
                     .asLongBuffer();
         }
 
-        System.out.println(osmIdBuffer.get(153713));*/
+        System.out.println(osmIdBuffer.get(153713));
 
         try (InputStream s = new FileInputStream("lausanne/attributes.bin")) {
             int b = 0, pos = 0;
@@ -224,7 +279,7 @@ public class GraphTest {
                 pos += 1;
             }
         }
-    }
+    }*/
 }
 
 

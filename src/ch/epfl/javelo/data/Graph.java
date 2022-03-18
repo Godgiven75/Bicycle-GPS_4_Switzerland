@@ -134,7 +134,7 @@ public class Graph {
      * @param searchDistance
      * @return
      */
-    public int nodeClosestTo(PointCh point, double searchDistance) {
+    public int nodeClosestTo(PointCh point, double searchDistance) { //dichotomie!!!
         List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
         double minDistance = searchDistance * searchDistance, distance = 0;
         int closestNodeId = -1;

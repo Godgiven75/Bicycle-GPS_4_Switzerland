@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.function.DoubleUnaryOperator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,4 +34,17 @@ public class EdgeTest {
         assertEquals((new PointCh( 2_533_232.407, 1_152_164.508)).e(), (e.pointAt(101)).e(), 10);
         assertEquals((new PointCh( 2_533_232.407, 1_152_164.508)).n(), (e.pointAt(101)).n(), 100);
     }
+
+    /*@Test
+    public void elevationAtWorks() throws IOException {
+        PointCh p1 = new PointCh(2_533_132, 1_152_206);
+        PointCh p2 = new PointCh( 2_533_513.610, 1_152_248.664);
+
+        Path basePath = Path.of("lausanne");
+        Graph g = Graph.loadFrom(basePath);
+        DoubleUnaryOperator profile = g.edgeProfile()
+        Edge e = Edge.of(g, 0, 0 , 0);
+        double expected = 398;
+        double actual =
+    }*/
 }
