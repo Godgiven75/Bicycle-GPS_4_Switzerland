@@ -28,6 +28,7 @@ public class SingleRouteTest {
         l.add(e4);
         SingleRoute s = new SingleRoute(l);
         PointCh p = e2.pointAt(10_000);
-        assertEquals(p, s.pointAt(10_000));
+        assertEquals(p.e(), s.pointAt(10_000).e(), 3);
+        assertEquals(p.n(), s.pointAt(10_000).n(), 3);
     }
 }
