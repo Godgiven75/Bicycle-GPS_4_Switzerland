@@ -71,7 +71,7 @@ public final class SingleRoute implements Route {
         }
         return l;
     }
-    private Edge findEdge(double position ) {
+    private double[] nodePositions() {
         int nbEdges = edges.size();
         double[] nodePositions = new double[nbEdges];
         int nodeId = 0;
@@ -79,8 +79,11 @@ public final class SingleRoute implements Route {
             if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
-        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2);
+        return nodePositions;
+    }
+    private Edge findEdge(double position) {
+        int binarySearchResult = Arrays.binarySearch(nodePositions(), position);
+        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2); // nombre magique!
     }
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
@@ -102,7 +105,6 @@ public final class SingleRoute implements Route {
     @Override
     public double elevationAt(double position) {
         return findEdge(position).elevationAt(position);
-
     }
 
     /**
@@ -112,7 +114,12 @@ public final class SingleRoute implements Route {
      */
     @Override
     public int nodeClosestTo(double position) {
-        return 0;
+        double[] nodePositions = nodePositions();
+        Edge e = findEdge(position);
+        int fromNodeId = e.fromNodeId();
+        int toNodeId = e.toNodeId();
+        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2;
+        return position <= mean ? fromNodeId : toNodeId;
     }
 
     /**
@@ -122,7 +129,22 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        return null;
+        PointCh closestPoint = null;
+        double smallestSquaredDistanceTo = Double.POSITIVE_INFINITY;
+        double position = 0;
+        for(Edge e : edges) {
+            double closestPosition = e.positionClosestTo(point);
+            PointCh closestPointOnEdge = e.pointAt(closestPosition);
+            double squaredDistanceTo = closestPointOnEdge.squaredDistanceTo(point);
+            if(squaredDistanceTo <= smallestSquaredDistanceTo)  {
+                closestPoint = closestPointOnEdge;
+                smallestSquaredDistanceTo = squaredDistanceTo;
+                position = closestPosition;
+            }
+        }
+        double distanceToReference = closestPoint.distanceTo(point);
+        return new RoutePoint(closestPoint,position, distanceToReference);
+
     }
 
 
