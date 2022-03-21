@@ -85,7 +85,6 @@ public final class SingleRoute implements Route {
         for(Edge e : edges) {
             if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
-
         }
         int binarySearchResult = Arrays.binarySearch(nodePositions, position);
         return binarySearchResult >= 0 ?  edges.get(binarySearchResult).pointAt(position) : edges.get(-binarySearchResult - 2).pointAt(position);
@@ -100,7 +99,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        return 0;
+
     }
 
     /**
