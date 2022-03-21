@@ -86,8 +86,7 @@ public class Graph {
 
     private static MappedByteBuffer mappedBuffer(Path filePath) throws IOException {
         try (FileChannel channel =  FileChannel.open(filePath)) {
-            return channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
     }
 
@@ -105,8 +104,6 @@ public class Graph {
      * @return la position du noeud d'identité donnée
      */
     public PointCh nodePoint(int nodeId) {
-        System.out.println(nodes.nodeE(nodeId));
-        System.out.println(nodes.nodeN(nodeId));
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
@@ -136,7 +133,7 @@ public class Graph {
      * @param searchDistance
      * @return
      */
-    public int nodeClosestTo(PointCh point, double searchDistance) { //dichotomie!!!
+    public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
         double minDistance = searchDistance * searchDistance, distance = 0;
         int closestNodeId = -1;

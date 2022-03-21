@@ -71,7 +71,17 @@ public final class SingleRoute implements Route {
         }
         return l;
     }
-
+    private Edge findEdge(double position ) {
+        int nbEdges = edges.size();
+        double[] nodePositions = new double[nbEdges];
+        int nodeId = 0;
+        for(Edge e : edges) {
+            if (nodeId == nbEdges - 1) break;
+            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
+        }
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
+        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2);
+    }
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
      * @param position
@@ -79,17 +89,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        int nbEdges = edges.size();
-        double[] nodePositions = new double[nbEdges];
-        int nodeId = 0;
-        for(Edge e : edges) {
-            if (nodeId == nbEdges - 1) break;
-            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
-
-        }
-        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-
-        return binarySearchResult >= 0 ?  edges.get(binarySearchResult).pointAt(position) : edges.get(-binarySearchResult - 2).pointAt(position);
+        return findEdge(position).pointAt(position);
     }
 
     /**
@@ -101,7 +101,8 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        return 0;
+        return findEdge(position).elevationAt(position);
+
     }
 
     /**
