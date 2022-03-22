@@ -19,7 +19,7 @@ import java.util.function.DoubleUnaryOperator;
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length, DoubleUnaryOperator profile) {
 
     /**
-     * Retourne une instance de Edge dont les attributs fromNodeId et toNodeId  sont ceux donnés, les deux autres étant ceux de l'arête d'identité edgeId dans le graphe Graph
+     * Retourne une instance de Edge dont les attributs fromNodeId et toNodeId sont ceux donnés, les deux autres étant ceux de l'arête d'identité edgeId dans le graphe Graph
      * @param graph graphe
      * @param edgeId identité de l'arête dont on veut récupérer les attributs
      * @param fromNodeId identité du nœud de départ

@@ -29,9 +29,9 @@ public record PointCh(double e, double n ) {
     }
 
     /**
-     * Retourne la distance au carré entre ce PointCh et un autre PointCh
+     * Retourne la distance entre ce PointCh et un autre PointCh
      * @param that autre PointCh
-     * @return la distance au carré entre ce PointCh et un autre PointCh
+     * @return la distance entre ce PointCh et un autre PointCh
      */
     public double distanceTo(PointCh that) {
         return Math.hypot(that.e - this.e, that.n - this.n);
