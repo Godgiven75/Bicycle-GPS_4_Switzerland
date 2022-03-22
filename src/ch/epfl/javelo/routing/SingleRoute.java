@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ch.epfl.javelo.routing.RoutePoint.NONE;
+
 /**
  * Représente un itinéraire simple, càd reliant un point de départ à un point d'arrivée, sans point de passage
  * intermédiaire
@@ -118,7 +120,7 @@ public final class SingleRoute implements Route {
         Edge e = findEdge(position);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
-        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2;
+        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
         return position <= mean ? fromNodeId : toNodeId;
     }
 
@@ -129,22 +131,11 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        PointCh closestPoint = null;
-        double smallestSquaredDistanceTo = Double.POSITIVE_INFINITY;
-        double position = 0;
+        RoutePoint closestPoint = NONE;
         for(Edge e : edges) {
-            double closestPosition = e.positionClosestTo(point);
-            PointCh closestPointOnEdge = e.pointAt(closestPosition);
-            double squaredDistanceTo = closestPointOnEdge.squaredDistanceTo(point);
-            if(squaredDistanceTo <= smallestSquaredDistanceTo)  {
-                closestPoint = closestPointOnEdge;
-                smallestSquaredDistanceTo = squaredDistanceTo;
-                position = closestPosition;
-            }
+            closestPoint = closestPoint.min(point, e.positionClosestTo(point), closestPoint.distanceToReference());
         }
-        double distanceToReference = closestPoint.distanceTo(point);
-        return new RoutePoint(closestPoint,position, distanceToReference);
-
+        return closestPoint;
     }
 
 
