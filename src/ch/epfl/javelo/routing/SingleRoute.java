@@ -119,12 +119,15 @@ public final class SingleRoute implements Route {
      */
     @Override
     public int nodeClosestTo(double position) {
-        double[] nodePositions = nodePositions();
-        Edge e = findEdge(position);
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
+
+        if (binarySearchResult >= 0 )
+            return binarySearchResult;
+        Edge e  = edges.get(-binarySearchResult - 2);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
-        return position <= mean ? fromNodeId : toNodeId;
+        return position <= mean ?  fromNodeId :  toNodeId;
     }
 
     /**
