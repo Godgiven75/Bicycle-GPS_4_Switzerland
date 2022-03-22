@@ -15,6 +15,7 @@ import static ch.epfl.javelo.routing.RoutePoint.NONE;
  */
 public final class SingleRoute implements Route {
     private final List<Edge> edges;
+    private final double[] nodePositions;
 
     /**
      * Retourne l'itinéraire simple composé des arêtes données, ou lève IllegalArgumentException si la liste d'arêtes
@@ -24,6 +25,17 @@ public final class SingleRoute implements Route {
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
+        this. nodePositions = nodePositions();
+    }
+    private double[] nodePositions() {
+        int nbEdges = edges.size();
+        double[] nodePositions = new double[nbEdges];
+        int nodeId = 0;
+        for(Edge e : edges) {
+            if (nodeId == nbEdges - 1) break;
+            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
+        }
+        return nodePositions;
     }
 
     /**
@@ -73,18 +85,9 @@ public final class SingleRoute implements Route {
         }
         return l;
     }
-    private double[] nodePositions() {
-        int nbEdges = edges.size();
-        double[] nodePositions = new double[nbEdges];
-        int nodeId = 0;
-        for(Edge e : edges) {
-            if (nodeId == nbEdges - 1) break;
-            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
-        }
-        return nodePositions;
-    }
+
     private Edge findEdge(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions(), position);
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
         return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2); // nombre magique!
     }
     /**
