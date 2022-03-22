@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ch.epfl.javelo.routing.RoutePoint.NONE;
+
 /**
  * Représente un itinéraire simple, càd reliant un point de départ à un point d'arrivée, sans point de passage
  * intermédiaire
  */
 public final class SingleRoute implements Route {
     private final List<Edge> edges;
+    private final double[] nodePositions;
 
     /**
      * Retourne l'itinéraire simple composé des arêtes données, ou lève IllegalArgumentException si la liste d'arêtes
@@ -22,6 +25,17 @@ public final class SingleRoute implements Route {
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
+        this. nodePositions = nodePositions();
+    }
+    private double[] nodePositions() {
+        int nbEdges = edges.size();
+        double[] nodePositions = new double[nbEdges];
+        int nodeId = 0;
+        for(Edge e : edges) {
+            if (nodeId == nbEdges - 1) break;
+            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
+        }
+        return nodePositions;
     }
 
     /**
@@ -71,18 +85,9 @@ public final class SingleRoute implements Route {
         }
         return l;
     }
-    private double[] nodePositions() {
-        int nbEdges = edges.size();
-        double[] nodePositions = new double[nbEdges];
-        int nodeId = 0;
-        for(Edge e : edges) {
-            if (nodeId == nbEdges - 1) break;
-            nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
-        }
-        return nodePositions;
-    }
+
     private Edge findEdge(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions(), position);
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
         return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2); // nombre magique!
     }
     /**
@@ -118,7 +123,7 @@ public final class SingleRoute implements Route {
         Edge e = findEdge(position);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
-        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2;
+        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
         return position <= mean ? fromNodeId : toNodeId;
     }
 
@@ -129,22 +134,11 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        PointCh closestPoint = null;
-        double smallestSquaredDistanceTo = Double.POSITIVE_INFINITY;
-        double position = 0;
+        RoutePoint closestPoint = NONE;
         for(Edge e : edges) {
-            double closestPosition = e.positionClosestTo(point);
-            PointCh closestPointOnEdge = e.pointAt(closestPosition);
-            double squaredDistanceTo = closestPointOnEdge.squaredDistanceTo(point);
-            if(squaredDistanceTo <= smallestSquaredDistanceTo)  {
-                closestPoint = closestPointOnEdge;
-                smallestSquaredDistanceTo = squaredDistanceTo;
-                position = closestPosition;
-            }
+            closestPoint = closestPoint.min(point, e.positionClosestTo(point), closestPoint.distanceToReference());
         }
-        double distanceToReference = closestPoint.distanceTo(point);
-        return new RoutePoint(closestPoint,position, distanceToReference);
-
+        return closestPoint;
     }
 
 

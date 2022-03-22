@@ -21,7 +21,20 @@ public final class ElevationProfileComputer {
      */
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
-        return null;
+        double itineraryLength = route.length();
+
+        int numberOfSamples = (int) Math.ceil(itineraryLength / maxStepLength) + 1;
+        double stepLength = (double) itineraryLength /(double) numberOfSamples;
+        double[] samples = new double[numberOfSamples];
+        double position = 0;
+        for(int i = 0; i < numberOfSamples; ++i) {
+            samples[i] = route.elevationAt(position);
+            position += stepLength;
+        }
+
+
+
+
     }
 
 }
