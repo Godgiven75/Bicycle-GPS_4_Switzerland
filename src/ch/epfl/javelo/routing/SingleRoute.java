@@ -25,7 +25,7 @@ public final class SingleRoute implements Route {
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
-        this. nodePositions = nodePositions();
+        this.nodePositions = nodePositions();
     }
     private double[] nodePositions() {
         int nbEdges = edges.size();
@@ -127,7 +127,7 @@ public final class SingleRoute implements Route {
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
-        return position <= mean ?  fromNodeId :  toNodeId;
+        return position <= mean ? fromNodeId :  toNodeId;
     }
 
     /**

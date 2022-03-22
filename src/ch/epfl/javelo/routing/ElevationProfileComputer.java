@@ -29,7 +29,7 @@ public final class ElevationProfileComputer {
         double itineraryLength = route.length();
 
         int numberOfSamples = (int) Math.ceil(itineraryLength / maxStepLength) + 1;
-        double stepLength = (double) itineraryLength /(double) numberOfSamples;
+        double stepLength = itineraryLength /(double) numberOfSamples;
         float[] samples = new float[numberOfSamples];
         double position = 0;
         for (int i = 0; i < samples.length; ++i) {
@@ -66,8 +66,10 @@ public final class ElevationProfileComputer {
                 while (isNaN(samples[j])) {
                     ++j;
                 }
-                double y1 = samples[j + 1];
-                double x = samples[i] / (stepLength * (j - i));
+                double y1 = samples[j];
+                System.out.println("i " + i);
+                System.out.println(j - i + 1);
+                double x = (double) i / ((j - i + 1) * stepLength);
                 samples[i] = (float) Math2.interpolate(y0, y1, x);
             }
         }
