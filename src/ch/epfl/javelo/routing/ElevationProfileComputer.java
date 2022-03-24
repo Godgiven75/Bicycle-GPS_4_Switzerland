@@ -10,7 +10,7 @@ import static java.lang.Float.isNaN;
 /**
  * Représente un calculateur de profil en long (càd calculer le profil en long d'un itinéraire donné)
  */
-public final class ElevationProfileComputer {
+public final class ElevationProfileComputer { // modifier la dernière boucle pour ne pas itérer sur tout le tableau
 
     private ElevationProfileComputer() {}
 
@@ -27,21 +27,22 @@ public final class ElevationProfileComputer {
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
         double itineraryLength = route.length();
-
-        int numberOfSamples = (int) Math.ceil(itineraryLength / maxStepLength) + 1;
-        double stepLength = itineraryLength /(double) numberOfSamples;
+        int numberOfSamples = (int) Math.ceil( itineraryLength / maxStepLength) + 1;
+        double stepLength = itineraryLength /(double) (numberOfSamples - 1);
         float[] samples = new float[numberOfSamples];
         double position = 0;
         for (int i = 0; i < samples.length; ++i) {
-            samples[i] = (float) route.elevationAt(position); // Interpolation d'arêtes avec un profil déjà faite dans l'appel...
+            samples[i] = (float) route.elevationAt(position);// Interpolation d'arêtes avec un profil déjà faite dans l'appel...
             position += stepLength;
         }
 
         // Recherche du 1er échantillon valide du tableau
         boolean isOnlyNan = true;
+        int firstValidSampleIndex = 0;
         for (int i = 0; i < samples.length; ++i) {
             if (!isNaN(samples[i])) {
-                Arrays.fill(samples, 0, i, samples[i]);
+                firstValidSampleIndex = i;
+                Arrays.fill(samples, 0, firstValidSampleIndex, samples[i]);
                 isOnlyNan = false;
                 break;
             }
@@ -60,7 +61,7 @@ public final class ElevationProfileComputer {
         }
 
         // Parcours du tableau pour trouver les trous intermédiaires et les remplir par interpolation
-        for (int i = 0; i < samples.length; ++i) {
+        for (int i = firstValidSampleIndex; i < samples.length; ++i) {
             if (isNaN(samples[i])) {
                 double y0 = samples[i - 1];
                 int j = i + 1;

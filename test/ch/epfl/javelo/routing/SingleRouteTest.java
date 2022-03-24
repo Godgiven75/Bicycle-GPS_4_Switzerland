@@ -5,7 +5,6 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SingleRouteTest {
+
+    @Test
+    public void pointAtShit() {
+        Edge e0 = new Edge(0,0,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),100, null);
+        Edge e1 = new Edge(0,0,e0.pointAt(100),e0.pointAt(200),100, null);
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        SingleRoute s = new SingleRoute(l);
+        PointCh p = e1.pointAt(200);
+        assertEquals(p.e(), s.pointAt(200).e(), 3);
+        assertEquals(p.n(), s.pointAt(200).n(), 3);
+    }
 
     @Test
     public void pointAtWorks() {
