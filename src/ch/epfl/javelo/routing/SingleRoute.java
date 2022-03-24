@@ -26,12 +26,14 @@ public final class SingleRoute implements Route {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
         this.nodePositions = nodePositions();
+
     }
     private double[] nodePositions() {
         int nbEdges = edges.size();
         double[] nodePositions = new double[nbEdges + 1];
         int nodeId = 0;
         for(Edge e : edges) {
+            //if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
         return nodePositions;
@@ -87,8 +89,7 @@ public final class SingleRoute implements Route {
 
     private Edge findEdge(double position) {
         int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        int edgeIndex = -binarySearchResult - 2; // Cf. javadoc de binarySearch()
-        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(edgeIndex);
+        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2); // nombre magique!
     }
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
@@ -104,12 +105,11 @@ public final class SingleRoute implements Route {
      * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil
      * @param position
-     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant
      * cette position n'a pas de profil
      */
     @Override
     public double elevationAt(double position) {
-        System.out.println(findEdge(position));
         return findEdge(position).elevationAt(position);
     }
 
@@ -124,7 +124,9 @@ public final class SingleRoute implements Route {
 
         if (binarySearchResult >= 0 )
             return binarySearchResult;
-        Edge e  = edges.get(-binarySearchResult - 2);
+        int binarySearchIndex = -binarySearchResult - 2;
+        System.out.println(binarySearchIndex);
+        Edge e  = edges.get(binarySearchIndex);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
