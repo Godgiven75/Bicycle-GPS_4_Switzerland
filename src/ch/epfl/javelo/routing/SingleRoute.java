@@ -82,15 +82,16 @@ public final class SingleRoute implements Route {
     @Override
     public List<PointCh> points() {
         List<PointCh> l = new ArrayList<>();
-        l.add(edges.get(0).fromPoint()); // Ajout du 1er point de la 1ère arête, puis du point d'arrivée de chaque arête
         for (Edge e : edges) {
-            l.add(e.toPoint());
+            l.add(e.fromPoint());
         }
+        l.add(edges.get(edges.size()-1).toPoint());
         return l;
     }
+
     private int binarySearchIndex(double position) {
         int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        if(binarySearchResult >= 0 ) {
+        if (binarySearchResult >= 0 ) {
             if (binarySearchResult == nodePositions.length - 1)
                 return binarySearchResult - 1;
             return binarySearchResult;
@@ -105,15 +106,21 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        Edge e = edges.get(binarySearchIndex(position));
-        return e.pointAt(position);
+        int binarySearchIndex = binarySearchIndex(position);
+        double anteriorLength = 0;
+        for (int i = 0; i < binarySearchIndex; ++i) {
+            anteriorLength += edges.get(i).length();
+        }
+        Edge e = edges.get(binarySearchIndex);
+        double actualPosition = position - anteriorLength;
+        return e.pointAt(actualPosition);
     }
 
     /**
      * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil
      * @param position
-     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil
      */
     @Override
@@ -150,9 +157,13 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint closestPoint = NONE;
-        for(Edge e : edges) {
-            closestPoint = closestPoint.min(point, e.positionClosestTo(point), closestPoint.distanceToReference());
+        for (Edge e : edges) {
+            double positionClosestToPoint = e.positionClosestTo(point);
+            closestPoint = closestPoint.min(e.fromPoint(), positionClosestToPoint, point.distanceTo(e.fromPoint()));
         }
+        Edge latestEdge = edges.get(edges.size() - 1);
+        closestPoint = closestPoint.min(latestEdge.pointAt(latestEdge.positionClosestTo(point)),
+                latestEdge.positionClosestTo(point), point.distanceTo(latestEdge.fromPoint()));
         return closestPoint;
     }
 
