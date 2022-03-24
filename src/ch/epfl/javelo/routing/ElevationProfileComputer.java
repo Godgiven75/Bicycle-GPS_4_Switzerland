@@ -33,7 +33,8 @@ public final class ElevationProfileComputer {
         float[] samples = new float[numberOfSamples];
         double position = 0;
         for (int i = 0; i < samples.length; ++i) {
-            samples[i] = (float) route.elevationAt(i * position);
+            samples[i] = (float) route.elevationAt(position); // Interpolation d'arêtes avec un profil déjà faite dans l'appel...
+            position += stepLength;
         }
 
         // Recherche du 1er échantillon valide du tableau
@@ -62,15 +63,17 @@ public final class ElevationProfileComputer {
         for (int i = 0; i < samples.length; ++i) {
             if (isNaN(samples[i])) {
                 double y0 = samples[i - 1];
-                int j = i;
+                int j = i + 1;
                 while (isNaN(samples[j])) {
                     ++j;
                 }
                 double y1 = samples[j];
-                System.out.println("i " + i);
-                System.out.println(j - i + 1);
-                double x = (double) i / ((j - i + 1) * stepLength);
-                samples[i] = (float) Math2.interpolate(y0, y1, x);
+
+                for(int k = i ; k < j; ++k) {
+                    double x = (double) (k - i + 1) / (double) (j - i + 1);
+                    samples[k] = (float) Math2.interpolate(y0, y1 , x);
+                }
+                i = j;
             }
         }
         return new ElevationProfile(itineraryLength, samples);

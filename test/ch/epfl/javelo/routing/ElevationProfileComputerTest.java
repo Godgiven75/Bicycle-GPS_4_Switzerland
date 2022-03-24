@@ -26,8 +26,8 @@ public class ElevationProfileComputerTest {
 
     }
     private static float[] samples(float[] samples) {
-        float routeLength = 16f;
-        float stepLength = routeLength / (float) samples.length;
+        float routeLength =8f;
+        float stepLength = routeLength / (float) samples.length - 1;
         boolean isOnlyNan = true;
         for (int i = 0; i < samples.length; ++i) {
             if (!isNaN(samples[i])) {
@@ -52,15 +52,17 @@ public class ElevationProfileComputerTest {
         for (int i = 0; i < samples.length; ++i) {
             if (isNaN(samples[i])) {
                 double y0 = samples[i - 1];
-                int j = i;
+                int j = i + 1;
                 while (isNaN(samples[j])) {
                     ++j;
                 }
                 double y1 = samples[j];
+                for(int k = i ; k < j; ++k) {
+                    double x = (double) (k - i + 1) / (j - i + 1);
+                    samples[k] = (float) Math2.interpolate(y0, y1 , x );
+                }
 
-                double x =  (double)  stepLength / (double) (j - i + 1);
-
-                samples[i] = (float) Math2.interpolate(y0, y1, x);
+                i = j;
             }
         }
         return samples;
