@@ -110,7 +110,16 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        return findEdge(position).elevationAt(position);
+        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
+        int binarySearchIndex = binarySearchResult >= 0 ?  binarySearchResult : -binarySearchResult - 2;
+
+        double anteriorLength = 0;
+        for(int i = 0; i < binarySearchIndex; ++i) {
+            anteriorLength += edges.get(i).length();
+        }
+        Edge e = edges.get(binarySearchIndex);
+        double actualPosition = position - anteriorLength;
+        return e.elevationAt(actualPosition);
     }
 
     /**
@@ -125,7 +134,6 @@ public final class SingleRoute implements Route {
         if (binarySearchResult >= 0 )
             return binarySearchResult;
         int binarySearchIndex = -binarySearchResult - 2;
-        System.out.println(binarySearchIndex);
         Edge e  = edges.get(binarySearchIndex);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
