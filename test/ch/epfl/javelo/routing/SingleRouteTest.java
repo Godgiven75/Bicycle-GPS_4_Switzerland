@@ -5,6 +5,7 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,7 +135,59 @@ public class SingleRouteTest {
     }
 
     @Test
-    public void pointClosestToWorks() {
-       // RoutePoint rp = new RoutePoint()
+    public void pointClosestToWorksOnTrivialPoint() {
+       PointCh p = new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N);
+       RoutePoint rp = new RoutePoint(p, 0, 0);
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),5800,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,e0.pointAt(100),e0.pointAt(200),2300,
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,e2.pointAt(300),e2.pointAt(400),2200,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,e3.pointAt(400),e3.pointAt(500),1700,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+       assertEquals(rp, s.pointClosestTo(p));
+    }
+
+    @Test
+    public void pointClosestToWorksOnHorizontalItinerary() {
+        PointCh p = new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300);
+        PointCh pp = new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N);
+
+        RoutePoint rp = new RoutePoint(pp, 0, p.distanceTo(pp));
+
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N),1000,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N),1000,
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N),1000,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N),1000,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 500, SwissBounds.MIN_N),1000,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        assertEquals(rp, s.pointClosestTo(p));
     }
 }
