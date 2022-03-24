@@ -29,10 +29,9 @@ public final class SingleRoute implements Route {
     }
     private double[] nodePositions() {
         int nbEdges = edges.size();
-        double[] nodePositions = new double[nbEdges];
+        double[] nodePositions = new double[nbEdges + 1];
         int nodeId = 0;
         for(Edge e : edges) {
-            if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
         return nodePositions;
@@ -88,7 +87,8 @@ public final class SingleRoute implements Route {
 
     private Edge findEdge(double position) {
         int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(-binarySearchResult - 2); // nombre magique!
+        int edgeIndex = -binarySearchResult - 2; // Cf. javadoc de binarySearch()
+        return binarySearchResult >= 0 ?  edges.get(binarySearchResult) : edges.get(edgeIndex);
     }
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
@@ -104,11 +104,12 @@ public final class SingleRoute implements Route {
      * Retourne l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil
      * @param position
-     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir Nan si l'arête contenant
+     * @return l'altitude à la position donnée le long de l'itinéraire, qui peut valoir NaN si l'arête contenant
      * cette position n'a pas de profil
      */
     @Override
     public double elevationAt(double position) {
+        System.out.println(findEdge(position));
         return findEdge(position).elevationAt(position);
     }
 

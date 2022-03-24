@@ -3,9 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static java.lang.Float.NaN;
 import static java.lang.Float.isNaN;

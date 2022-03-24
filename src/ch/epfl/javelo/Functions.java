@@ -9,7 +9,6 @@ import java.util.function.DoubleUnaryOperator;
 public final class Functions {
     private Functions() {}
 
-
     /**
      * Retourne une fonction constante, dont la valeur est toujours y
      * @param y valeur (double) de la fonction
