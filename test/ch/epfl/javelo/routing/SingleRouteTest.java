@@ -99,9 +99,9 @@ public class SingleRouteTest {
                 Functions.sampled(elevationSamples, 2300));
         Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
                 Functions.constant(Double.NaN));
-        Edge e3 = new Edge(4,5,e2.pointAt(300),e2.pointAt(400),2200,
+        Edge e3 = new Edge(3,4,e2.pointAt(300),e2.pointAt(400),2200,
                 Functions.constant(Double.NaN));
-        Edge e4 = new Edge(5,6,e3.pointAt(400),e3.pointAt(500),1700,
+        Edge e4 = new Edge(4,5,e3.pointAt(400),e3.pointAt(500),1700,
                 Functions.constant(Double.NaN));
         List<Edge> l = new ArrayList<>();
         l.add(e0);
@@ -113,6 +113,9 @@ public class SingleRouteTest {
         float expected = 384.5f;
         assertEquals(expected, s.elevationAt(5900));
     }
+
+
+
 
 
 }
