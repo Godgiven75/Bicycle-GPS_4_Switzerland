@@ -26,7 +26,7 @@ public class ElevationProfileComputerTest {
 
     }
     private static float[] samples(float[] samples) {
-        float routeLength =8f;
+        float routeLength = 8f;
         float stepLength = routeLength / (float) samples.length - 1;
         boolean isOnlyNan = true;
         for (int i = 0; i < samples.length; ++i) {

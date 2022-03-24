@@ -26,13 +26,14 @@ public final class SingleRoute implements Route {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
         this.nodePositions = nodePositions();
+
     }
     private double[] nodePositions() {
         int nbEdges = edges.size();
-        double[] nodePositions = new double[nbEdges];
+        double[] nodePositions = new double[nbEdges + 1];
         int nodeId = 0;
         for(Edge e : edges) {
-            if (nodeId == nbEdges - 1) break;
+            //if (nodeId == nbEdges - 1) break;
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
         return nodePositions;
@@ -123,7 +124,9 @@ public final class SingleRoute implements Route {
 
         if (binarySearchResult >= 0 )
             return binarySearchResult;
-        Edge e  = edges.get(-binarySearchResult - 2);
+        int binarySearchIndex = -binarySearchResult - 2;
+        System.out.println(binarySearchIndex);
+        Edge e  = edges.get(binarySearchIndex);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
