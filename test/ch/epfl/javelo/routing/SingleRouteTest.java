@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import org.junit.jupiter.api.Test;
@@ -87,5 +88,31 @@ public class SingleRouteTest {
         assertEquals(expected, actual);
 
     }
+    @Test
+    public void elevationAtWorksWithNonConstantAltitudesOnInterval() {
+
+        float[] elevationSamples = new float[]{384.75f, 384.6875f, 400f, 384.5f};
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 199, SwissBounds.MIN_N + 199),5800,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,e0.pointAt(100),e0.pointAt(200),2300,
+                Functions.sampled(elevationSamples, 2300));
+        Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,e2.pointAt(300),e2.pointAt(400),2200,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,e3.pointAt(400),e3.pointAt(500),1700,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        float expected = 384.5f;
+        assertEquals(expected, s.elevationAt(5900));
+    }
+
 
 }
