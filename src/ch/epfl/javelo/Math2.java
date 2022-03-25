@@ -115,7 +115,6 @@ public final class Math2 {
         double AB_x = bX - aX;
         double AB_y = bY - aY;
         double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY ) / squaredNorm(AB_x, AB_y);
-
         return norm(q * AB_x, q * AB_y);
     }
 }

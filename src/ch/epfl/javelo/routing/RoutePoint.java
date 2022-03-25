@@ -36,13 +36,15 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
 
     /**
      * Retourne this si sa distance à la référence est inférieure ou égale à thatDistanceToReference, et une nouvelle
-     * instance de RoutePoint avec pour arguments, thatPoint, thatPosition et thatDistanceToReference
+     * instance de RoutePoint avec pour arguments, thatPoint, thatPosition et thatDistanceToReference sinon
      * @param thatPoint autre point sur l'itinéraire
      * @param thatPosition autre position du point le long de l'itinéraire, en mètres
      * @param thatDistanceToReference distance, en mètres, entre l'autre point et la référence
-     * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference, et une nouvelle instance de RoutePoint avec pour arguments, thatPoint, thatPosition et thatDistanceToReference
+     * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference, et une nouvelle
+     * instance de RoutePoint avec pour arguments, thatPoint, thatPosition et thatDistanceToReference sinon
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference) {
-        return this.distanceToReference <= thatDistanceToReference ? this : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
+        return this.distanceToReference <= thatDistanceToReference ?
+                this : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }
 }

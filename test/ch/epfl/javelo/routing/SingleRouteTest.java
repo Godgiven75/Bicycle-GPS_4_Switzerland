@@ -8,11 +8,27 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
-import static ch.epfl.test.TestRandomizer.newRandom;
+import static java.lang.Double.isNaN;
+import static java.lang.Math.sqrt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SingleRouteTest {
+
+    @Test
+    public void pointAtShit() {
+        Edge e0 = new Edge(0,0,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),100, null);
+        Edge e1 = new Edge(0,0,new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),
+                new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),100, null);
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        SingleRoute s = new SingleRoute(l);
+        PointCh p = e0.pointAt(200);
+        assertEquals(p.e(), s.pointAt(200).e(), 3);
+        assertEquals(p.n(), s.pointAt(200).n(), 3);
+    }
 
     @Test
     public void pointAtWorks() {
@@ -36,72 +52,39 @@ public class SingleRouteTest {
     }
 
     @Test
-    public void lengthWorks() {
-        var rng = newRandom();
-        List<Edge> l = new ArrayList<>();
-        double totalLength = 0;
-        for(int i = 0; i < RANDOM_ITERATIONS; ++i) {
-            double length = rng.nextDouble();
-            totalLength += length;
-            double eFrom = newRandom().nextDouble(SwissBounds.MIN_E, SwissBounds.MAX_E);
-            double nFrom = newRandom().nextDouble(SwissBounds.MIN_N, SwissBounds.MAX_N);
-            double eTo = newRandom().nextDouble(SwissBounds.MIN_E , SwissBounds.MAX_E);
-            double nTo = newRandom().nextDouble(SwissBounds.MIN_N, SwissBounds.MAX_N);
-            PointCh fromPoint = new PointCh(eFrom, nFrom);
-            PointCh toPoint = new PointCh(eTo, nTo);
-
-            l.add(new Edge(i, i + 1, fromPoint, toPoint, length, null));
-        }
-        SingleRoute sr = new SingleRoute(l);
-        double expected = totalLength;
-        double actual = sr.length();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void nodeClosestToWorks() {
-        double[] positions = new double[]{0, 5800, 8100, 9200, 11_400, 13_100};
-        Edge e0 = new Edge(0, 1, null, null, 5800, null );
-        Edge e1 = new Edge(1, 2, null, null,  2300, null);
-        Edge e2 = new Edge (2, 3 ,null, null,   1100, null);
-        Edge e3 = new Edge (3, 4, null, null ,  2200, null);
-        Edge e4 = new Edge (4, 5, null, null, 1700 , null);
-
+    public void pointAtWorks2() {
+        double[] a = new double[]{0, 5800, 8100, 9200, 11_400, 13_100};
+        Edge e0 = new Edge(0,0,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 199, SwissBounds.MIN_N + 199),5800, null);
+        Edge e1 = new Edge(0,0,e0.pointAt(100),e0.pointAt(200),2300, null);
+        Edge e2 = new Edge(0,0,e1.pointAt(200),e1.pointAt(300),1100, null);
+        Edge e3 = new Edge(0,0,e2.pointAt(300),e2.pointAt(400),2200, null);
+        Edge e4 = new Edge(0,0,e3.pointAt(400),e3.pointAt(500),1700, null);
         List<Edge> l = new ArrayList<>();
         l.add(e0);
         l.add(e1);
         l.add(e2);
         l.add(e3);
         l.add(e4);
-        SingleRoute sr = new SingleRoute(l);
-
-        int expected = 0;
-        int actual = sr.nodeClosestTo(1);
-        assertEquals(expected, actual);
-
-        expected = 0;
-        actual = sr.nodeClosestTo(2900);
-        assertEquals(expected, actual);
-
-        expected = 5;
-        actual = sr.nodeClosestTo(13100);
-        assertEquals(expected, actual);
-
+        SingleRoute s = new SingleRoute(l);
+        PointCh p = e2.pointAt(1);
+        assertEquals(p.e(), s.pointAt(1).e(), 4);
+        assertEquals(p.n(), s.pointAt(1).n(), 4);
     }
-    @Test
-    public void elevationAtWorksWithNonConstantAltitudesOnInterval() {
 
-        float[] elevationSamples = new float[]{384.75f, 384.6875f, 400f, 384.5f};
-        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+    @Test
+    public void elevationAtReturnsNaNIfNoProfile(){
+        double[] a = new double[]{0, 5800, 8100, 9200, 11_400, 13_100};
+        Edge e0 = new Edge(0,0,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
                 new PointCh(SwissBounds.MIN_E + 199, SwissBounds.MIN_N + 199),5800,
                 Functions.constant(Double.NaN));
-        Edge e1 = new Edge(1,2,e0.pointAt(100),e0.pointAt(200),2300,
-                Functions.sampled(elevationSamples, 2300));
-        Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
+        Edge e1 = new Edge(0,0,e0.pointAt(100),e0.pointAt(200),2300,
                 Functions.constant(Double.NaN));
-        Edge e3 = new Edge(3,4,e2.pointAt(300),e2.pointAt(400),2200,
+        Edge e2 = new Edge(0,0,e1.pointAt(200),e1.pointAt(300),1100,
                 Functions.constant(Double.NaN));
-        Edge e4 = new Edge(4,5,e3.pointAt(400),e3.pointAt(500),1700,
+        Edge e3 = new Edge(0,0,e2.pointAt(300),e2.pointAt(400),2200,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(0,0,e3.pointAt(400),e3.pointAt(500),1700,
                 Functions.constant(Double.NaN));
         List<Edge> l = new ArrayList<>();
         l.add(e0);
@@ -110,12 +93,186 @@ public class SingleRouteTest {
         l.add(e3);
         l.add(e4);
         SingleRoute s = new SingleRoute(l);
-        float expected = 384.5f;
-        assertEquals(expected, s.elevationAt(5900));
+        PointCh p = e2.pointAt(10_000);
+        assertTrue(isNaN(s.elevationAt(10_000)));
     }
 
+    @Test
+    public void elevationAtReturnsAltitudeAtGivenPosition() {
+        double[] a = new double[]{0, 5800, 8100, 9200, 11_400, 13_100};
+        Edge e0 = new Edge(0, 0, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 199, SwissBounds.MIN_N + 199), 5800,
+                Functions.constant(4589));
+        Edge e1 = new Edge(0, 0, e0.pointAt(100), e0.pointAt(200), 2300,
+                Functions.constant(234));
+        Edge e2 = new Edge(0, 0, e1.pointAt(200), e1.pointAt(300), 1100,
+                Functions.constant(643));
+        Edge e3 = new Edge(0, 0, e2.pointAt(300), e2.pointAt(400), 2200,
+                Functions.constant(0));
+        Edge e4 = new Edge(0, 0, e3.pointAt(400), e3.pointAt(500), 1700,
+                Functions.constant(2.3));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        PointCh p = e2.pointAt(10_000);
+        double expected = 234;
+        assertEquals(expected, s.elevationAt(5_900));
+    }
 
+    @Test
+    public void elevationAtWorksWithNonConstantAltitudesOnInterval() {
 
+        float[] elevationSamples = new float[]{384.75f, 384.6875f, 384.5625f, 384.5f};
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 199, SwissBounds.MIN_N + 199),5800,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,e0.pointAt(100),e0.pointAt(200),2300,
+                Functions.sampled(elevationSamples, 2300));
+        Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,e2.pointAt(300),e2.pointAt(400),2200,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,e3.pointAt(400),e3.pointAt(500),1700,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        float expected = 384.7418f;
+        assertEquals(expected, s.elevationAt(5900), 1e-3);
+    }
 
+    @Test
+    public void pointClosestToWorksOnTrivialPoint() {
+       PointCh p = new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N);
+       RoutePoint rp = new RoutePoint(p, 0, 0);
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 1, SwissBounds.MIN_N + 1),5800,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,e0.pointAt(100),e0.pointAt(200),2300,
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,e1.pointAt(200),e1.pointAt(300),1100,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,e2.pointAt(300),e2.pointAt(400),2200,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,e3.pointAt(400),e3.pointAt(500),1700,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+       assertEquals(rp, s.pointClosestTo(p));
+    }
 
+    @Test
+    public void pointClosestToWorksOnHorizontalItinerary() {
+        PointCh p = new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300);
+        PointCh pp = new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N);
+
+        RoutePoint rp = new RoutePoint(pp, 300, p.distanceTo(pp));
+
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N),100,
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N),100,
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N),100,
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N),100,
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 500, SwissBounds.MIN_N),100,
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        assertEquals(rp, s.pointClosestTo(p));
+    }
+
+    @Test
+    public void pointClosestToWorksOnDiagonalItinerary1() {
+        PointCh p = new PointCh(SwissBounds.MIN_E + 250, SwissBounds.MIN_N + 350);
+        PointCh pp = new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300);
+
+        RoutePoint rp = new RoutePoint(pp, 424.26, p.distanceTo(pp));
+
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),
+                new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),
+                new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),
+                new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),
+                new PointCh(SwissBounds.MIN_E + 500, SwissBounds.MIN_N + 500),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        assertEquals(rp.point(), s.pointClosestTo(p).point());
+        assertEquals(rp.position(), s.pointClosestTo(p).position(), 1);
+        assertEquals(rp.distanceToReference(), s.pointClosestTo(p).distanceToReference(), 1);
+    }
+
+    @Test
+    public void pointClosestToWorksOnDiagonalItinerary2() {
+        PointCh p = new PointCh(SwissBounds.MIN_E + 220, SwissBounds.MIN_N + 350);
+        PointCh pp = new PointCh(SwissBounds.MIN_E + 285, SwissBounds.MIN_N + 285);
+
+        RoutePoint rp = new RoutePoint(pp, 403, 92);
+
+        System.out.println((new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N).distanceTo(pp)));
+
+        Edge e0 = new Edge(0,1,new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e1 = new Edge(1,2,new PointCh(SwissBounds.MIN_E + 100, SwissBounds.MIN_N + 100),
+                new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e2 = new Edge(2,3,new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),
+                new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),
+                new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        Edge e4 = new Edge(5,6,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),
+                new PointCh(SwissBounds.MIN_E + 500, SwissBounds.MIN_N + 500),100*sqrt(2),
+                Functions.constant(Double.NaN));
+        List<Edge> l = new ArrayList<>();
+        l.add(e0);
+        l.add(e1);
+        l.add(e2);
+        l.add(e3);
+        l.add(e4);
+        SingleRoute s = new SingleRoute(l);
+        assertEquals(rp.point(), s.pointClosestTo(p).point());
+        assertEquals(rp.position(), s.pointClosestTo(p).position(), 1);
+        assertEquals(rp.distanceToReference(), s.pointClosestTo(p).distanceToReference(), 1);
+    }
 }
