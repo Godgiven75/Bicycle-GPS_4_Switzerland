@@ -99,6 +99,16 @@ public final class SingleRoute implements Route {
         return - binarySearchResult - 2;
     }
 
+    // @param position is the position on the itinerary, returns the position on the edge
+    private double positionOnEdge(double position) {
+        int binarySearchIndex = binarySearchIndex(position);
+        double anteriorLength = 0;
+        for (int i = 0; i < binarySearchIndex; i++) {
+            anteriorLength += edges.get(i).length();
+        }
+        return position - anteriorLength;
+    }
+
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
      * @param position
@@ -106,14 +116,8 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        int binarySearchIndex = binarySearchIndex(position);
-        double anteriorLength = 0;
-        for (int i = 0; i < binarySearchIndex; ++i) {
-            anteriorLength += edges.get(i).length();
-        }
-        Edge e = edges.get(binarySearchIndex);
-        double actualPosition = position - anteriorLength;
-        return e.pointAt(actualPosition);
+        Edge e = edges.get(binarySearchIndex(position));
+        return e.pointAt(positionOnEdge(position));
     }
 
     /**
@@ -125,14 +129,8 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        int binarySearchIndex = binarySearchIndex(position);
-        double anteriorLength = 0;
-        for(int i = 0; i < binarySearchIndex; ++i) {
-            anteriorLength += edges.get(i).length();
-        }
-        Edge e = edges.get(binarySearchIndex);
-        double actualPosition = position - anteriorLength;
-        return e.elevationAt(actualPosition);
+        Edge e = edges.get(binarySearchIndex(position));
+        return e.elevationAt(positionOnEdge(position));
     }
 
     /**

@@ -31,6 +31,7 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
         double stepLength = itineraryLength /(double) (numberOfSamples - 1);
         float[] samples = new float[numberOfSamples];
         double position = 0;
+
         for (int i = 0; i < samples.length; ++i) {
             samples[i] = (float) route.elevationAt(position);// Interpolation d'arêtes avec un profil déjà faite dans l'appel...
             position += stepLength;
