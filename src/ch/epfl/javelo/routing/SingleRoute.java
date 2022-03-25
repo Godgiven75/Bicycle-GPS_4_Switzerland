@@ -18,6 +18,7 @@ import static ch.epfl.javelo.routing.RoutePoint.NONE;
 public final class SingleRoute implements Route {
     private final List<Edge> edges;
     private final double[] nodePositions;
+    private final double length;
 
     /**
      * Retourne l'itinéraire simple composé des arêtes données, ou lève IllegalArgumentException si la liste d'arêtes
@@ -28,6 +29,7 @@ public final class SingleRoute implements Route {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
         this.nodePositions = nodePositions();
+        this.length = length();
     }
 
     private double[] nodePositions() {
@@ -115,7 +117,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        double finalPosition = Math2.clamp(0, position, length());
+        double finalPosition = Math2.clamp(0, position, length);
         Edge e = edges.get(binarySearchIndex(finalPosition));
         return e.pointAt(positionOnEdge(finalPosition));
     }
@@ -129,7 +131,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        double finalPosition = Math2.clamp(0, position, length());
+        double finalPosition = Math2.clamp(0, position, length);
         Edge e = edges.get(binarySearchIndex(finalPosition));
         return e.elevationAt(positionOnEdge(finalPosition));
     }
@@ -155,17 +157,6 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        /*
-        RoutePoint closestPoint = NONE;
-        for (Edge e : edges) {
-            double positionClosestToPoint = positionOnItinerary(e.positionClosestTo(point), e);
-            closestPoint = closestPoint.min(e.pointAt(positionClosestToPoint), positionClosestToPoint, point.distanceTo(e.fromPoint()));
-        }
-        Edge latestEdge = edges.get(edges.size() - 1);
-        closestPoint = closestPoint.min(latestEdge.pointAt(latestEdge.positionClosestTo(point)),
-                latestEdge.positionClosestTo(point), point.distanceTo(latestEdge.fromPoint()));
-        return closestPoint;
-         */
         RoutePoint closestPoint = NONE;
         for (Edge e : edges) {
             double closestPositionOnEdge = Math2.clamp(0d, e.positionClosestTo(point), e.length());
@@ -173,7 +164,6 @@ public final class SingleRoute implements Route {
             double closestPositionOnItinerary = nodePositions[nodeIndex] + closestPositionOnEdge;
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
             closestPoint = closestPoint.min(closestPointOnEdge, closestPositionOnItinerary, point.distanceTo(closestPointOnEdge));
-            System.out.println();
         }
         return closestPoint;
     }
