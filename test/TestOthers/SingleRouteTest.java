@@ -15,9 +15,94 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
+import static java.lang.Math.sqrt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SingleRouteTest {
+
+    private List<Edge> edges = new ArrayList<>();
+    private List<PointCh> points = new ArrayList<>();
+    SingleRoute route = route();
+
+    private SingleRoute route() {
+        float[] samples1 = new float[]{200, 100, 150, 250,300};
+        DoubleUnaryOperator profile1 = Functions.sampled(samples1, 100 * sqrt(2));
+        Edge edge1 = new Edge(0, 4,
+                new PointCh(2500100, 1100100), new PointCh(2500200, 1100200),
+                100 * sqrt(2), profile1);
+        points.add(new PointCh(2500100, 1100100));
+
+        float[] samples2 = new float[]{0, 200, 100, 400,0};
+        PointCh from2 = new PointCh(2500200, 1100200);
+        PointCh to2 = new PointCh(2500000, 1100000);
+        DoubleUnaryOperator profile2 = Functions.sampled(samples2, from2.distanceTo(to2));
+        Edge edge2 = new Edge(4, 7,
+                from2, to2, from2.distanceTo(to2), profile2);
+        points.add(from2);
+        points.add(to2);
+
+        float[] samples3 = new float[]{300, 100, 200, 100, 200};
+        PointCh from3 = new PointCh(2500000, 1100000);
+        PointCh to3 = new PointCh(2500400, 1100400);
+        DoubleUnaryOperator profile3 = Functions.sampled(samples3, from3.distanceTo(to3));
+        Edge edge3 = new Edge(7, 5,
+                from3, to3, from3.distanceTo(to3), profile3);
+        points.add(to3);
+
+        edges.add(edge1);
+        edges.add(edge2);
+        edges.add(edge3);
+        SingleRoute route1 = new SingleRoute(edges);
+        return route1;
+    }
+    @Test
+    void pointAtTest() {
+        // can the position exceed the length? what to do in that case
+        PointCh expected = new PointCh(2500500, 1100500);
+        PointCh actual = route.pointAt(800 * sqrt(2));
+        assertEquals(expected.e(), actual.e());
+        assertEquals(expected.n(), actual.n());
+
+        expected = new PointCh(2500000, 1100000);
+        actual = route.pointAt(-100 * sqrt(2));
+        assertEquals(expected.e(), actual.e());
+        assertEquals(expected.n(), actual.n());
+
+        expected = new PointCh(2500700, 1100700);
+        actual = route.pointAt(1000 * sqrt(2));
+        assertEquals(expected.e(), actual.e());
+        assertEquals(expected.n(), actual.n());
+    }
+
+    // 3e test
+    @Test
+    void pointAtWorksWithPointsBeyondRouteMiMi() {
+        PointCh pointBeyondRoute = ourRoute().pointAt(ourRoute().length()+45);
+        PointCh pointBeforeRoute = ourRoute().pointAt(edgeBeforeRoute.length()/2d);
+        System.out.println(p0.distanceTo(p1));
+        System.out.println(edgeBeforeRoute.length()/2d);
+        assertEquals(p3, pointBeyondRoute, "oh no…our code…it's broken"); // a point right after the route
+        assertEquals(p1, pointBeforeRoute, "oh no…our code…it's broken"); // a point right before the route
+    }
+    PointCh p0 = new PointCh(2600100, 1200400);
+    PointCh p1 = new PointCh(2600123, 1200456);
+    PointCh p2 = new PointCh(2600456, 1200789);
+    PointCh p3 = new PointCh(2600789, 1200123);
+    PointCh p4 = new PointCh(2601000, 1201000);
+
+    Edge myEdge1 = new Edge(1, 2, p1, p2, p1.distanceTo(p2), x -> Double.NaN);
+    Edge myEdge2 = new Edge(2, 3, p2, p3, p2.distanceTo(p3), x -> Math.sin(x));
+    Edge edgeBeforeRoute  =  new Edge(3, 4, p0, p1, p0.distanceTo(p1), x -> Double.NaN);
+
+    public SingleRoute ourRoute() {
+
+        List<Edge> edges = new ArrayList<>();
+        edges.add(myEdge1);
+        edges.add(myEdge2);
+
+        return new SingleRoute(edges);
+    }
+
     // LES EDGES DE CES TEST NE SONT PAS COLLE!! :/
     @Test
     public void indexOfSegmentAt(){
