@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
@@ -89,13 +90,9 @@ public final class SingleRoute implements Route {
         return l;
     }
     private int binarySearchIndex(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        if(binarySearchResult >= 0 ) {
-            if (binarySearchResult == nodePositions.length - 1)
-                return binarySearchResult - 1;
-            return binarySearchResult;
-        }
-        return - binarySearchResult - 2;
+        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(nodePositions[0],position, nodePositions[nodePositions.length - 1]));
+        int index = binarySearchResult >= 0 ? binarySearchResult : -binarySearchResult - 2;
+        return index == nodePositions.length - 1 ? index - 1 : index;
     }
 
     /**
@@ -119,6 +116,7 @@ public final class SingleRoute implements Route {
     @Override
     public double elevationAt(double position) {
         int binarySearchIndex = binarySearchIndex(position);
+
         double anteriorLength = 0;
         for(int i = 0; i < binarySearchIndex; ++i) {
             anteriorLength += edges.get(i).length();
@@ -155,6 +153,4 @@ public final class SingleRoute implements Route {
         }
         return closestPoint;
     }
-
-
 }

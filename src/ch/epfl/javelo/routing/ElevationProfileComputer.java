@@ -48,23 +48,26 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
             }
         }
         if (isOnlyNan) {
-            Arrays.fill(samples, 0, samples.length - 1, 0f);
+            Arrays.fill(samples, 0, samples.length , 0f);
             return new ElevationProfile(itineraryLength, samples);
         }
 
         // Recherche du dernier échantillon valide du tableau
         for (int i = samples.length - 1; i >= 0;  --i) {
             if (!isNaN(samples[i])) {
-                Arrays.fill(samples, samples.length - 1, i, samples[i]);
+                Arrays.fill(samples, i,  samples.length, samples[i]);
                 break;
             }
         }
 
         // Parcours du tableau pour trouver les trous intermédiaires et les remplir par interpolation
         for (int i = firstValidSampleIndex; i < samples.length; ++i) {
+
             if (isNaN(samples[i])) {
+
                 double y0 = samples[i - 1];
                 int j = i + 1;
+
                 while (isNaN(samples[j])) {
                     ++j;
                 }

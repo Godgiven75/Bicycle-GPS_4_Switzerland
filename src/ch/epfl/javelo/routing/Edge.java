@@ -36,8 +36,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return le point se trouvant à la position donnée sur l'arête, exprimée en mètres
      */
     public PointCh pointAt(double position) {
-        double e = Math2.interpolate(fromPoint.e(), toPoint.e(), position/length);
-        double n = Math2.interpolate(fromPoint.n(), toPoint.n(), position/length);
+        double e = Math2.interpolate(fromPoint.e(), toPoint.e(), position / length);
+        double n = Math2.interpolate(fromPoint.n(), toPoint.n(), position / length);
         return new PointCh(e, n);
     }
 
