@@ -147,7 +147,7 @@ public final class SingleRoute implements Route {
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
-        return position <= mean ? fromNodeId :  toNodeId;
+        return position <= mean ? fromNodeId : toNodeId;
     }
 
     /**
