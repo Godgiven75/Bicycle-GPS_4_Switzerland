@@ -18,7 +18,7 @@ import static ch.epfl.javelo.routing.RoutePoint.NONE;
 public final class SingleRoute implements Route {
     private final List<Edge> edges;
     private final double[] nodePositions;
-    private final double length;
+
 
     /**
      * Retourne l'itinéraire simple composé des arêtes données, ou lève IllegalArgumentException si la liste d'arêtes
@@ -29,7 +29,6 @@ public final class SingleRoute implements Route {
         Preconditions.checkArgument(!edges.isEmpty());
         this.edges = List.copyOf(edges);
         this.nodePositions = nodePositions();
-        this.length = length();
     }
 
     private double[] nodePositions() {
@@ -60,11 +59,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double length() {
-        double totalLength = 0.0;
-        for (Edge e : edges) {
-            totalLength += e.length();
-        }
-        return totalLength;
+        return nodePositions[nodePositions.length - 1];
     }
 
     /**
@@ -73,7 +68,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public List<Edge> edges() {
-        return edges;
+        return List.copyOf(edges);
     }
 
     /**
@@ -86,28 +81,8 @@ public final class SingleRoute implements Route {
         for (Edge e : edges) {
             l.add(e.fromPoint());
         }
-        l.add(edges.get(edges.size()-1).toPoint());
+        l.add(edges.get(edges.size() - 1).toPoint());
         return l;
-    }
-
-    private int binarySearchIndex(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions, position);
-        if (binarySearchResult >= 0 ) {
-            if (binarySearchResult == nodePositions.length - 1)
-                return binarySearchResult - 1;
-            return binarySearchResult;
-        }
-        return - binarySearchResult - 2;
-    }
-
-    // @param position is the position on the itinerary, returns the position on the edge
-    private double positionOnEdge(double position) {
-        int binarySearchIndex = binarySearchIndex(position);
-        double anteriorLength = 0;
-        for (int i = 0; i < binarySearchIndex; i++) {
-            anteriorLength += edges.get(i).length();
-        }
-        return position - anteriorLength;
     }
 
     /**
@@ -117,9 +92,14 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        double finalPosition = Math2.clamp(0, position, length);
-        Edge e = edges.get(binarySearchIndex(finalPosition));
-        return e.pointAt(positionOnEdge(finalPosition));
+        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
+        if(binarySearchResult == 0)
+            return edges.get(binarySearchResult).fromPoint();
+        if(binarySearchResult > 0)
+            return edges.get(binarySearchResult - 1).toPoint();
+        int actualIndex = - binarySearchResult - 2;
+        return edges.get(actualIndex).pointAt(position - nodePositions[actualIndex]);
+
     }
 
     /**
@@ -131,9 +111,14 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        double finalPosition = Math2.clamp(0, position, length);
-        Edge e = edges.get(binarySearchIndex(finalPosition));
-        return e.elevationAt(positionOnEdge(finalPosition));
+        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
+        System.out.println(binarySearchResult);
+        int binarySearchIndex = binarySearchResult;
+        if(binarySearchResult == nodePositions.length - 1)
+            binarySearchIndex = binarySearchResult  - 1;
+        if(binarySearchResult < 0)
+            binarySearchIndex = -binarySearchResult - 2;
+        return edges.get(binarySearchIndex).elevationAt(position - nodePositions[binarySearchIndex]);
     }
 
     /**
@@ -143,10 +128,17 @@ public final class SingleRoute implements Route {
      */
     @Override
     public int nodeClosestTo(double position) {
-        Edge e = edges.get(binarySearchIndex(position));
+        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
+        if(binarySearchResult >= 0) {
+            if (binarySearchResult == nodePositions.length - 1)
+                return edges.get(binarySearchResult - 1).toNodeId();
+            return edges.get(binarySearchResult).fromNodeId();
+        }
+        int actualIndex = -binarySearchResult - 2;
+        Edge e = edges.get(actualIndex);
         int fromNodeId = e.fromNodeId();
         int toNodeId = e.toNodeId();
-        double mean = (nodePositions[fromNodeId] + nodePositions[toNodeId]) / 2.0;
+        double mean = (nodePositions[actualIndex] + nodePositions[actualIndex + 1]) / 2.0;
         return position <= mean ? fromNodeId : toNodeId;
     }
 
@@ -159,7 +151,7 @@ public final class SingleRoute implements Route {
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint closestPoint = NONE;
         for (Edge e : edges) {
-            double closestPositionOnEdge = Math2.clamp(0d, e.positionClosestTo(point), e.length());
+            double closestPositionOnEdge = Math2.clamp(0.0, e.positionClosestTo(point), e.length());
             int nodeIndex = edges.indexOf(e);
             double closestPositionOnItinerary = nodePositions[nodeIndex] + closestPositionOnEdge;
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);

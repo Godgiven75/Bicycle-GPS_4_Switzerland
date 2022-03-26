@@ -92,8 +92,8 @@ public class ElevationProfileComputerTest {
         ElevationProfile actual = ElevationProfileComputer.elevationProfile(sr, 100);
         float[] samples = new float[]{100, 100, 200};
         ElevationProfile expected = new ElevationProfile(200, samples);
-        //assertArrayEquals(expected.elevationSamples, actual.elevationSamples); //passer en package private pour les tests
-        //assertEquals(expected.length, actual.length);
+        assertArrayEquals(expected.elevationSamples, actual.elevationSamples); //passer en package private pour les tests
+        assertEquals(expected.length, actual.length);
 
     }
     @Test
@@ -219,7 +219,7 @@ public class ElevationProfileComputerTest {
 
         actual = profile.elevationAt(500);
         expected = 82.88;
-        //assertEquals(expected, actual, 1e-1);
+        assertEquals(expected, actual, 1e-1);
 
         actual = profile.elevationAt(1000);
         expected = 0f;
@@ -251,7 +251,7 @@ public class ElevationProfileComputerTest {
         ElevationProfile elevationProfile = ElevationProfileComputer.elevationProfile(sr, 100);
 
         float[] expected = new float[] {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-        float[] actual = elevationProfile.elevationSamples;
+        float[] actual = elevationProfile.elevationSamples; //Repasser en les attributs de ElevationProgile en package private pour ces tests
 
         assertArrayEquals(expected, actual);
     }

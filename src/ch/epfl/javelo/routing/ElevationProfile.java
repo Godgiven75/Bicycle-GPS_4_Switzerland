@@ -9,8 +9,8 @@ import java.util.DoubleSummaryStatistics;
  * Représente le profil en long d'un itinéraire simple ou multiple
  */
 public class ElevationProfile {
-    private final double length;
-    private final float[] elevationSamples;
+     final double length;
+     final float[] elevationSamples;
 
     /**
      * Construit le profil en long d'un itinéraire de longueur length (en mètres) et dont les échantillons d'altitude,
