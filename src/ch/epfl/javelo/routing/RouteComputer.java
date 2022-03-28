@@ -9,8 +9,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 public class RouteComputer {
-    Graph graph;
-    CostFunction costFunction;
+    private final Graph graph;
+    private final CostFunction costFunction;
 
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
@@ -42,6 +42,7 @@ public class RouteComputer {
 
         }
 
+        return null;
 
         record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
             @Override
@@ -51,5 +52,12 @@ public class RouteComputer {
         }
 
     }
+    // Retourne l'identité du noeud le plus proche de la source parmi les noeuds en cours d'exploration
+    private int closestNodeId(HashSet<Integer> hs, int sourceNodeId) {
+        for (Integer i : hs) {
+
+        }
+    }
+
 
 }

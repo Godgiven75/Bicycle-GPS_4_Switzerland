@@ -11,6 +11,9 @@ import static ch.epfl.javelo.data.Attribute.*;
 // https://github.com/abrensch/brouter/blob/15e84c81ea23408abde8605bd57a87a777003ce2/misc/profiles2/trekking.brf
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+/**
+ * Représente la fonction de coût adaptée à la pratique du vélo
+ */
 public record CityBikeCF(Graph graph) implements CostFunction {
     // Any kind of marked cycle route (international, national, regional or local)
     private static final AttributeSet CYCLE_ROUTE =
