@@ -225,7 +225,7 @@ public class SingleRouteTest {
         Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),
                 new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),100*sqrt(2),
                 Functions.constant(Double.NaN));
-        Edge e4 = new Edge(5,6,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),
+        Edge e4 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),
                 new PointCh(SwissBounds.MIN_E + 500, SwissBounds.MIN_N + 500),100*sqrt(2),
                 Functions.constant(Double.NaN));
         List<Edge> l = new ArrayList<>();
@@ -258,7 +258,7 @@ public class SingleRouteTest {
         Edge e2 = new Edge(2,3,new PointCh(SwissBounds.MIN_E + 200, SwissBounds.MIN_N + 200),
                 new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),100*sqrt(2),
                 Functions.constant(Double.NaN));
-        Edge e3 = new Edge(4,5,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),
+        Edge e3 = new Edge(3,4,new PointCh(SwissBounds.MIN_E + 300, SwissBounds.MIN_N + 300),
                 new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),100*sqrt(2),
                 Functions.constant(Double.NaN));
         Edge e4 = new Edge(5,9879,new PointCh(SwissBounds.MIN_E + 400, SwissBounds.MIN_N + 400),
