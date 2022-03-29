@@ -38,19 +38,19 @@ public class RouteComputer {
         }
 
         int nodesNb = graph.nodeCount();
-        float[] distance = new float[nodesNb];
+        float[] distanceTo = new float[nodesNb];
         int[] predecessor = new int[nodesNb];
-        List<Edge> edges = new ArrayList<>(nodesNb);
+        List<Edge> edges = Arrays.asList(new Edge[nodesNb]);
         Deque<Edge> pathEdges = new LinkedList<>();
         PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
         CityBikeCF cityBikeCF = new CityBikeCF(graph);
         WeightedNode closestNode = new WeightedNode(0, 0);
 
-        Arrays.fill(distance, Float.POSITIVE_INFINITY);
+        Arrays.fill(distanceTo, Float.POSITIVE_INFINITY);
         Arrays.fill(predecessor, 0);
-        distance[startNodeId] = 0f;
+        distanceTo[startNodeId] = 0f;
         en_exploration.add(new WeightedNode(startNodeId, 0));
-        float dist = 0f;
+        float distanceToNodeOut = 0f;
 
         while(!en_exploration.isEmpty()) {
 
@@ -61,8 +61,14 @@ public class RouteComputer {
             if (closestNode.distance() == Float.NEGATIVE_INFINITY) continue;
 
             if (closestNodeId == endNodeId) {
-                int j = predecessor.length - 1;
+                int j = endNodeId;
                 // Construire la liste d'edges dans l'ordre de l'itinéraire
+                while (j != startNodeId) {
+                    Edge e = edges.get(j);
+                    pathEdges.offerFirst(e);
+                    j = edges.get(j).fromNodeId();
+                }
+                /*
                 for (int i = predecessor.length - 1; i >= 0; i++) {
                     for (Edge e : edges) {
                         if (e.toNodeId() == predecessor[j]) {
@@ -72,6 +78,8 @@ public class RouteComputer {
                         }
                     }
                 }
+
+                 */
                 return new SingleRoute(new ArrayList<>(pathEdges));
             }
 
@@ -84,17 +92,25 @@ public class RouteComputer {
                 // Facteur de coût -> allongement artificiel de la longueur d'une arête
                 double coeff = cityBikeCF.costFactor(closestNodeId, i_thEdgeId);
                 // Calcul distance
-                dist = distance[closestNodeId] + (float) (coeff * graph.edgeLength(i_thEdgeId));
+                distanceToNodeOut = distanceTo[closestNodeId]
+                        + (float) (coeff * graph.edgeLength(i_thEdgeId));
+                // Affectation de l'identité du noeud précédent
+                predecessor[edgeEndNodeId] = closestNodeId;
 
-                if (dist < distance[edgeEndNodeId]) {
-                    distance[edgeEndNodeId] = dist;
-                    predecessor[edgeEndNodeId] = closestNodeId;
-                    en_exploration.add(new WeightedNode(edgeEndNodeId, dist));
-                    edges.set(edgeEndNodeId, Edge.of(graph, i_thEdgeId, closestNodeId, edgeEndNodeId));
+                float knownDistanceToThisNode = distanceTo[edgeEndNodeId];
+                if (distanceToNodeOut < knownDistanceToThisNode) {
+                    distanceTo[edgeEndNodeId] = distanceToNodeOut;
+                    en_exploration.add(
+                            new WeightedNode(edgeEndNodeId, distanceToNodeOut)
+                    );
+                    edges.set(
+                            edgeEndNodeId,
+                            Edge.of(graph, i_thEdgeId, closestNodeId, edgeEndNodeId)
+                    );
                 }
             }
             // Marquer le noeud exploré pour ne plus y revenir
-            distance[closestNodeId] = Float.NEGATIVE_INFINITY;
+            distanceTo[closestNodeId] = Float.NEGATIVE_INFINITY;
 
         }
         // Si aucun chemin n'a été trouvé
