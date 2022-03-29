@@ -99,7 +99,6 @@ public final class SingleRoute implements Route {
             return edges.get(binarySearchResult - 1).toPoint();
         int actualIndex = - binarySearchResult - 2;
         return edges.get(actualIndex).pointAt(position - nodePositions[actualIndex]);
-
     }
 
     /**

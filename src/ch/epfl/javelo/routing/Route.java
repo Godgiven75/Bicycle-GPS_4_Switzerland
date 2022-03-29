@@ -29,21 +29,21 @@ public interface Route {
     List<Edge> edges();
 
     /**
+     * Retourne la totalité des points situés aux extrémités des arêtes de l'itinéraire
+     * @return la totalité des points situés aux extrémités des arêtes de l'itinéraire
+     */
+    List<PointCh> points();
+
+    /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire
      * @return le point se trouvant à la position donnée le long de l'itinéraire
      */
-    List<PointCh> points();
+    PointCh pointAt(double position);
 
     /**
      * Retourne l'altitude à la position donnée le long de l'itinéraire
      * @param position
      * @return l'altitude à la position donnée le long de l'itinéraire
-     */
-    PointCh pointAt(double position);
-
-    /**
-     * Retourne l'identité du noeud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée
-     * @return l'identité du noeud appartenant à l'itinéaire et se trouvant le plus proche de la position donnée
      */
     double elevationAt(double position);
 

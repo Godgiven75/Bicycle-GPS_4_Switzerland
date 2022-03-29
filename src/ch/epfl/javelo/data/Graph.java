@@ -127,11 +127,14 @@ public class Graph {
     }
 
     /**
-     * Retourne l'identité du noeud se trouvant le plus proche du point donné, à la distance maximale donnée (en mètres),
-     * ou -1 si aucun noeud ne correspond à ces critères
+     * Retourne l'identité du noeud se trouvant le plus proche du point donné,
+     * à la distance maximale donnée (en mètres), ou -1 si aucun noeud ne
+     * correspond à ces critères
      * @param point
      * @param searchDistance
-     * @return
+     * @return l'identité du noeud se trouvant le plus proche du point donné,
+     * à la distance maximale donnée (en mètres), ou -1 si aucun noeud ne
+     * correspond à ces critères
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
@@ -159,9 +162,11 @@ public class Graph {
     }
 
     /**
-     * Retourne vrai ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
+     * Retourne vrai ssi l'arête d'identité donnée va dans le sens contraire de
+     * la voie OSM dont elle provient
      * @param edgeId
-     * @return vrai ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
+     * @return vrai ssi l'arête d'identité donnée va dans le sens contraire de
+     * la voie OSM dont elle provient
      */
     public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
