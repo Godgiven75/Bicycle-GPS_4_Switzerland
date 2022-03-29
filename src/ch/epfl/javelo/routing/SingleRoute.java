@@ -112,7 +112,6 @@ public final class SingleRoute implements Route {
     @Override
     public double elevationAt(double position) {
         int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
-        System.out.println(binarySearchResult);
         int binarySearchIndex = binarySearchResult;
         if(binarySearchResult == nodePositions.length - 1)
             binarySearchIndex = binarySearchResult  - 1;
