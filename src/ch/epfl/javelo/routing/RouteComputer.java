@@ -68,18 +68,7 @@ public class RouteComputer {
                     pathEdges.offerFirst(e);
                     j = edges.get(j).fromNodeId();
                 }
-                /*
-                for (int i = predecessor.length - 1; i >= 0; i++) {
-                    for (Edge e : edges) {
-                        if (e.toNodeId() == predecessor[j]) {
-                            pathEdges.offerFirst(e);
-                            j = predecessor[j];
-                            break;
-                        }
-                    }
-                }
-
-                 */
+                // Retourner l'itinéraire trouvé
                 return new SingleRoute(new ArrayList<>(pathEdges));
             }
 
