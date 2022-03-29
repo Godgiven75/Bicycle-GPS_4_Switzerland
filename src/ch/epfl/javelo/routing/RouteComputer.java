@@ -3,10 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 public class RouteComputer {
     private final Graph graph;
@@ -29,20 +26,6 @@ public class RouteComputer {
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
-        int nodesNb = graph.nodeCount();
-        float[] distance = new float[nodesNb];
-        Set<Integer> explored = new HashSet<>();
-        PriorityQueue<Integer> en_exploration = new PriorityQueue<>();
-
-        Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        distance[startNodeId] = 0f;
-        en_exploration.add(startNodeId);
-
-        while(!en_exploration.isEmpty()) {
-
-        }
-
-        return null;
 
         record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
             @Override
@@ -51,13 +34,46 @@ public class RouteComputer {
             }
         }
 
-    }
-    // Retourne l'identité du noeud le plus proche de la source parmi les noeuds en cours d'exploration
-    private int closestNodeId(HashSet<Integer> hs, int sourceNodeId) {
-        for (Integer i : hs) {
+        int nodesNb = graph.nodeCount();
+        float[] distance = new float[nodesNb];
+        List<Edge> edges = new ArrayList<>();
+        PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
+        CityBikeCF cityBikeCF = new CityBikeCF(graph);
+        WeightedNode closestNode = new WeightedNode(0, 0);
+
+        Arrays.fill(distance, Float.POSITIVE_INFINITY);
+        distance[startNodeId] = 0f;
+        en_exploration.add(new WeightedNode(startNodeId, 0));
+        float dist = 0f;
+
+        while(!en_exploration.isEmpty()) {
+            closestNode = en_exploration.remove();
+
+            // Si le noeud a déjà été exploré
+            if (closestNode.distance() == Float.NEGATIVE_INFINITY) continue;
+
+            if (closestNode.nodeId() == endNodeId) {
+                return new SingleRoute(edges);
+            }
+
+            for (int i = 0; i < graph.nodeOutDegree(closestNode.nodeId()); i++) {
+                int i_thEdgeId = graph.nodeOutEdgeId(closestNode.nodeId(), i);
+                int edgeEndNodeId = graph.edgeTargetNodeId(i_thEdgeId);
+                // Facteur de coût -> allongement artificiel de la longueur d'une arête
+                double coeff = cityBikeCF.costFactor(closestNode.nodeId(), i_thEdgeId);
+                dist = distance[closestNode.nodeId()] + (float) (coeff * graph.edgeLength(i_thEdgeId));
+
+                if (dist < distance[edgeEndNodeId]) {
+                    distance[edgeEndNodeId] = dist;
+                    en_exploration.add(new WeightedNode(edgeEndNodeId, dist));
+                    distance[closestNode.nodeId()] = Float.NEGATIVE_INFINITY;
+                    edges.add(Edge.of(graph, i_thEdgeId, closestNode.nodeId(), edgeEndNodeId));
+                }
+            }
 
         }
+        // Si aucun chemin n'a été trouvé
+        return null;
     }
-
 
 }
