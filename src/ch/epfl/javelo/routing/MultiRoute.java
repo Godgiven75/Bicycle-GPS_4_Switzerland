@@ -14,7 +14,7 @@ import static java.lang.Float.NaN;
  */
 public final class MultiRoute implements Route {
     private final List<Route> segments;
-    private final List<SingleRoute> singleSegments;
+
 
     public static void main(String[] args) {
         Edge e = new Edge(0, 1, null, null, 1000, Functions.constant(NaN));
@@ -35,17 +35,19 @@ public final class MultiRoute implements Route {
      */
     public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!segments.isEmpty());
-
         this.segments = List.copyOf(segments);
-
-        List<SingleRoute> l = new ArrayList<>();
-        for (Route r : segments) {
-            List<SingleRoute> temp  =  r instanceof SingleRoute ? List.of((SingleRoute) r) : ((MultiRoute)r).singleSegments;
-            l.addAll(temp);
-        }
-        this.singleSegments = List.copyOf(l);
     }
-
+    private int findRouteIndex(double position) {
+        int tempPosition = 0;
+        int index = 0;
+        for (Route r : segments) {
+            tempPosition += r.length();
+            if (tempPosition >= position)
+                return index;
+            ++index;
+        }
+        return segments.size() - 1;
+    }
     /**
      *
      * @param position
@@ -70,17 +72,7 @@ public final class MultiRoute implements Route {
         }
         return totalLength;
     }
-    private int findRouteIndex(double position) {
-        int tempPosition = 0;
-        int index = 0;
-        for (Route r : segments) {
-            tempPosition += r.length();
-            if (tempPosition >= position)
-                return index;
-            ++index;
-        }
-        return segments.size() - 1;
-    }
+
     @Override
     public List<Edge> edges() {
         List<Edge> l = new ArrayList<>();
@@ -122,11 +114,6 @@ public final class MultiRoute implements Route {
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        RoutePoint closestPoint = RoutePoint.NONE;
-        for (SingleRoute r : singleSegments) {
-            RoutePoint closestPointOnSegment =  r.pointClosestTo(point);
-            closestPoint = closestPoint.min(closestPointOnSegment);
-        }
-        return closestPoint;
+        return null;
     }
 }

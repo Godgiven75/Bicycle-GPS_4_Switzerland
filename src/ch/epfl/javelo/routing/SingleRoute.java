@@ -92,13 +92,14 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
+        double clampedPosition = Math2.clamp(0.0, position, length());
+        int binarySearchResult = Arrays.binarySearch(nodePositions, clampedPosition);
         if(binarySearchResult == 0)
             return edges.get(binarySearchResult).fromPoint();
         if(binarySearchResult > 0)
             return edges.get(binarySearchResult - 1).toPoint();
         int actualIndex = - binarySearchResult - 2;
-        return edges.get(actualIndex).pointAt(position - nodePositions[actualIndex]);
+        return edges.get(actualIndex).pointAt(clampedPosition - nodePositions[actualIndex]);
     }
 
     /**
@@ -110,13 +111,15 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        int binarySearchResult = Arrays.binarySearch(nodePositions, Math2.clamp(0.0, position, length()));
+        double clampedPosition = Math2.clamp(0.0, position, length());
+        int binarySearchResult = Arrays.binarySearch(nodePositions, clampedPosition);
+
         int binarySearchIndex = binarySearchResult;
         if(binarySearchResult == nodePositions.length - 1)
             binarySearchIndex = binarySearchResult  - 1;
         if(binarySearchResult < 0)
             binarySearchIndex = -binarySearchResult - 2;
-        return edges.get(binarySearchIndex).elevationAt(position - nodePositions[binarySearchIndex]);
+        return edges.get(binarySearchIndex).elevationAt(clampedPosition - nodePositions[binarySearchIndex]);
     }
 
     /**
@@ -153,7 +156,10 @@ public final class SingleRoute implements Route {
             int nodeIndex = edges.indexOf(e);
             double closestPositionOnItinerary = nodePositions[nodeIndex] + closestPositionOnEdge;
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
+            System.out.println(closestPoint.distanceToReference());
+            System.out.println( "on edge" + point.distanceTo(closestPointOnEdge));
             closestPoint = closestPoint.min(closestPointOnEdge, closestPositionOnItinerary, point.distanceTo(closestPointOnEdge));
+
         }
         return closestPoint;
     }
