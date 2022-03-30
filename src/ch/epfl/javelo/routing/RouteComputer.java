@@ -1,6 +1,5 @@
 package ch.epfl.javelo.routing;
 
-import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 
@@ -60,14 +59,14 @@ public class RouteComputer {
             int closestNodeId = closestNode.nodeId();
 
             // Si le noeud a déjà été exploré, on l'ignore
-            if (closestNode.distance() == Float.NEGATIVE_INFINITY) continue;
+            if (distanceTo[closestNodeId] == Float.NEGATIVE_INFINITY) continue;
 
             if (closestNodeId == endNodeId) {
-                int j = endNodeId;
-                while (j != startNodeId) {
-                    Edge e = edges.get(j);
+                int toNodeId = endNodeId;
+                while (toNodeId != startNodeId) {
+                    Edge e = edges.get(toNodeId);
                     pathEdges.offerFirst(e);
-                    j = predecessor[j];
+                    toNodeId = predecessor[toNodeId]; // = closestNodeId
                 }
                 System.out.println("Longueur de l'itinéraire : " +
                         (new SingleRoute(new ArrayList<>(pathEdges))).length()
@@ -81,6 +80,7 @@ public class RouteComputer {
                 int i_thEdgeId = graph.nodeOutEdgeId(closestNodeId, i);
                 // Noeud d'arrivée de l'arête
                 int edgeEndNodeId = graph.edgeTargetNodeId(i_thEdgeId);
+
                 // Facteur de coût -> allongement artificiel de la longueur d'une arête
                 double coeff = cityBikeCF.costFactor(closestNodeId, i_thEdgeId);
                 // Calcul distance
