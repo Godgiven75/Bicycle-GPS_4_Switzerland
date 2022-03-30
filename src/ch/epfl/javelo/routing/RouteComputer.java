@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 
@@ -8,10 +9,12 @@ import java.util.*;
 public class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
+    CityBikeCF cityBikeCF;
 
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
         this.costFunction = costFunction;
+        cityBikeCF = new CityBikeCF(graph);
     }
 
     /**
@@ -38,23 +41,22 @@ public class RouteComputer {
         }
 
         int nodesNb = graph.nodeCount();
-        float[] distanceTo = new float[nodesNb];
+        double[] distanceTo = new double[nodesNb];
         int[] predecessor = new int[nodesNb];
         List<Edge> edges = Arrays.asList(new Edge[nodesNb]);
         Deque<Edge> pathEdges = new LinkedList<>();
-        PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
-        CityBikeCF cityBikeCF = new CityBikeCF(graph);
-        WeightedNode closestNode = new WeightedNode(0, 0);
+        PriorityQueue<WeightedNode> unsettled = new PriorityQueue<>();
+        WeightedNode closestNode;
 
         Arrays.fill(distanceTo, Float.POSITIVE_INFINITY);
         Arrays.fill(predecessor, 0);
         distanceTo[startNodeId] = 0f;
-        en_exploration.add(new WeightedNode(startNodeId, 0));
-        float distanceToNodeOut = 0f;
+        unsettled.add(new WeightedNode(startNodeId, 0));
+        double distanceToNodeOut;
 
-        while(!en_exploration.isEmpty()) {
+        while(!unsettled.isEmpty()) {
 
-            closestNode = en_exploration.remove();
+            closestNode = unsettled.remove();
             int closestNodeId = closestNode.nodeId();
 
             // Si le noeud a déjà été exploré, on l'ignore
@@ -62,18 +64,15 @@ public class RouteComputer {
 
             if (closestNodeId == endNodeId) {
                 int j = endNodeId;
-                // Construire la liste d'edges dans l'ordre de l'itinéraire
                 while (j != startNodeId) {
                     Edge e = edges.get(j);
                     pathEdges.offerFirst(e);
-                    j = edges.get(j).fromNodeId();
+                    j = predecessor[j];
                 }
                 System.out.println("Longueur de l'itinéraire : " +
                         (new SingleRoute(new ArrayList<>(pathEdges))).length()
                 );
-                // Retourner l'itinéraire trouvé
                 return new SingleRoute(new ArrayList<>(pathEdges));
-
             }
 
             // Pour chaque arête sortant du closestNode
@@ -87,14 +86,13 @@ public class RouteComputer {
                 // Calcul distance
                 distanceToNodeOut = distanceTo[closestNodeId]
                         + (float) (coeff * graph.edgeLength(i_thEdgeId));
-                // Affectation de l'identité du noeud précédent
-                predecessor[edgeEndNodeId] = closestNodeId;
 
-                float knownDistanceToThisNode = distanceTo[edgeEndNodeId];
+                double knownDistanceToThisNode = distanceTo[edgeEndNodeId];
                 if (distanceToNodeOut < knownDistanceToThisNode) {
                     distanceTo[edgeEndNodeId] = distanceToNodeOut;
-                    en_exploration.add(
-                            new WeightedNode(edgeEndNodeId, distanceToNodeOut)
+                    predecessor[edgeEndNodeId] = closestNodeId;
+                    unsettled.add(
+                            new WeightedNode(edgeEndNodeId, (float) distanceToNodeOut)
                     );
                     edges.set(
                             edgeEndNodeId,
@@ -104,10 +102,31 @@ public class RouteComputer {
             }
             // Marquer le noeud exploré pour ne plus y revenir
             distanceTo[closestNodeId] = Float.NEGATIVE_INFINITY;
-
         }
         // Si aucun chemin n'a été trouvé
         return null;
     }
+
+    /*
+    private SingleRoute getSingleRoute(int startNodeId, int endNodeId, int[] predecessor) {
+        Deque<Edge> pathEdges = new ArrayDeque<>();
+        int toNodeId = endNodeId;
+        // Construire la liste d'edges dans l'ordre de l'itinéraire
+        while (toNodeId != startNodeId) {
+            int wrapEdgeIdAndNodeId = predecessor[toNodeId];
+            int fromNodeId = Bits.extractUnsigned(wrapEdgeIdAndNodeId, 0, 4);
+            int edgeId = Bits.extractUnsigned(wrapEdgeIdAndNodeId, 4, 27);
+            pathEdges.offerFirst(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+            toNodeId = fromNodeId;
+            System.out.println(toNodeId);
+        }
+        System.out.println("Longueur de l'itinéraire : " +
+                (new SingleRoute(new ArrayList<>(pathEdges))).length()
+        );
+        // Retourner l'itinéraire trouvé
+        return new SingleRoute(new ArrayList<>(pathEdges));
+    }
+
+     */
 
 }

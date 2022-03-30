@@ -153,12 +153,14 @@ public final class SingleRoute implements Route {
         RoutePoint closestPoint = NONE;
         for (Edge e : edges) {
             double closestPositionOnEdge = Math2.clamp(0.0, e.positionClosestTo(point), e.length());
+            System.out.println("pos" + e.positionClosestTo(point));
+            System.out.println(closestPositionOnEdge);
             int nodeIndex = edges.indexOf(e);
             double closestPositionOnItinerary = nodePositions[nodeIndex] + closestPositionOnEdge;
+            System.out.println(closestPositionOnItinerary);
             double clampedClosestPositionOnItinerary = Math2.clamp(0.0, closestPositionOnItinerary, length());
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
             closestPoint = closestPoint.min(closestPointOnEdge, clampedClosestPositionOnItinerary, point.distanceTo(closestPointOnEdge));
-
         }
         return closestPoint;
     }
