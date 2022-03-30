@@ -68,8 +68,12 @@ public class RouteComputer {
                     pathEdges.offerFirst(e);
                     j = edges.get(j).fromNodeId();
                 }
+                System.out.println("Longueur de l'itinéraire : " +
+                        (new SingleRoute(new ArrayList<>(pathEdges))).length()
+                );
                 // Retourner l'itinéraire trouvé
                 return new SingleRoute(new ArrayList<>(pathEdges));
+
             }
 
             // Pour chaque arête sortant du closestNode
