@@ -15,7 +15,7 @@ public class RouteComputer {
 
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
-        this.costFunction = new CityBikeCF(graph);
+        this.costFunction = costFunction;
     }
 
     /**
