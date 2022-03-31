@@ -95,9 +95,9 @@ public final class SingleRoute implements Route {
         double clampedPosition = Math2.clamp(0.0, position, length());
         int binarySearchResult = Arrays.binarySearch(nodePositions, clampedPosition);
         if(binarySearchResult == 0)
-            return edges.get(binarySearchResult).fromPoint();
+            return points().get(binarySearchResult);
         if(binarySearchResult > 0)
-            return edges.get(binarySearchResult - 1).toPoint();
+            return points().get(binarySearchResult);
         int actualIndex = - binarySearchResult - 2;
         return edges.get(actualIndex).pointAt(clampedPosition - nodePositions[actualIndex]);
     }
@@ -151,14 +151,13 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint closestPoint = NONE;
+        double currentPosition = 0;
         for (Edge e : edges) {
-            double closestPositionOnEdge = Math2.clamp(0.0, e.positionClosestTo(point), e.length());
-            int nodeIndex = edges.indexOf(e);
-            double closestPositionOnItinerary = nodePositions[nodeIndex] + closestPositionOnEdge;
-            double clampedClosestPositionOnItinerary = Math2.clamp(0.0, closestPositionOnItinerary, length());
+            double closestPosition = e.positionClosestTo(point);
+            double closestPositionOnEdge = Math2.clamp(0.0, closestPosition, e.length());
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
-            closestPoint = closestPoint.min(closestPointOnEdge, clampedClosestPositionOnItinerary, point.distanceTo(closestPointOnEdge));
-
+            closestPoint = closestPoint.min(closestPointOnEdge, currentPosition + closestPositionOnEdge, point.distanceTo(closestPointOnEdge));
+            currentPosition += e.length();
         }
         return closestPoint;
     }

@@ -114,7 +114,6 @@ public final class Math2 {
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY ) {
         double AB_x = bX - aX;
         double AB_y = bY - aY;
-        double q  = dotProduct(AB_x, AB_y, pX - aX, pY - aY ) / squaredNorm(AB_x, AB_y);
-        return norm(q * AB_x, q * AB_y);
+        return dotProduct(AB_x, AB_y, pX - aX, pY - aY ) / norm(AB_x, AB_y);
     }
 }

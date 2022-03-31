@@ -151,7 +151,6 @@ class SingleRouteTest {
             var dE = rng.nextDouble(-1000, 1000);
             var p = new PointCh(ORIGIN_E + dE, ORIGIN_N + dN);
             var pct = route.pointClosestTo(p);
-            System.out.println(p);
             assertEquals(origin, pct.point());
             assertEquals(0, pct.position());
             assertEquals(Math.hypot(dE, dN), pct.distanceToReference(), 1e-4);
