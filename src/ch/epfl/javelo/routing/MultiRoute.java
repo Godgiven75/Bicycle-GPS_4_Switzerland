@@ -27,7 +27,7 @@ public final class MultiRoute implements Route {
 
 
     @Override
-    public int indexOfSegmentAt(double position) { //regarder à nouveau avec la publication piazza de Schinz
+    public int indexOfSegmentAt(double position) { //regarder à nouveau avec la publication piazza de M. Schinz
         int tempPosition = 0;
         int index = 0;
         for (Route r : segments) {

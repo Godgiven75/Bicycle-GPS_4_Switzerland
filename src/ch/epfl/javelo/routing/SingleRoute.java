@@ -150,6 +150,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
+
         RoutePoint closestPoint = NONE;
         double currentPosition = 0;
         for (Edge e : edges) {
