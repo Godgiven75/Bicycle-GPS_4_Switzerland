@@ -94,7 +94,7 @@ public class RouteComputer {
         // Si aucun chemin n'a été trouvé
         return null;
     }
-    private Deque<Edge> shortestItinerary( int startNodeId, int endNodeId, int[] predecessors) {
+    private Deque<Edge> shortestItinerary(int startNodeId, int endNodeId, int[] predecessors) {
         Deque<Edge> itinerary = new LinkedList<>();
         int toNodeId = endNodeId;
         while (toNodeId != startNodeId) {

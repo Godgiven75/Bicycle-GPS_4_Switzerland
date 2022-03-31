@@ -14,7 +14,9 @@ import java.util.random.RandomGenerator;
 
 import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
 import static ch.epfl.test.TestRandomizer.newRandom;
+import static java.lang.Double.isNaN;
 import static java.lang.Float.NaN;
+import static java.lang.Float.POSITIVE_INFINITY;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MultiRouteTest {
@@ -135,7 +137,7 @@ public class MultiRouteTest {
         }
         MultiRoute mr = new MultiRoute(segments);
         double delta = mr.length() / 1000000000;
-        System.out.println(delta);
+        System.out.println("La précision de l'égalité suivante est de l'ordre de " +  delta);
         assertEquals(mr.length(), nbEdges * edgeLength, delta);
     }
 
@@ -232,7 +234,7 @@ public class MultiRouteTest {
         PointCh p2 = new PointCh(p1.e(), p1.n() + EDGE_LENGTH);
         PointCh p3 = new PointCh( p2.e() + EDGE_LENGTH, p2.n() + EDGE_LENGTH);
         PointCh p4 = new PointCh(p3.e(), p3.n() + EDGE_LENGTH + EDGE_LENGTH);
-        PointCh p5 = new PointCh(p4.e() + EDGE_LENGTH + EDGE_LENGTH, p2.e());
+        PointCh p5 = new PointCh(p4.e() + EDGE_LENGTH + EDGE_LENGTH, p2.n());
 
         Edge e0 = new Edge(0, 1, origin, p1, p1.distanceTo(origin), Functions.constant(NaN));
         Edge e1 = new Edge(1, 2, p1, p2 , p2.distanceTo(p1), Functions.constant(NaN));
@@ -255,7 +257,135 @@ public class MultiRouteTest {
         PointCh actual2 = m1.pointAt(0);
         assertEquals(expected2, actual2);
 
-        //PointCh expected3 =
+        PointCh expected3 = p4;
+        PointCh actual3 = m1.pointAt(401 + e2.length());
+        assertEquals(expected3, actual3);
+
+        PointCh expected4 = e4.pointAt(550 - 401 - e2.length());
+        PointCh actual4 = m1.pointAt(550);
+        assertEquals(expected4, actual4);
+
+        PointCh expected5 = p5;
+        PointCh actual5 = m1.pointAt(904.243);
+        assertEquals(expected5, actual5);
+
+        PointCh expected6 = p5;
+        PointCh actual6 = m1.pointAt(POSITIVE_INFINITY);
+        assertEquals(expected6, actual6);
+    }
+
+    @Test
+    void elevationAtWorksWithMultiRoutesAndSingleRoutesInSegments() {
+        PointCh origin = new PointCh(ORIGIN_E, ORIGIN_N);
+        PointCh p1 = new PointCh(origin.e() + EDGE_LENGTH, origin.n());
+        PointCh p2 = new PointCh(p1.e(), p1.n() + EDGE_LENGTH);
+        PointCh p3 = new PointCh( p2.e() + EDGE_LENGTH, p2.n() + EDGE_LENGTH);
+        PointCh p4 = new PointCh(p3.e(), p3.n() + EDGE_LENGTH + EDGE_LENGTH);
+        PointCh p5 = new PointCh(p4.e() + EDGE_LENGTH + EDGE_LENGTH, p2.n());
+
+        List<float[]> randomSamplesList = listOfRandomFloatArrays(4);
+        float[] samples0 = randomSamplesList.get(0);
+        Edge e0 = new Edge(0, 1, origin, p1, p1.distanceTo(origin),
+                Functions.sampled((samples0) , p1.distanceTo(origin)));
+        Edge e1 = new Edge(1, 2, p1, p2 , p2.distanceTo(p1),
+                Functions.constant(NaN));
+        float[] samples2 = randomSamplesList.get(1);
+        Edge e2 = new Edge(2, 3, p2, p3, p3.distanceTo(p2),
+                Functions.sampled(samples2, p3.distanceTo(p2)));
+        float[] samples3 = randomSamplesList.get(2);
+        Edge e3 = new Edge(3, 4, p3, p4, p4.distanceTo(p3),
+                Functions.sampled(samples3, p4.distanceTo(p3)));
+        float[] samples4 = randomSamplesList.get(3);
+        Edge e4 = new Edge( 4, 5, p4, p5, p5.distanceTo(p4),
+                Functions.sampled(samples4, p5.distanceTo(p4)));
+
+        SingleRoute s0 = new SingleRoute(List.of(e0, e1));
+        SingleRoute s1 = new SingleRoute(List.of(e2, e3));
+        SingleRoute s2 = new SingleRoute(List.of(e4));
+
+        MultiRoute m0 = new MultiRoute(List.of(s0));
+        MultiRoute m1 = new MultiRoute(List.of(m0, s1, s2));
+
+
+        double actual1 = m1.elevationAt(150);
+        assertTrue(isNaN(actual1));
+
+        double expected2 = e4.elevationAt(0);
+        double actual2 = m1.elevationAt(401 + e2.length());
+        assertEquals(expected2, actual2);
+
+        double expected3 = e0.elevationAt(50);
+        double actual3 = m1.elevationAt(50);
+        assertEquals(expected3, actual3);
+
+        assertEquals(m1.elevationAt(0), m1.elevationAt(-9879));
+        assertEquals(m1.elevationAt(m1.length()), m1.elevationAt(8769876));
+
+    }
+
+    private List<float[]> listOfRandomFloatArrays(int numberOfArrays) {
+        var rng = newRandom();
+        List<float[]> l= new ArrayList<>();
+        for (int i = 0; i < numberOfArrays; i++) {
+            int arrayLength = rng.nextInt(100);
+            float[] arr = new float[arrayLength];
+            for (int j = 0; j < arr.length; j++) {
+                arr[j] = rng.nextFloat(200);
+            }
+            l.add(arr);
+        }
+        return l;
+    }
+
+    @Test
+    void nodeClosestToWorks() {
+        PointCh origin = new PointCh(ORIGIN_E, ORIGIN_N);
+        PointCh p1 = new PointCh(origin.e() + EDGE_LENGTH, origin.n());
+        PointCh p2 = new PointCh(p1.e(), p1.n() + EDGE_LENGTH);
+        PointCh p3 = new PointCh( p2.e() + EDGE_LENGTH, p2.n() + EDGE_LENGTH);
+        PointCh p4 = new PointCh(p3.e(), p3.n() + EDGE_LENGTH + EDGE_LENGTH);
+        PointCh p5 = new PointCh(p4.e() + EDGE_LENGTH + EDGE_LENGTH, p2.n());
+
+        Edge e0 = new Edge(0, 1, origin, p1, p1.distanceTo(origin), Functions.constant(NaN));
+        Edge e1 = new Edge(1, 2, p1, p2, p2.distanceTo(p1), Functions.constant(NaN));
+        Edge e2 = new Edge(2, 3, p2, p3, p3.distanceTo(p2), Functions.constant(NaN));
+        Edge e3 = new Edge(3, 4, p3, p4, p4.distanceTo(p3), Functions.constant(NaN));
+        Edge e4 = new Edge( 4, 5, p4, p5, p5.distanceTo(p4),Functions.constant(NaN));
+
+        SingleRoute s0 = new SingleRoute(List.of(e0, e1));
+        SingleRoute s1 = new SingleRoute(List.of(e2, e3));
+        SingleRoute s2 = new SingleRoute(List.of(e4));
+
+        MultiRoute m0 = new MultiRoute(List.of(s0));
+        MultiRoute m1 = new MultiRoute(List.of(m0, s1, s2));
+
+        int expected1 = 0;
+        int actual1 = m1.nodeClosestTo(-8679);
+        assertEquals(expected1, actual1);
+
+        int expected2 = 0;
+        int actual2 = m1.nodeClosestTo(0);
+        assertEquals(expected2, actual2);
+
+        int expected3  = 3;
+        int actual3 = m1.nodeClosestTo(p1.distanceTo(origin)
+                + p2.distanceTo(p1)
+                + p3.distanceTo(p2)
+        );
+        assertEquals(expected3, actual3);
+
+        int expected4 = 5;
+        int actual4 = m1.nodeClosestTo(p1.distanceTo(origin)
+                + p2.distanceTo(p1)
+                + p3.distanceTo(p2)
+                + p4.distanceTo(p3)
+                + p5.distanceTo(p4)
+        );
+        assertEquals(expected4, actual4);
+
+        int expected5 = 5;
+        int actual5 = m1.nodeClosestTo(45678);
+        assertEquals(expected5, actual5);
     }
 
 

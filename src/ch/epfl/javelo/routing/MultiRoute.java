@@ -27,7 +27,7 @@ public final class MultiRoute implements Route {
 
 
     @Override
-    public int indexOfSegmentAt(double position) {
+    public int indexOfSegmentAt(double position) { //regarder à nouveau avec la publication piazza de Schinz
         int tempPosition = 0;
         int index = 0;
         for (Route r : segments) {
@@ -60,8 +60,13 @@ public final class MultiRoute implements Route {
     @Override
     public List<PointCh> points() {
         List<PointCh> l = new ArrayList<>();
+        Route r0 = segments.get(0);
+        l.add(r0.points().get(0));
         for (Route r : segments) {
-            l.addAll(r.points());
+            List<PointCh> rPoints = r.points();
+            for (int i = 1; i < rPoints.size(); i++) {
+                l.add(rPoints.get(i));
+            }
         }
         return l;
     }
@@ -89,7 +94,7 @@ public final class MultiRoute implements Route {
     public PointCh pointAt(double position) {
         int routeIndex = findRouteIndex(position);
         Route r = segments.get(routeIndex);
-        return r.pointAt(positionOnRoute(position)); // il faut sans doute ajuster la position pour avoir la position sur s...
+        return r.pointAt(positionOnRoute(position));
     }
 
     @Override
