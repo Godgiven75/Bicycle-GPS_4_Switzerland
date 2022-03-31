@@ -45,17 +45,15 @@ public class RouteComputer {
         double[] distanceTo = new double[nbNodes];
         int[] predecessors = new int[nbNodes];
         PriorityQueue<WeightedNode> exploring = new PriorityQueue<>();
-        WeightedNode closestNode;
 
         Arrays.fill(distanceTo, Float.POSITIVE_INFINITY);
         Arrays.fill(predecessors, 0);
         distanceTo[startNodeId] = 0f;
         exploring.add(new WeightedNode(startNodeId, 0));
 
-
         while (!exploring.isEmpty()) {
 
-            closestNode = exploring.remove();
+            WeightedNode closestNode = exploring.remove();
             int closestNodeId = closestNode.nodeId();
 
             // Si le noeud a déjà été exploré, on l'ignore
