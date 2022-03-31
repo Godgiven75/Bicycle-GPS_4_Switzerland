@@ -43,7 +43,7 @@ public class RouteComputerTest {
             var rng = newRandom();
             int nodeIndex = rng.nextInt(3714919);
             assertThrows(IllegalArgumentException.class , () -> {
-                rc.bestRouteBetween( nodeIndex, nodeIndex);
+                rc.bestRouteBetween(nodeIndex, nodeIndex);
             });
         }
 
