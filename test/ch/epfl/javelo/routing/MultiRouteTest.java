@@ -165,7 +165,7 @@ public class MultiRouteTest {
     }
 
     PointCh randomPointCh() {
-        RandomGenerator rng = new Random();
+        var rng = new Random();
         return new PointCh(rng.nextDouble(SwissBounds.MIN_E, SwissBounds.MAX_E), rng.nextDouble(SwissBounds.MIN_N, SwissBounds.MAX_N));
     }
 

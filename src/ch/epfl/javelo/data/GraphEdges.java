@@ -82,7 +82,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le tableau des échantillons du profil de l'arête d'identité donnée, qui est vide si l'arête ne possède
      */
     public float[] profileSamples(int edgeId) {
-        if(!hasProfile(edgeId)) return new float[]{};
+        if (!hasProfile(edgeId))
+            return new float[]{};
 
         int profileTypeValue = Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
         int firstProfileId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 29);
@@ -90,7 +91,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         profileTypes profileType = allProfileTypes.get(profileTypeValue);
 
 
-        int lengthToQ28_4 = (edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
+        int lengthToQ28_4 = Short.toUnsignedInt(edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
         int twoToQ28_4 = Q28_4.ofInt(2);
         int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
 
