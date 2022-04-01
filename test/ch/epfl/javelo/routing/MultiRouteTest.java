@@ -195,14 +195,6 @@ public class MultiRouteTest {
     }
 
     @Test
-    void pointWorksOnMultipleIterations() {
-        System.out.println("Ce test peut prendre quelques secondes");
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            //assertTrue(pointsWorks());
-        }
-    }
-
-    @Test
     void pointAtWorksWithOnlySingleRoutesInSegments() {
         PointCh origin = new PointCh(ORIGIN_E, ORIGIN_N);
         PointCh p1 = new PointCh(origin.e() + EDGE_LENGTH, origin.n());
@@ -389,8 +381,5 @@ public class MultiRouteTest {
         int actual5 = m1.nodeClosestTo(45678);
         assertEquals(expected5, actual5);
     }
-
-
-
 
 }
