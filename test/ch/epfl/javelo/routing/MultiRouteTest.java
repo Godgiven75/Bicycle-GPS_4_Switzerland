@@ -382,4 +382,40 @@ public class MultiRouteTest {
         assertEquals(expected5, actual5);
     }
 
+    @Test
+    void pointClosestToWorks() {
+        PointCh origin = new PointCh(ORIGIN_E, ORIGIN_N);
+        PointCh p1 = new PointCh(origin.e() + EDGE_LENGTH, origin.n());
+        PointCh p2 = new PointCh(p1.e(), p1.n() + EDGE_LENGTH);
+        PointCh p3 = new PointCh( p2.e() + EDGE_LENGTH, p2.n() + EDGE_LENGTH);
+        PointCh p4 = new PointCh(p3.e(), p3.n() + EDGE_LENGTH + EDGE_LENGTH);
+        PointCh p5 = new PointCh(p4.e() + EDGE_LENGTH + EDGE_LENGTH, p2.n());
+
+        Edge e0 = new Edge(0, 1, origin, p1, p1.distanceTo(origin), Functions.constant(NaN));
+        Edge e1 = new Edge(1, 2, p1, p2, p2.distanceTo(p1), Functions.constant(NaN));
+        Edge e2 = new Edge(2, 3, p2, p3, p3.distanceTo(p2), Functions.constant(NaN));
+        Edge e3 = new Edge(3, 4, p3, p4, p4.distanceTo(p3), Functions.constant(NaN));
+        Edge e4 = new Edge(4,5, p4, p5, p5.distanceTo(p4),Functions.constant(NaN));
+
+        SingleRoute s0 = new SingleRoute(List.of(e0, e1));
+        SingleRoute s1 = new SingleRoute(List.of(e2, e3));
+        SingleRoute s2 = new SingleRoute(List.of(e4));
+
+        MultiRoute m0 = new MultiRoute(List.of(s0, s1));
+        MultiRoute m1 = new MultiRoute(List.of(s2));
+        MultiRoute m2 = new MultiRoute(List.of(m0, m1));
+
+        PointCh expected1 = origin;
+        PointCh actual1 = m2.pointClosestTo(new PointCh(origin.e() - 100, origin.n() - 100)).point();
+        assertEquals(expected1, actual1);
+
+        PointCh expected2 = p1;
+        PointCh actual2 = m2.pointClosestTo(new PointCh(p1.e(), SwissBounds.MIN_N)).point();
+        assertEquals(expected2, actual2);
+
+        PointCh expected3 = e3.pointAt(e3.length());
+        PointCh actual3 = m2.pointClosestTo(new PointCh(p3.e(), SwissBounds.MAX_N)).point();
+        assertEquals(expected3, actual3);
+    }
+
 }

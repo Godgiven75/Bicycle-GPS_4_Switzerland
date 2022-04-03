@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
 
 import java.util.*;
 
@@ -33,7 +34,8 @@ public class RouteComputer {
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
-        record WeightedNode(int nodeId, float distance)
+
+         /*record WeightedNode(int nodeId, float distance)
                 implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
@@ -92,7 +94,8 @@ public class RouteComputer {
             distanceTo[closestNodeId] = Float.NEGATIVE_INFINITY;
         }
         // Si aucun chemin n'a été trouvé
-        return null;
+        return null;*/
+        return bestRouteBetweenAStar(startNodeId, endNodeId);
     }
     private Deque<Edge> shortestItinerary(int startNodeId, int endNodeId, int[] predecessors) {
         Deque<Edge> itinerary = new LinkedList<>();
@@ -108,5 +111,56 @@ public class RouteComputer {
             toNodeId = fromNodeId;
         }
         return itinerary;
+    }
+
+    private Route bestRouteBetweenAStar(int startNodeId, int endNodeId) {
+        //Duplication (temporaire) de code
+        record WeightedNode(int nodeId, float distance)
+                implements Comparable<WeightedNode> {
+            @Override
+            public int compareTo(WeightedNode that) {
+                return Float.compare(this.distance, that.distance);
+            }
+        }
+
+        float[] distance = new float[graph.nodeCount()];
+        int[] predecessors = new int[distance.length];
+        Arrays.fill(distance, Float.POSITIVE_INFINITY);
+        Arrays.fill(predecessors, 0 );
+        PointCh endPoint = graph.nodePoint(endNodeId);
+        distance[startNodeId] =  (float) endPoint.distanceTo(graph.nodePoint(startNodeId));
+
+        Queue<WeightedNode> discoveredNodes = new PriorityQueue<>();
+        discoveredNodes.add(new WeightedNode(startNodeId, distance[startNodeId]));
+
+
+        while (!discoveredNodes.isEmpty()) {
+            WeightedNode node = discoveredNodes.remove();
+            int nodeId = node.nodeId();
+            if (distance[nodeId] == Float.NEGATIVE_INFINITY)
+                continue;
+
+            if (nodeId == endNodeId)
+                return new SingleRoute(new ArrayList<>(shortestItinerary
+                                (startNodeId, endNodeId, predecessors)
+                ));
+
+            for (int i = 0; i < graph.nodeOutDegree(nodeId); i++) {
+                int edgeId = graph.nodeOutEdgeId(nodeId, i);
+                int edgeTargetNodeId = graph.edgeTargetNodeId(edgeId);
+
+                double costFactor = costFunction.costFactor(nodeId, edgeId);
+                double distanceToEndPoint = endPoint.distanceTo(graph.nodePoint(edgeTargetNodeId));
+                double distanceToTargetNodeId = Math.fma(graph.edgeLength(edgeId), costFactor, distance[nodeId]);
+
+                if (distanceToTargetNodeId < distance[edgeTargetNodeId]) {
+                    predecessors[edgeTargetNodeId] = (node.nodeId() << 4) | i;
+                    distance[edgeTargetNodeId] = (float) distanceToTargetNodeId;
+                    discoveredNodes.add(new WeightedNode(edgeTargetNodeId, (float) (distanceToTargetNodeId +  distanceToEndPoint)));
+                }
+            }
+            distance[node.nodeId] = Float.NEGATIVE_INFINITY;
+        }
+        return null;
     }
 }
