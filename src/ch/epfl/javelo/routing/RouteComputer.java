@@ -124,9 +124,9 @@ public class RouteComputer {
         }
 
         float[] distance = new float[graph.nodeCount()];
-        int[] predecessors = new int[distance.length];
+        int[] predecessorsEdgeAndNode = new int[distance.length];
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(predecessors, 0 );
+        Arrays.fill(predecessorsEdgeAndNode, 0 );
         PointCh endPoint = graph.nodePoint(endNodeId);
         distance[startNodeId] =  (float) endPoint.distanceTo(graph.nodePoint(startNodeId));
 
@@ -142,7 +142,7 @@ public class RouteComputer {
 
             if (nodeId == endNodeId)
                 return new SingleRoute(new ArrayList<>(shortestItinerary
-                                (startNodeId, endNodeId, predecessors)
+                                (startNodeId, endNodeId, predecessorsEdgeAndNode)
                 ));
 
             for (int i = 0; i < graph.nodeOutDegree(nodeId); i++) {
@@ -154,7 +154,7 @@ public class RouteComputer {
                 double distanceToTargetNodeId = Math.fma(graph.edgeLength(edgeId), costFactor, distance[nodeId]);
 
                 if (distanceToTargetNodeId < distance[edgeTargetNodeId]) {
-                    predecessors[edgeTargetNodeId] = (node.nodeId() << 4) | i;
+                    predecessorsEdgeAndNode[edgeTargetNodeId] = (node.nodeId() << 4) | i;
                     distance[edgeTargetNodeId] = (float) distanceToTargetNodeId;
                     discoveredNodes.add(new WeightedNode(edgeTargetNodeId, (float) (distanceToTargetNodeId +  distanceToEndPoint)));
                 }
