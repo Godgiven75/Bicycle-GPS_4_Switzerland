@@ -126,7 +126,6 @@ public class RouteComputer {
         float[] distance = new float[graph.nodeCount()];
         int[] predecessorsEdgeAndNode = new int[distance.length];
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(predecessorsEdgeAndNode, 0 );
         PointCh endPoint = graph.nodePoint(endNodeId);
         distance[startNodeId] =  (float) endPoint.distanceTo(graph.nodePoint(startNodeId));
 
