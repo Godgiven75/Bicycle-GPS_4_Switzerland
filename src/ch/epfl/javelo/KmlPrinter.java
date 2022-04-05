@@ -8,8 +8,11 @@ import java.io.PrintWriter;
 import java.util.Locale;
 
 /**
- * Permet de décrire des données géographiques puis de visualiser le fichier KML sur une carte
+ * Permet de décrire des données géographiques puis de visualiser le fichier KML
+ * sur une carte
  * Peut se visualiser sur "map.geo.admin.ch"
+ *
+ * @author M. Schinz
  */
 public final class KmlPrinter {
     private static final String KML_HEADER =
@@ -41,7 +44,8 @@ public final class KmlPrinter {
                     "</kml>";
 
     /**
-     * Prend un nom de fichier et un itinéraire et écrit la description de l'itinéraire au format KML dans le fichier
+     * Prend un nom de fichier et un itinéraire et écrit la description de
+     * l'itinéraire au format KML dans le fichier
      * @param fileName
      * @param route
      * @throws IOException

@@ -418,4 +418,8 @@ public class MultiRouteTest {
         assertEquals(expected3, actual3);
     }
 
+    @Test
+    void pointClosesToWorks() {
+
+    }
 }

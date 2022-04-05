@@ -5,6 +5,9 @@ import java.util.function.DoubleUnaryOperator;
 /**
  * Classe publique finale et non instanciable contenant des méthodes permettant de créer des objets représentants des
  * fonctions mathématiques R -> R (c-à-d des réels vers les réels).
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public final class Functions {
     private Functions() {}

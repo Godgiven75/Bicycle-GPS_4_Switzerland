@@ -1,13 +1,19 @@
 package ch.epfl.javelo;
 
 /**
- * Classe utilitaire, finale et non-instanciable, offrant une méthode de validation d'argument
+ * Classe utilitaire, finale et non-instanciable, offrant une méthode de
+ * validation d'argument.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public final class Preconditions {
     private Preconditions() {}
 
     /**
-     * Lance une IllegalArgumentException si l'argument est faux, et ne fait rien sinon
+     * Lance une IllegalArgumentException si l'argument est faux, et ne fait
+     * rien sinon.
+     *
      * @param shouldBeTrue argument
      */
     public static void checkArgument(boolean shouldBeTrue) {

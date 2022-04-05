@@ -3,7 +3,11 @@ package ch.epfl.javelo;
 import static java.lang.Math.fma;
 
 /**
- * Classe finale et non-instanciable permettant d'effectuer des opérations mathématiques
+ * Classe finale et non-instanciable permettant d'effectuer des opérations
+ * mathématiques
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public final class Math2 {
 

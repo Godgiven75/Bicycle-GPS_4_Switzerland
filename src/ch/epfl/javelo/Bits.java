@@ -1,32 +1,43 @@
 package ch.epfl.javelo;
 
 /**
- *  Classe non-instanciable et finale permettant d'extraire une séquence de bit d'un vecteur de 32 bits
+ *  Classe non-instanciable et finale permettant d'extraire une séquence de bit
+ *  d'un vecteur de 32 bits.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public final class Bits {
     private Bits() {}
 
     /**
-     * Retourne la séquence de bits du vecteur value commençant au bit d'index start (0 <= start <= 30) de longueur length, extraite de manière signée
-     * @param value vecteur de 32 bits
-     * @param start index de départ
-     * @param length longeur de la séquence
-     * @return la séquence de bits du vecteur value commençant au bit d'index start de longueur length, extraite de manière signée
+     * Retourne la séquence de bits du vecteur value commençant au bit d'index
+     * start (0 <= start <= 30) de longueur length, extraite de manière signée
+     *
+     * @param value le vecteur de 32 bits
+     * @param start l'index de départ
+     * @param length la longeur de la séquence
+     *
+     * @return la séquence de bits du vecteur value commençant au bit d'index
+     * start de longueur length, extraite de manière signée
      */
     public static int extractSigned (int value, int start, int length) {
         Preconditions.checkArgument(isBitRangeValid(value, start, length));
         int rangeSize = start + length;
         int leftShift = value << Integer.SIZE - rangeSize;
         return leftShift >> Integer.SIZE - length;
-
     }
 
     /**
-     * Retourne la séquence de bits du vecteur value commençant au bit d'index start (0 <= start <= 30) de longueur length, extraite de manière non-signée
-     * @param value vecteur de 32 bits
-     * @param start index de départ
-     * @param length longeur de la séquence
-     * @return la séquence de bits du vecteur value commençant au bit d'index start de longueur length, extraite de manière non-signée
+     * Retourne la séquence de bits du vecteur value commençant au bit d'index
+     * start (0 <= start <= 30) de longueur length, extraite de manière non-signée.
+     *
+     * @param value le vecteur de 32 bits
+     * @param start l'index de départ
+     * @param length la longeur de la séquence
+     *
+     * @return la séquence de bits du vecteur value commençant au bit d'index
+     * start de longueur length, extraite de manière non-signée
      */
     public static int extractUnsigned(int value, int start, int length) {
         Preconditions.checkArgument(isBitRangeValid(value, start, length));
@@ -36,10 +47,9 @@ public final class Bits {
         return leftShift >>> Integer.SIZE - length;
     }
 
+
     private static boolean isBitRangeValid(int value, int start, int length) {
         int rangeSize = start + length;
         return 0 <= start && length >= 1 && rangeSize <= Integer.SIZE;
     }
-
-
 }
