@@ -3,24 +3,32 @@ import ch.epfl.javelo.Preconditions;
 import java.util.StringJoiner;
 
 /**
- * Enregistrement représentant un ensemble d'attributs OpenStreetMap. Possède un unique attribut : le long bits,
- * qui représente le contenu de l'ensemble au moyen d'un bit par valeur possible; càd que le bit d'index b de cette
- * valeur est 1 si et seulement si l'attribut b est contenu dans l'ensemble
+ * Représente un ensemble d'attributs OpenStreetMap. Possède un unique attribut :
+ * le long bits, qui représente le contenu de l'ensemble au moyen d'un bit par
+ * valeur possible; càd que le bit d'index b de cette valeur est 1 ssi l'attribut
+ * b est contenu dans l'ensemble.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record AttributeSet(long bits) {
 
     /**
-     * Constructeur compact lève une exception si la valeur passée au constructeur contient un bit à 1 qui ne correspond
-     * à aucun attribut valide
-     * @param bits bits
+     * Constructeur compact lève une exception si la valeur passée au
+     * constructeur contient un bit à 1 qui ne correspond
+     * à aucun attribut valide.
      *
+     * @param bits le contenu de l'ensemble
+     * @throws IllegalArgumentException si la valeur passée contient un bit à 1
+     * ne correspondant à aucun attribut valide
      */
     public AttributeSet {
         Preconditions.checkArgument((bits >>> Attribute.values().length) == 0L);
     }
 
     /**
-     * Retourne un ensemble contenant uniquement les attributs passés en argument
+     * Retourne un ensemble contenant uniquement les attributs passés en argument.
+     *
      * @param attributes ensemble d'attributs
      * @return un nouvel AttributeSet
      */
@@ -34,31 +42,37 @@ public record AttributeSet(long bits) {
     }
 
     /**
-     * Retourne vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
+     * Retourne vrai si et seulement si l'ensemble récepteur (this) contient
+     * l'attribut donné.
+     *
      * @param attribute attribut
-     * @return vrai si et seulement si l'ensemble récepteur (this) contient l'attribut donné
+     * @return vrai si et seulement si l'ensemble récepteur (this) contient
+     * l'attribut donné
      */
     public boolean contains(Attribute attribute) {
         return ( ( this.bits >>> attribute.ordinal() & 1 ) == 1);
     }
 
     /**
-     * Retourne vrai si et seulement si l'intersection de l'ensemble récepteur (this) avec celui passé en argument (that)
-     * n'est pas vide
-     * @param that ensemble d'attributs
-     * @return vrai si et seulement si l'intersection de l'ensemble récepteur (this) avec celui passé en argument (that)
-     * n'est pas vide
+     * Retourne vrai si et seulement si l'intersection de l'ensemble récepteur
+     * (this) avec celui passé en argument (that) n'est pas vide.
+     *
+     * @param that un ensemble d'attributs
+     * @return vrai si et seulement si l'intersection de l'ensemble récepteur
+     * (this) avec celui passé en argument (that) n'est pas vide
      */
     public boolean intersects(AttributeSet that) {
         return (this.bits & that.bits) != 0L;
     }
 
     /**
-     * Redéfinition de toString() afin de retourner une chaîne composée de la représentation textuelle des éléments
-     * de l'ensemble entourés d'accolades et séparés par des virgules : les éléments apparaissent dans l'ordre dans
-     * lequel ils sont déclarés dans le type énuméré Attribute
-     * @return une chaîne composée de la représentation textuelle des éléments de l'ensemble entourés d'accolades ({})
-     * et séparés par des virgules
+     * Redéfinition de toString() afin de retourner une chaîne composée de la
+     * représentation textuelle des élémentsde l'ensemble entourés d'accolades
+     * et séparés par des virgules : les éléments apparaissent dans l'ordre dans
+     * lequel ils sont déclarés dans le type énuméré Attribute.
+     *
+     * @return une chaîne composée de la représentation textuelle des éléments
+     * de l'ensemble entourés d'accolades ({}) et séparés par des virgules.
      */
     @Override
     public String toString() {
@@ -70,5 +84,6 @@ public record AttributeSet(long bits) {
         }
         return j.toString();
     }
+
 }
 

@@ -3,7 +3,10 @@ package ch.epfl.javelo.data;
 import java.util.List;
 
 /**
- * Type énuméré représentant les différents attributs OpenStreetMap attachés aux éléments (noeuds, voies et relations)
+ * Type énuméré représentant les différents attributs OpenStreetMap attachés aux
+ * éléments (noeuds, voies et relations).
+ *
+ * @author M. Schinz
  */
 public enum Attribute {
     // See https://wiki.openstreetmap.org/wiki/Map_features

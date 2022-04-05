@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Représente le graphe JaVelo
+ * Représente le graphe JaVelo.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public class Graph {
     private final GraphNodes nodes;
@@ -21,11 +24,12 @@ public class Graph {
     private final List<AttributeSet> attributeSets;
 
     /**
-     * Retourne le graphe avec les noeuds, secteurs, arêtes et ensembles d'attributs donnés
-     * @param nodes noeuds
-     * @param sectors secteurs
-     * @param edges arêtes
-     * @param attributeSets ensembles d'attributs donnés
+     * Construit le graphe avec les noeuds, secteurs, arêtes et ensembles
+     * d'attributs donnés.
+     * @param nodes les noeuds du graphe
+     * @param sectors les secteurs du graphe
+     * @param edges les arêtes du graphe
+     * @param attributeSets un ensembles d'attributs donnés
      */
     public Graph (GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
@@ -35,13 +39,15 @@ public class Graph {
     }
 
     /**
-     * Retourne le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin d'accès est
-     * basePath, ou lève IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendu n'existe pas.
-     * @param basePath
+     * Retourne le graphe JaVelo obtenu à partir des fichiers se trouvant dans
+     * le répertoire dont le chemin d'accès est basePath, ou lève IOException en
+     * cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendu n'existe pas.
+     *
+     * @param basePath le répertoire du chemin d'accès
+     * @throws IOException si le fichier attendu n'existe pas
      * @return retourne le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin
      * d'accès est basePath, ou lève IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendu
      * n'existe pas.
-     * @throws IOException
      */
     public static Graph loadFrom(Path basePath) throws IOException {
 
