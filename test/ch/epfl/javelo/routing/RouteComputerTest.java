@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RouteComputerTest {
 
     @Test
-    void bestRouteBetweenWorksWithDijkstraOnLausanne() throws IOException {
+    void bestRouteBetweenWorksOnLausanne() throws IOException {
         Graph g = Graph.loadFrom(Path.of("lausanne"));
         CostFunction cf = new CityBikeCF(g);
         RouteComputer rc = new RouteComputer(g, cf);
@@ -24,7 +24,7 @@ public class RouteComputerTest {
         assertEquals(expected, actual);
     }
     @Test
-    void bestRouteBetweenWorksWithDisjkstraOnCH_West() throws IOException {
+    void bestRouteBetweenWorksOnCH_West() throws IOException {
         Graph g = Graph.loadFrom(Path.of("ch_west"));
         CostFunction cf = new CityBikeCF(g);
         RouteComputer rc = new RouteComputer(g, cf);

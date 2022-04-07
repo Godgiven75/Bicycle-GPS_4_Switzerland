@@ -11,7 +11,9 @@ import static java.lang.Float.isNaN;
  * Représente un calculateur de profil en long (càd calculer le profil en long d'un itinéraire donné)
  */
 public final class ElevationProfileComputer { // modifier la dernière boucle pour ne pas itérer sur tout le tableau
-
+    /**
+     * Personne ne doit être en mesure d'instancier cette classe
+     */
     private ElevationProfileComputer() {}
 
     /**
@@ -32,7 +34,7 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
         float[] samples = new float[numberOfSamples];
         double position = 0;
         for (int i = 0; i < samples.length; ++i) {
-            samples[i] = (float) route.elevationAt(position);// Interpolation d'arêtes avec un profil déjà faite dans l'appel...
+            samples[i] = (float) route.elevationAt(position);
             position += stepLength;
         }
 
@@ -47,6 +49,8 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
                 break;
             }
         }
+
+        //Si aucune des arêtes ne contient de profil, la méthode retourne un tableau vide
         if (isOnlyNan) {
             Arrays.fill(samples, 0, samples.length , 0f);
             return new ElevationProfile(itineraryLength, samples);
@@ -62,18 +66,13 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
 
         // Parcours du tableau pour trouver les trous intermédiaires et les remplir par interpolation
         for (int i = firstValidSampleIndex; i < samples.length; ++i) {
-
             if (isNaN(samples[i])) {
-
                 double y0 = samples[i - 1];
                 int j = i + 1;
-
-                while (isNaN(samples[j])) {
+                while (isNaN(samples[j]))
                     ++j;
-                }
                 double y1 = samples[j];
-
-                for(int k = i ; k < j; ++k) {
+                for (int k = i ; k < j; ++k) {
                     double x = (double) (k - i + 1) / (double) (j - i + 1);
                     samples[k] = (float) Math2.interpolate(y0, y1 , x);
                 }
@@ -82,5 +81,4 @@ public final class ElevationProfileComputer { // modifier la dernière boucle po
         }
         return new ElevationProfile(itineraryLength, samples);
     }
-
 }
