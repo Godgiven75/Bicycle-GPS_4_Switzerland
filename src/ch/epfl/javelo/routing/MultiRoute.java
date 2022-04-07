@@ -1,9 +1,11 @@
 package ch.epfl.javelo.routing;
 
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +32,14 @@ public final class MultiRoute implements Route {
     public int indexOfSegmentAt(double position) { //regarder à nouveau avec la publication piazza de M. Schinz
         int tempPosition = 0;
         int index = 0;
+        double positionOnItinerary = Math2.clamp(0, position, length());
         for (Route r : segments) {
             tempPosition += r.length();
-            if (position <= tempPosition)
-                return index + r.indexOfSegmentAt(position);
-            index += 1 + r.indexOfSegmentAt(position);
+            if (positionOnItinerary <= tempPosition)
+                return index + r.indexOfSegmentAt(positionOnItinerary);
+            index += 1 + r.indexOfSegmentAt(position - tempPosition);
         }
-        return indexOfSegmentAt(tempPosition);
+        return segments.size() - 1;
     }
 
     @Override
@@ -70,6 +73,7 @@ public final class MultiRoute implements Route {
         }
         return l;
     }
+
     private int findRouteIndex(double position) {
         int tempPosition = 0;
         int index = 0;
@@ -114,9 +118,12 @@ public final class MultiRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint closestPoint = NONE;
+        double tempPosition = 0;
         for (Route r : segments) {
             RoutePoint closestPointOnRoute = r.pointClosestTo(point);
-            closestPoint = closestPoint.min(closestPointOnRoute);
+            PointCh p = closestPointOnRoute.point();
+            closestPoint = closestPoint.min(closestPointOnRoute.point(), closestPointOnRoute.position() + tempPosition, p.distanceTo(point));
+            tempPosition += r.length();
         }
         return closestPoint;
     }

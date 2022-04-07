@@ -35,7 +35,7 @@ public final class SingleRoute implements Route {
         int nbEdges = edges.size();
         double[] nodePositions = new double[nbEdges + 1];
         int nodeId = 0;
-        for(Edge e : edges) {
+        for (Edge e : edges) {
             nodePositions[++nodeId] = e.length() + nodePositions[nodeId - 1];
         }
         return nodePositions;
@@ -141,6 +141,8 @@ public final class SingleRoute implements Route {
         int toNodeId = e.toNodeId();
         double mean = (nodePositions[actualIndex] + nodePositions[actualIndex + 1]) / 2.0;
         return position <= mean ? fromNodeId : toNodeId;
+
+
     }
 
     /**
@@ -150,11 +152,11 @@ public final class SingleRoute implements Route {
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-
         RoutePoint closestPoint = NONE;
         double currentPosition = 0;
         for (Edge e : edges) {
             double closestPosition = e.positionClosestTo(point);
+            //On clamp pour s'assurer que l'on est bien sur l'arête, et pas sur sa projection à l'infini
             double closestPositionOnEdge = Math2.clamp(0.0, closestPosition, e.length());
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
             closestPoint = closestPoint.min(closestPointOnEdge, currentPosition + closestPositionOnEdge, point.distanceTo(closestPointOnEdge));
@@ -162,5 +164,4 @@ public final class SingleRoute implements Route {
         }
         return closestPoint;
     }
-
 }

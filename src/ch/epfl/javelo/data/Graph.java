@@ -83,7 +83,7 @@ public class Graph {
         long[] attributeSetsArray =  new long[attributes.capacity()];
         attributes.get(attributeSetsArray);
 
-        for(long l : attributeSetsArray) {
+        for (long l : attributeSetsArray) {
             attributeSets.add(new AttributeSet(l));
         }
 
