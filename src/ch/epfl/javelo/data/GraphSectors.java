@@ -27,6 +27,12 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final int OFFSET_SECTOR = Integer.BYTES + Short.BYTES;
 
     /**
+     * Représente un secteur par l'identité du premier noeud du secteur et
+     * l'identité du noeud situé juste après le dernier noeud du secteur.
+     */
+    public record Sector(int startNodeId, int endNodeId) {}
+
+    /**
      * Retourne la liste de tous les secteurs ayant une intersection avec le carré
      * centré au point donné et de côté égal au double de la distance donnée.
      *
@@ -69,11 +75,4 @@ public record GraphSectors(ByteBuffer buffer) {
 
         return inArea;
     }
-
-    /**
-     * Représente un secteur par l'identité du premier noeud du secteur et
-     * l'identité du noeud situé juste après le dernier noeud du secteur.
-     */
-    public record Sector(int startNodeId, int endNodeId) {}
-
 }
