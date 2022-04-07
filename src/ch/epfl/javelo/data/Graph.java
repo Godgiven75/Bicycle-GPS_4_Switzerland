@@ -26,6 +26,7 @@ public class Graph {
     /**
      * Construit le graphe avec les noeuds, secteurs, arêtes et ensembles
      * d'attributs donnés.
+     *
      * @param nodes les noeuds du graphe
      * @param sectors les secteurs du graphe
      * @param edges les arêtes du graphe

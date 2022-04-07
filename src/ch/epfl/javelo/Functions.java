@@ -14,19 +14,25 @@ public final class Functions {
 
     /**
      * Retourne une fonction constante, dont la valeur est toujours y
+     *
      * @param y valeur (double) de la fonction
-     * @return une fonctions constante, dont la valeur est toujotus y
+     *
+     * @return une fonction constante, dont la valeur est toujours y
      */
     public static DoubleUnaryOperator constant(double y ) {
         return new Constant(y);
     }
 
     /**
-     * Retourne une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés régulièrement
-     * sur l'intervalle allant de 0 à xMax
+     * Retourne une fonction obtenue par interpolation linéaire entre les
+     * échantillons samples, espacés régulièrement sur l'intervalle allant
+     * de 0 à xMax.
+     *
      * @param samples tableau d'échantillons
      * @param xMax abscisse maximale
-     * @return une fonction obtenue par interpolation linéaire entre les échantillons samples, espacés régulièrement
+     *
+     * @return une fonction obtenue par interpolation linéaire entre les
+     * échantillons samples, espacés régulièrement
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
         Preconditions.checkArgument(samples.length >= 2 && xMax > 0);

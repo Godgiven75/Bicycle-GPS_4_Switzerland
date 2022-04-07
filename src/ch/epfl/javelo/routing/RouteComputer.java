@@ -9,11 +9,23 @@ import java.util.*;
 
 import static ch.epfl.javelo.routing.Edge.of;
 
+/**
+ * Représente un planificateur d'itinéraire.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ */
 public class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
 
-
+    /**
+     * Construit un planificateur d'itinéraire pour le graphe et la fonction
+     * de coût donnés.
+     *
+     * @param graph le graphe
+     * @param costFunction la fonction de coût
+     */
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
         this.costFunction = costFunction;
@@ -22,15 +34,16 @@ public class RouteComputer {
     /**
      * Retourne l'itinéraire de coût total minimal allant du noeud d'identité
      * startNodeId au noeud d'identité endNodeId dans le graphe passé au
-     * constructeur, ou null si aucun itinéraire n'existe. Si le noeud de départ
-     * et d'arrivée sont identiques, lève IllegalArgumentException
+     * constructeur, ou null si aucun itinéraire n'existe.
      *
      * @param startNodeId noeud de départ
      * @param endNodeId noeud d'arrivée
+     * @throws IllegalArgumentException si le noeud de départ et d'arrivée sont
+     * identiques
+     *
      * @return l'itinéraire de coût total minimal allant du noeud d'identité
      * startNodeId au noeud d'identité endNodeId dans le graphe passé au
-     * constructeur, ou null si aucun itinéraire n'existe. Si le noeud de départ
-     * et d'arrivée sont identiques, lève IllegalArgumentException
+     * constructeur, ou null si aucun itinéraire n'existe
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
@@ -88,6 +101,7 @@ public class RouteComputer {
         return null;
     }
 
+    // Reconstitue l'itinéraire à partir du tableau de prédecesseurs
     private List<Edge> shortestItinerary(int startNodeId, int endNodeId, int[] predecessors) {
         Deque<Edge> itinerary =  new ArrayDeque<>();
         int toNodeId = endNodeId;
