@@ -5,9 +5,8 @@ import ch.epfl.javelo.Preconditions;
 /**
  * Représente un point dans le système Web Mercator.
  *
- * Ses attributs sont :
- * double x : la coordonnée x du point
- * double y : la coordonnée y du point
+ * @param x la coordonnée x du point
+ * @param y la coordonnée y du point
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)

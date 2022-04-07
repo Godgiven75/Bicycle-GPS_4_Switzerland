@@ -13,14 +13,20 @@ import static ch.epfl.javelo.routing.RoutePoint.NONE;
 
 
 /**
- * Représente un itinéraire multiple, c.-à-d. composé d'une séquence d'itinéraires contigus
+ * Représente un itinéraire multiple, c.-à-d. composé d'une séquence
+ * d'itinéraires contigus.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public final class MultiRoute implements Route {
     private final List<Route> segments;
 
     /**
-     * Construit un itinéraire multiple composé des segments donnés, ou lève IllegalArgumentException si la liste des segments est vide
-     * @param segments
+     * Construit un itinéraire multiple composé des segments donnés.
+     *
+     * @param segments les segments de l'itinéraire
+     * @throws IllegalArgumentException si la liste des segments est vide
      */
     public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!segments.isEmpty());
@@ -29,7 +35,7 @@ public final class MultiRoute implements Route {
 
 
     @Override
-    public int indexOfSegmentAt(double position) { //regarder à nouveau avec la publication piazza de M. Schinz
+    public int indexOfSegmentAt(double position) {
         int tempPosition = 0;
         int index = 0;
         double positionOnItinerary = Math2.clamp(0, position, length());
@@ -94,6 +100,7 @@ public final class MultiRoute implements Route {
         }
         return position - lengthOfPreviousRoutes;
     }
+
     @Override
     public PointCh pointAt(double position) {
         int routeIndex = findRouteIndex(position);

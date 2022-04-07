@@ -1,17 +1,24 @@
 package ch.epfl.javelo.routing;
 
 /**
- * Représente une fonction de coût
+ * Représente une fonction de coût.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public interface CostFunction {
 
     /**
-     * Retourne le facteur par lequel la longueur de l'arête d'identité edgeId, partant du noeud d'identité nodeId, doit
-     * être multipliée; ce facteur doit impérativement être supérieur ou égal à 1
+     * Retourne le facteur par lequel la longueur de l'arête d'identité edgeId,
+     * partant du noeud d'identité nodeId, doit être multipliée; ce facteur doit
+     * impérativement être supérieur ou égal à 1.
+     *
      * @param nodeId l'identité du noeud
      * @param edgeId l'identité de l'arête
-     * @return le facteur par lequel la longueur de l'arête d'identité edgeId, partant du noeud d'identité nodeId, doit
-     * être multipliée; ce facteur doit impérativement être supérieur ou égal à 1
+     *
+     * @return le facteur par lequel la longueur de l'arête d'identité edgeId,
+     * partant du noeud d'identité nodeId, doit être multipliée; ce facteur doit
+     * impérativement être supérieur ou égal à 1
      */
     double costFactor(int nodeId, int edgeId);
 

@@ -7,16 +7,23 @@ import java.util.DoubleSummaryStatistics;
 
 /**
  * Représente le profil en long d'un itinéraire simple ou multiple
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public class ElevationProfile {
      final double length;
      final float[] elevationSamples;
 
     /**
-     * Construit le profil en long d'un itinéraire de longueur length (en mètres) et dont les échantillons d'altitude,
-     * répartis uniformément le long de l'itinéraire, sont contenus dans elevationSamples
-     * @param length
-     * @param elevationSamples
+     * Construit le profil en long d'un itinéraire de longueur length (en mètres)
+     * et dont les échantillons d'altitude, répartis uniformément le long de
+     * l'itinéraire, sont contenus dans elevationSamples.
+     *
+     * @param length la longueur de l'itinéraire, en mètres
+     * @param elevationSamples les échantillons d'altitude
+     * @throws IllegalArgumentException si la longueur de l'itinéraire est négative
+     * ou si les échantillons ne sont pas au moins deux.
      */
     public ElevationProfile(double length, float[] elevationSamples) {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
@@ -25,7 +32,8 @@ public class ElevationProfile {
     }
 
     /**
-     * Retourne la longueur du profil, en mètres
+     * Retourne la longueur du profil, en mètres.
+     *
      * @return la longueur du profil, en mètres
      */
     public double length() {
@@ -42,15 +50,17 @@ public class ElevationProfile {
     }
 
     /**
-     * Retourne l'altitude minimum du profil, en mètres
-     * @return
+     * Retourne l'altitude minimum du profil, en mètres.
+     *
+     * @return l'altitude minimum du profil, en mètres
      */
     public double minElevation() {
         return summaryStatistics(elevationSamples).getMin();
     }
 
     /**
-     * Retourne l'altitude maximum du profil, en mètres
+     * Retourne l'altitude maximum du profil, en mètres.
+     *
      * @return l'altitude maximum du profil, en mètres
      */
     public double maxElevation() {
@@ -58,7 +68,8 @@ public class ElevationProfile {
     }
 
     /**
-     * Retourne le dénivelé positif total du profil, en mètres
+     * Retourne le dénivelé positif total du profil, en mètres.
+     *
      * @return le dénivelé positif total du profil, en mètres
      */
     public double totalAscent() {
@@ -73,7 +84,8 @@ public class ElevationProfile {
     }
 
     /**
-     * Retourne le dénivelé négatif total du profil, en mètres
+     * Retourne le dénivelé négatif total du profil, en mètres.
+     *
      * @return le dénivelé négatif total du profil, en mètres
      */
     public double totalDescent() {
@@ -88,12 +100,16 @@ public class ElevationProfile {
     }
 
     /**
-     * Retourne l'altitude du profil à la position donnée, qui n'est pas forcément comprise entre 0 et la longueur du
-     * profil; le premier échantillon est retourné lorsque la position est négative, le dernier lorsqu'elle est
-     * supérieure à la longueur
-     * @param position
-     * @return l'altitude du profil à la position donnée, qui n'est pas forcément comprise entre 0 et la longueur du
-     * profil; le premier échantillon est retourné lorsque la position est négative, le dernier lorsqu'elle est
+     * Retourne l'altitude du profil à la position donnée, qui n'est pas forcément
+     * comprise entre 0 et la longueur du profil; le premier échantillon est
+     * retourné lorsque la position est négative, le dernier lorsqu'elle est
+     * supérieure à la longueur.
+     *
+     * @param position la position, en mètres
+     *
+     * @return l'altitude du profil à la position donnée, qui n'est pas forcément
+     * comprise entre 0 et la longueur du profil; le premier échantillon est
+     * retourné lorsque la position est négative, le dernier lorsqu'elle est
      * supérieure à la longueur
      */
     public double elevationAt(double position) {

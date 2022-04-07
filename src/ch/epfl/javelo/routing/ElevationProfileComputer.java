@@ -8,23 +8,31 @@ import java.util.Arrays;
 import static java.lang.Float.isNaN;
 
 /**
- * Représente un calculateur de profil en long (càd calculer le profil en long d'un itinéraire donné)
+ * Représente un calculateur de profil en long (càd calculer le profil en long
+ * d'un itinéraire donné).
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
-public final class ElevationProfileComputer { // modifier la dernière boucle pour ne pas itérer sur tout le tableau
+public final class ElevationProfileComputer {
     /**
      * Personne ne doit être en mesure d'instancier cette classe
      */
     private ElevationProfileComputer() {}
 
     /**
-     * Retourne le profil en long de l'itinéraire route, en garantissant que l'espacement entre les échantillons du
-     * profil est d'au maximum maxStepLength mètres; lève IllegalArgumentException si cet espacement n'est pas
-     * strictement positif
-     * @param route
-     * @param maxStepLength
-     * @return le profil en long de l'itinéraire route, en garantissant que l'espacement entre les échantillons du
-     * profil est d'au maximum maxStepLength mètres; lève IllegalArgumentException si cet espacement n'est pas
-     * strictement positif
+     * Retourne le profil en long de l'itinéraire route, en garantissant que
+     * l'espacement entre les échantillons du profil est d'au maximum
+     * maxStepLength mètres.
+     *
+     * @param route la route
+     * @param maxStepLength l'espacement maximal entre les échantillons du profil
+     * @throws IllegalArgumentException si l'espacement n'est pas strictement
+     * positif
+     *
+     * @return le profil en long de l'itinéraire route, en garantissant que
+     * l'espacement entre les échantillons du profil est d'au maximum
+     * maxStepLength mètres
      */
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);
