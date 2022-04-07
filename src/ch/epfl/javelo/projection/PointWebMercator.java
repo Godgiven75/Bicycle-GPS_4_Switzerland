@@ -2,30 +2,39 @@ package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Preconditions;
 
-
 /**
- * Enregistrement représentant un point dans le système Web Mercator
- * Ses attributs sont : double x, la coordonnée x du point; double y la coordonnée y du point.
+ * Représente un point dans le système Web Mercator.
+ *
+ * Ses attributs sont :
+ * double x : la coordonnée x du point
+ * double y : la coordonnée y du point
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record PointWebMercator(double x, double y) {
 
     private static final int BASE_ZOOM_LEVEL = 8;
 
-
     /**
-     * Constructeur validant les coordonnées x et y du point et levant une expressions si l'une d'elle n'est pas comprise dans l'intervalle [0;1]
+     * Construit les coordonnées x et y du point.
+     *
      * @param x coordonnée x du point
      * @param y coordonnée y du point
+     * @throws IllegalArgumentException si l'une des coordonnées n'est pas comprise
+     * dans l'intervalle [0;1]
      */
     public PointWebMercator {
         Preconditions.checkArgument( (0 <= x && x <= 1) && (0 <= y && y <= 1) );
     }
 
     /**
-     * Retourne le point dont les coordonnées x et y sont au niveau de zoom zoomLevel
-     * @param zoomLevel niveau de zoom
-     * @param x coordonnée x du point au niveau de zoom
-     * @param y coordonnée y du point au niveau de zoom
+     * Retourne le point dont les coordonnées x et y sont au niveau de zoom zoomLevel.
+     *
+     * @param zoomLevel le niveau de zoom
+     * @param x la coordonnée x du point au niveau de zoom
+     * @param y la coordonnée y du point au niveau de zoom
+     *
      * @return le point dont les coordonnées x et y sont au niveau de zoom zoomLevel
      */
     public static PointWebMercator of(int zoomLevel, double x, double y ) {
@@ -35,9 +44,13 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Retourne le point WebMercator correspondant au point du système de coordonnées suisse donné
-     * @param pointCh point du système de coordonnées suisse
-     * @return le point WebMercator correspondant au point du système de coordonnées suisse donné
+     * Retourne le point WebMercator correspondant au point du système de
+     * coordonnées suisse donné.
+     *
+     * @param pointCh le point du système de coordonnées suisse
+     *
+     * @return le point WebMercator correspondant au point du système de
+     * coordonnées suisse donné
      */
     public static PointWebMercator ofPointCh(PointCh pointCh) {
         double longitude = pointCh.lon();
@@ -51,24 +64,29 @@ public record PointWebMercator(double x, double y) {
 
     /**
      * Retourne la coordonnée x du point au niveau de zoom donné
-     * @param zoomLevel niveau de zoom
-     * @return Retourne la coordonnée x du point au niveau de zoom donné
+     *
+     * @param zoomLevel le niveau de zoom
+     *
+     * @return la coordonnée x du point au niveau de zoom donné
      */
     public double xAtZoomLevel(int zoomLevel) {
         return Math.scalb(x, actualZoomLevel(zoomLevel) );
     }
 
     /**
-     * Retourne la coordonnée y du point au niveau de zoom donné
-     * @param zoomLevel niveau de zoom
-     * @return Retourne la coordonnée x du point au niveau de zoom donné
+     * Retourne la coordonnée y du point au niveau de zoom donné.
+     *
+     * @param zoomLevel le niveau de zoom
+     *
+     * @return la coordonnée x du point au niveau de zoom donné
      */
     public double yAtZoomLevel(int zoomLevel) {
         return Math.scalb(y, actualZoomLevel(zoomLevel));
     }
 
     /**
-     * Retourne la longitude du point, en radians
+     * Retourne la longitude du point, en radians.
+     *
      * @return la longitude du point, en radians
      */
     public double lon() {
@@ -77,6 +95,7 @@ public record PointWebMercator(double x, double y) {
 
     /**
      * Retourne la latitude du point, en radians
+     *
      * @return la latitude du point, en radians
      */
     public double lat() {
@@ -84,9 +103,13 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Retourne le point de coordonnées suisses se trouvant à la même position que le récepteur (this) ou null si ce point n'est pas dans les limites de la Suisse définies par SwissBounds
-     * @return le point de coordonnées suisses se trouvant à la même position que le récepteur (this) ou null si ce point n'est pas dans les limites de la Suisse définies par SwissBounds
+     * Retourne le point de coordonnées suisses se trouvant à la même position
+     * que le récepteur (this) ou null si ce point n'est pas dans les limites de
+     * la Suisse définies par SwissBounds.
      *
+     * @return le point de coordonnées suisses se trouvant à la même position
+     * que le récepteur (this) ou null si ce point n'est pas dans les limites de
+     * la Suisse définies par SwissBounds
      */
     public PointCh toPointCh() {
         double lon = lon();
@@ -99,7 +122,9 @@ public record PointWebMercator(double x, double y) {
 
     /**
      * Retourne le niveau de zoom de base additioné au niveau de zoom passé en paramètre
-     * @param zoomLevel niveau de zoom
+     *
+     * @param zoomLevel le niveau de zoom
+     *
      * @return le niveau de zoom de base additioné au niveau de zoom passé en paramètre
      */
     private static int actualZoomLevel(int zoomLevel) {

@@ -1,26 +1,31 @@
 package ch.epfl.javelo.projection;
 
-
 import ch.epfl.javelo.Preconditions;
 
 /**
- * Enregistrement représentant un point dans le système de coordonnées suisse
+ * Enregistrement représentant un point dans le système de coordonnées suisse.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record PointCh(double e, double n ) {
 
     /**
-     * Permet de construire un PointCh, lance une exception si les coordonnées ne respectent pas les conditions définies
-     * par Swissbounds
-     * @param e coordonnée est du point
-     * @param n coordonnée nord du point
+     * Permet de construire un PointCh, lance une exception si les coordonnées
+     * ne respectent pas les conditions définies par Swissbounds.
+     *
+     * @param e la coordonnée Est du point
+     * @param n la coordonnée Nord du point
      */
     public PointCh {
         Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 
     /**
-     * Retourne la distance au carré entre ce PointCh et un autre PointCh
-     * @param that autre PointCh
+     * Retourne la distance au carré entre ce PointCh et un autre PointCh.
+     *
+     * @param that l'autre PointCh
+     *
      * @return la distance au carré entre ce PointCh et un autre PointCh
      */
     public double squaredDistanceTo(PointCh that) {
@@ -29,8 +34,10 @@ public record PointCh(double e, double n ) {
     }
 
     /**
-     * Retourne la distance entre ce PointCh et un autre PointCh
-     * @param that autre PointCh
+     * Retourne la distance entre ce PointCh et un autre PointCh.
+     *
+     * @param that l'autre PointCh
+     *
      * @return la distance entre ce PointCh et un autre PointCh
      */
     public double distanceTo(PointCh that) {
@@ -39,6 +46,7 @@ public record PointCh(double e, double n ) {
 
     /**
      * Retourne la longitude du PointCh (en degrés)
+     *
      * @return la longitude du PointCh
      */
     public double lon()  {
@@ -47,6 +55,7 @@ public record PointCh(double e, double n ) {
 
     /**
      * Retourne la latitude du PointCh
+     *
      * @return la latitude du PointCh
      */
     public double lat() {

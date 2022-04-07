@@ -40,14 +40,14 @@ public class Graph {
 
     /**
      * Retourne le graphe JaVelo obtenu à partir des fichiers se trouvant dans
-     * le répertoire dont le chemin d'accès est basePath, ou lève IOException en
-     * cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendu n'existe pas.
+     * le répertoire donné.
      *
-     * @param basePath le répertoire du chemin d'accès
-     * @throws IOException si le fichier attendu n'existe pas
-     * @return retourne le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin
-     * d'accès est basePath, ou lève IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendu
-     * n'existe pas.
+     * @param basePath le chemin du répertoire où se trouvent les fichiers
+     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des
+     * fichiers attendu n'existe pas
+     *
+     * @return retourne le graphe JaVelo obtenu à partir des fichiers se trouvant
+     * dans le répertoire donné
      */
     public static Graph loadFrom(Path basePath) throws IOException {
 
@@ -97,7 +97,8 @@ public class Graph {
     }
 
     /**
-     * Retourne le nombre total de noeuds dans le graphe
+     * Retourne le nombre total de noeuds dans le graphe.
+     *
      * @return le nombre total de noeuds dans le graphe
      */
     public int nodeCount() {
@@ -105,8 +106,10 @@ public class Graph {
     }
 
     /**
-     * Retourne la position du noeud d'identité donnée
-     * @param nodeId
+     * Retourne la position du noeud d'identité donnée.
+     *
+     * @param nodeId l'identité du noeud
+     *
      * @return la position du noeud d'identité donnée
      */
     public PointCh nodePoint(int nodeId) {
@@ -114,8 +117,10 @@ public class Graph {
     }
 
     /**
-     * Retourne le nombre d'arêtes sortant du noeud d'identité donnée
-     * @param nodeId
+     * Retourne le nombre d'arêtes sortant du noeud d'identité donnée.
+     *
+     * @param nodeId l'identité du noeud
+     *
      * @return le nombre d'arêtes sortant du noeud d'identité donnée
      */
     public int nodeOutDegree(int nodeId) {
@@ -123,9 +128,11 @@ public class Graph {
     }
 
     /**
-     * Retourne l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
-     * @param nodeId
-     * @param edgeIndex
+     * Retourne l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId.
+     *
+     * @param nodeId l'identité du noeud
+     * @param edgeIndex l'indice d'une des arêtes sortantes du noeud
+     *
      * @return l'identité de la edgeIndex-ième arête sortant du noeud d'identité nodeId
      */
     public int nodeOutEdgeId(int nodeId, int edgeIndex) {
@@ -135,32 +142,41 @@ public class Graph {
     /**
      * Retourne l'identité du noeud se trouvant le plus proche du point donné,
      * à la distance maximale donnée (en mètres), ou -1 si aucun noeud ne
-     * correspond à ces critères
-     * @param point
-     * @param searchDistance
+     * correspond à ces critères.
+     *
+     * @param point le point donné
+     * @param searchDistance la distance maximale de recherche
+     *
      * @return l'identité du noeud se trouvant le plus proche du point donné,
      * à la distance maximale donnée (en mètres), ou -1 si aucun noeud ne
      * correspond à ces critères
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
-        List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
+        List<GraphSectors.Sector> closeSectors =
+                sectors.sectorsInArea(point, searchDistance);
+
         double minDistance = searchDistance * searchDistance, distance = 0;
         int closestNodeId = -1;
+
         for (GraphSectors.Sector s : closeSectors) {
             for (int nodeId = s.startNodeId(); nodeId < s.endNodeId(); nodeId++) {
                 distance = point.squaredDistanceTo(nodePoint(nodeId));
+
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestNodeId = nodeId;
                 }
             }
         }
+
         return closestNodeId;
     }
 
     /**
-     * Retourne l'identité du noeud destination de l'arête d'identité donnée
-     * @param edgeId
+     * Retourne l'identité du noeud destination de l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return l'identité du noeud destination de l'arête d'identité donnée
      */
     public int edgeTargetNodeId(int edgeId) {
@@ -169,8 +185,10 @@ public class Graph {
 
     /**
      * Retourne vrai ssi l'arête d'identité donnée va dans le sens contraire de
-     * la voie OSM dont elle provient
-     * @param edgeId
+     * la voie OSM dont elle provient.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return vrai ssi l'arête d'identité donnée va dans le sens contraire de
      * la voie OSM dont elle provient
      */
@@ -179,8 +197,10 @@ public class Graph {
     }
 
     /**
-     * Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée
-     * @param edgeId
+     * Retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return l'ensemble des attributs OSM attachés à l'arête d'identité donnée
      */
     public AttributeSet edgeAttributes(int edgeId) {
@@ -189,8 +209,10 @@ public class Graph {
     }
 
     /**
-     * Retourne la longueur, en mètres, de l'arête d'identité donnée
-     * @param edgeId
+     * Retourne la longueur, en mètres, de l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double edgeLength(int edgeId) {
@@ -198,8 +220,10 @@ public class Graph {
     }
 
     /**
-     * Retourne le dénivelé positif total de l'arête d'identité donnée
-     * @param edgeId
+     * Retourne le dénivelé positif total de l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return le dénivelé positif total de l'arête d'identité donnée
      */
     public double edgeElevationGain(int edgeId) {
@@ -207,14 +231,20 @@ public class Graph {
     }
 
     /**
-     * Retourne le profil en long de l'arête d'identité donnée, sous la forme d'une fonction; si l'arête ne possède pas
-     * de profil, alors cette fonction doit retourner Double.NaN pour n'importe quel argument
-     * @param edgeId
-     * @return le profil en long de l'arête d'identité donnée, sous la forme d'une fonction; si l'arête ne possède pas
-     * de profil, alors cette fonction doit retourner Double.NaN pour n'importe quel argument
+     * Retourne le profil en long de l'arête d'identité donnée, sous la forme
+     * d'une fonction; si l'arête ne possède pas de profil, alors cette fonction
+     * doit retourner Double.NaN pour n'importe quel argument.
+     *
+     * @param edgeId l'identité de l'arête
+     *
+     * @return le profil en long de l'arête d'identité donnée, sous la forme
+     * d'une fonction; si l'arête ne possède pas de profil, alors cette fonction
+     * doit retourner Double.NaN pour n'importe quel argument
      */
     public DoubleUnaryOperator edgeProfile(int edgeId) {
         float[] samples = edges.profileSamples(edgeId);
-        return edges.hasProfile(edgeId)? Functions.sampled(samples, edgeLength(edgeId)) : Functions.constant(Double.NaN);
+        return edges.hasProfile(edgeId)?
+                Functions.sampled(samples, edgeLength(edgeId))
+                : Functions.constant(Double.NaN);
     }
 }

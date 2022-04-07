@@ -14,7 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Représente le tableau de toutes les arêtes du graphe JaVelo
+ * Représente le tableau de toutes les arêtes du graphe JaVelo.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
 
@@ -25,17 +28,23 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private final static int BYTES_FOR_EDGES = OFFSET_ATTRIBUTES_INDEX + Short.BYTES;
 
     /**
-     * Retourne vrai si et seulement si l'arête d'identité donnée va dans le sens inverse de la voie OSM dont elle provient
-     * @param edgeId
-     * @return vrai si et seulement si l'arête d'identité donnée va dans le sens inverse de la voie OSM dont elle provient
+     * Retourne vrai si et seulement si l'arête d'identité donnée va dans le sens
+     * inverse de la voie OSM dont elle provient.
+     *
+     * @param edgeId l'identité de l'arête
+     *
+     * @return vrai si et seulement si l'arête d'identité donnée va dans le sens
+     * inverse de la voie OSM dont elle provient
      */
     public boolean isInverted(int edgeId) {
         return edgesBuffer.get(edgeId * BYTES_FOR_EDGES + OFFSET_TARGET_NODE_ID) < 0;
     }
 
     /**
-     * Retourne l'identité du noeud destination de l'arête d'identité donnée
-     * @param edgeId
+     * Retourne l'identité du noeud destination de l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return l'identité du noeud destination de l'arête d'identité donnée
      */
     public int targetNodeId(int edgeId) {
@@ -45,7 +54,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     /**
      * Retourne la longueur, en mètres, de l'arête d'identité donnée
-     * @param edgeId
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double length(int edgeId) {
@@ -54,8 +65,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée
-     * @param edgeId
+     * Retourne le dénivelé positif, en mètres, de l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return le dénivelé positif, en mètres, de l'arête d'identité donnée
      */
     public double elevationGain(int edgeId) {
@@ -64,8 +77,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne vrai si et seulement si l'arête d'identité donnée possède un profil
-     * @param edgeId
+     * Retourne vrai si et seulement si l'arête d'identité donnée possède un profil.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return vrai si et seulement si l'arête d'identité donnée possède un profil
      */
     public boolean hasProfile(int edgeId) {
@@ -76,9 +91,11 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne le tableau des échantillons du profil de l'arête d'identité donnée, qui est vide si l'arête ne possède
-     * pas de profil
-     * @param edgeId
+     * Retourne le tableau des échantillons du profil de l'arête d'identité donnée,
+     * qui est vide si l'arête ne possède pas de profil.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return le tableau des échantillons du profil de l'arête d'identité donnée, qui est vide si l'arête ne possède
      */
     public float[] profileSamples(int edgeId) {
@@ -161,8 +178,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private final static List<profileTypes> allProfileTypes = List.of(profileTypes.values());
 
     /**
-     * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
-     * @param edgeId
+     * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée.
+     *
+     * @param edgeId l'identité de l'arête
+     *
      * @return l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
      */
     public int attributesIndex(int edgeId) {
