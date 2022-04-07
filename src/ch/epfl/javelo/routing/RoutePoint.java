@@ -14,7 +14,8 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     /**
      * Représente un point inexistant.
      */
-    public static final RoutePoint NONE  = new RoutePoint(null, Double.NaN, Double.POSITIVE_INFINITY);
+    public static final RoutePoint NONE
+            = new RoutePoint(null, Double.NaN, Double.POSITIVE_INFINITY);
 
     /**
      * Retourne un point identique au récepteur (this) mais dont la position est
