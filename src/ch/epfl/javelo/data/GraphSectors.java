@@ -29,6 +29,9 @@ public record GraphSectors(ByteBuffer buffer) {
     /**
      * Représente un secteur par l'identité du premier noeud du secteur et
      * l'identité du noeud situé juste après le dernier noeud du secteur.
+     *
+     * @param startNodeId l'identité du neoud de départ
+     * @param endNodeId l'identité du noeud d'arrivée
      */
     public record Sector(int startNodeId, int endNodeId) {}
 
@@ -52,22 +55,24 @@ public record GraphSectors(ByteBuffer buffer) {
         final double EDGE_LENGTH = 2 * distance;
 
         int xMin = Math2.clamp(0,
-                (int) (distanceToWestLimit / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE_INDEX);
+                (int) (distanceToWestLimit / SECTOR_WIDTH),
+                SUBDIVISIONS_PER_SIDE_INDEX);
         int xMax = Math2.clamp(0,
-                (int) ( (distanceToWestLimit + EDGE_LENGTH) / SECTOR_WIDTH), SUBDIVISIONS_PER_SIDE_INDEX);
+                (int) ( (distanceToWestLimit + EDGE_LENGTH) / SECTOR_WIDTH),
+                SUBDIVISIONS_PER_SIDE_INDEX);
         int yMin = Math2.clamp(0,
-                (int) (distanceToSouthLimit / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE_INDEX);
+                (int) (distanceToSouthLimit / SECTOR_HEIGHT),
+                SUBDIVISIONS_PER_SIDE_INDEX);
         int yMax = Math2.clamp(0,
-                (int) ( (distanceToSouthLimit + EDGE_LENGTH) / SECTOR_HEIGHT), SUBDIVISIONS_PER_SIDE_INDEX);
+                (int) ( (distanceToSouthLimit + EDGE_LENGTH) / SECTOR_HEIGHT),
+                SUBDIVISIONS_PER_SIDE_INDEX);
 
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-                int startNodeId = buffer.getInt(OFFSET_SECTOR * (x + y * SUBDIVISIONS_PER_SIDE));
-                int endNodeId = startNodeId
-                                + toUnsignedInt(buffer.getShort(
-                                        OFFSET_SECTOR * (x + y * SUBDIVISIONS_PER_SIDE)
-                                                + Integer.BYTES)
-                                                );
+                int startNodeIndex = OFFSET_SECTOR * (x + y * SUBDIVISIONS_PER_SIDE);
+                int endNodeIndex = startNodeIndex + Integer.BYTES;
+                int startNodeId = buffer.getInt(startNodeIndex);
+                int endNodeId = startNodeId + toUnsignedInt(buffer.getShort(endNodeIndex));
 
                 inArea.add(new Sector(startNodeId, endNodeId));
             }
