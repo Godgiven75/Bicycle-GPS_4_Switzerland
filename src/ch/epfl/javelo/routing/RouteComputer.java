@@ -18,6 +18,9 @@ import static ch.epfl.javelo.routing.Edge.of;
 public class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
+    private static final int OFFSET_EDGE = 4;
+    private static final int NODE_BIT_RANGE_LENGTH = 28;
+
 
     /**
      * Construit un planificateur d'itinéraire pour le graphe et la fonction

@@ -30,7 +30,6 @@ public final class MultiRoute implements Route {
         this.segments = List.copyOf(segments);
     }
 
-
     @Override
     public int indexOfSegmentAt(double position) {
         int tempPosition = 0;
