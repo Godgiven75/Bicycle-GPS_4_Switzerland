@@ -1,6 +1,5 @@
 package ch.epfl.javelo.routing;
 
-
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ch.epfl.javelo.routing.RoutePoint.NONE;
-
 
 /**
  * Représente un itinéraire multiple, c.-à-d. composé d'une séquence
@@ -129,8 +127,7 @@ public final class MultiRoute implements Route {
         for (Route r : segments) {
             RoutePoint closestPointOnRoute = r.pointClosestTo(point);
             PointCh p = closestPointOnRoute.point();
-            closestPoint = closestPoint.min(
-                    closestPointOnRoute.point(),
+            closestPoint = closestPoint.min(p,
                     closestPointOnRoute.position() + tempPosition,
                     p.distanceTo(point));
             tempPosition += r.length();

@@ -8,16 +8,13 @@ import java.util.Arrays;
 import static java.lang.Float.isNaN;
 
 /**
- * Représente un calculateur de profil en long (càd calculer le profil en long
- * d'un itinéraire donné).
+ * Classe finale et non-instanciable qui représente un calculateur de profil en
+ * long (càd calculer le profil en long d'un itinéraire donné).
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
 public final class ElevationProfileComputer {
-    /**
-     * Personne ne doit être en mesure d'instancier cette classe
-     */
     private ElevationProfileComputer() {}
 
     /**
@@ -58,7 +55,8 @@ public final class ElevationProfileComputer {
             }
         }
 
-        //Si aucune des arêtes ne contient de profil, la méthode retourne un tableau vide
+        // Si aucune des arêtes ne contient de profil, la méthode retourne un
+        // tableau vide
         if (isOnlyNan) {
             Arrays.fill(samples, 0, samples.length , 0f);
             return new ElevationProfile(itineraryLength, samples);
@@ -72,7 +70,8 @@ public final class ElevationProfileComputer {
             }
         }
 
-        // Parcours du tableau pour trouver les trous intermédiaires et les remplir par interpolation
+        // Parcours du tableau pour trouver les trous intermédiaires et les
+        // remplir par interpolation
         for (int i = firstValidSampleIndex; i < samples.length; ++i) {
             if (isNaN(samples[i])) {
                 double y0 = samples[i - 1];
