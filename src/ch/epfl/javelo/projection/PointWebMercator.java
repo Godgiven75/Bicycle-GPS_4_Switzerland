@@ -7,6 +7,7 @@ import ch.epfl.javelo.Preconditions;
  *
  * @param x la coordonnée x du point
  * @param y la coordonnée y du point
+ *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
@@ -20,7 +21,7 @@ public record PointWebMercator(double x, double y) {
      * @param x coordonnée x du point
      * @param y coordonnée y du point
      * @throws IllegalArgumentException si l'une des coordonnées n'est pas comprise
-     *                                  dans l'intervalle [0;1]
+     * dans l'intervalle [0;1]
      */
     public PointWebMercator {
         Preconditions.checkArgument((0 <= x && x <= 1) && (0 <= y && y <= 1));
@@ -30,8 +31,9 @@ public record PointWebMercator(double x, double y) {
      * Retourne le point dont les coordonnées x et y sont au niveau de zoom zoomLevel.
      *
      * @param zoomLevel le niveau de zoom
-     * @param x         la coordonnée x du point au niveau de zoom
-     * @param y         la coordonnée y du point au niveau de zoom
+     * @param x la coordonnée x du point au niveau de zoom
+     * @param y la coordonnée y du point au niveau de zoom
+     *
      * @return le point dont les coordonnées x et y sont au niveau de zoom zoomLevel
      */
     public static PointWebMercator of(int zoomLevel, double x, double y) {
@@ -45,6 +47,7 @@ public record PointWebMercator(double x, double y) {
      * coordonnées suisse donné.
      *
      * @param pointCh le point du système de coordonnées suisse
+     *
      * @return le point WebMercator correspondant au point du système de
      * coordonnées suisse donné
      */
@@ -59,9 +62,10 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Retourne le niveau de zoom de base additioné au niveau de zoom passé en paramètre
+     * Retourne le niveau de zoom de base additioné au niveau de zoom passé en paramètre.
      *
      * @param zoomLevel le niveau de zoom
+     *
      * @return le niveau de zoom de base additioné au niveau de zoom passé en paramètre
      */
     private static int actualZoomLevel(int zoomLevel) {
@@ -72,6 +76,7 @@ public record PointWebMercator(double x, double y) {
      * Retourne la coordonnée x du point au niveau de zoom donné
      *
      * @param zoomLevel le niveau de zoom
+     *
      * @return la coordonnée x du point au niveau de zoom donné
      */
     public double xAtZoomLevel(int zoomLevel) {
@@ -82,6 +87,7 @@ public record PointWebMercator(double x, double y) {
      * Retourne la coordonnée y du point au niveau de zoom donné.
      *
      * @param zoomLevel le niveau de zoom
+     *
      * @return la coordonnée x du point au niveau de zoom donné
      */
     public double yAtZoomLevel(int zoomLevel) {
@@ -98,7 +104,7 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Retourne la latitude du point, en radians
+     * Retourne la latitude du point, en radians.
      *
      * @return la latitude du point, en radians
      */
