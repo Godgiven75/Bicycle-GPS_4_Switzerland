@@ -96,6 +96,15 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         return Bits.extractSigned(profileIds.get(edgeId), startOfRange, rangeLength )
                 != profileTypes.NO_PROFILE.ordinal();
     }
+    // Type énuméré représentant les différents types de profil
+    private enum profileTypes {
+        NO_PROFILE,
+        UNCOMPRESSED,
+        COMPRESSED_Q44,
+        COMPRESSED_Q04
+    }
+    // Liste contenant les différents types de profil
+    private final static List<profileTypes> allProfileTypes = List.of(profileTypes.values());
 
     /**
      * Retourne le tableau des échantillons du profil de l'arête d'identité donnée,
@@ -138,7 +147,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int k = inverted ? numberOfSamples - 1 : 0;
         for (int i = 0; i < elevations().capacity() - 1; ++i) {
             int start =  Short.SIZE  - sampleLength;
-
             int elevationsIndex =  firstProfileId + i ;
             int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
 
@@ -164,15 +172,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         }
      return samples;
     }
-
-    private enum profileTypes {
-        NO_PROFILE,
-        UNCOMPRESSED,
-        COMPRESSED_Q44,
-        COMPRESSED_Q04
-    }
-    private final static List<profileTypes> allProfileTypes = List.of(profileTypes.values());
-
     /**
      * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée.
      *
