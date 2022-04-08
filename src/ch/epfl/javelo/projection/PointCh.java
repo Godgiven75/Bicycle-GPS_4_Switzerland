@@ -34,7 +34,6 @@ public record PointCh(double e, double n ) {
      * @return la distance au carré entre ce PointCh et un autre PointCh
      */
     public double squaredDistanceTo(PointCh that) {
-        //return distanceTo(that) * distanceTo(that);
         return (that.e - this.e) * (that.e - this.e) + (that.n - this.n) * (that.n - this.n);
     }
 

@@ -154,10 +154,10 @@ public class Graph {
      * correspond à ces critères
      */
     public int nodeClosestTo(PointCh point, double searchDistance) {
-        List<GraphSectors.Sector> closeSectors =
-                sectors.sectorsInArea(point, searchDistance);
+        List<GraphSectors.Sector> closeSectors = sectors.sectorsInArea(point, searchDistance);
 
-        double minDistance = searchDistance * searchDistance, distance = 0;
+        double minDistance = searchDistance * searchDistance, distance;
+        // Si le noeud ne correspond à aucun des critères, -1 sera retourné
         int closestNodeId = -1;
 
         for (GraphSectors.Sector s : closeSectors) {

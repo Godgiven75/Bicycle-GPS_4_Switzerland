@@ -3,10 +3,11 @@ import ch.epfl.javelo.Preconditions;
 import java.util.StringJoiner;
 
 /**
- * Représente un ensemble d'attributs OpenStreetMap. Possède un unique attribut :
- * le long bits, qui représente le contenu de l'ensemble au moyen d'un bit par
- * valeur possible; càd que le bit d'index b de cette valeur est 1 ssi l'attribut
- * b est contenu dans l'ensemble.
+ * Représente un ensemble d'attributs OpenStreetMap.
+ *
+ * @param bits le long qui représente le contenu de l'ensemble d'attributs au moyen
+ * d'un bit par valeur possible; càd que le bit d'index b de cette valeur est 1
+ * ssi l'attribut b est contenu dans l'ensemble.
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
@@ -70,7 +71,7 @@ public record AttributeSet(long bits) {
 
     /**
      * Redéfinition de toString() afin de retourner une chaîne composée de la
-     * représentation textuelle des élémentsde l'ensemble entourés d'accolades
+     * représentation textuelle des éléments de l'ensemble entourés d'accolades
      * et séparés par des virgules : les éléments apparaissent dans l'ordre dans
      * lequel ils sont déclarés dans le type énuméré Attribute.
      *

@@ -23,6 +23,7 @@ public class RouteComputerTest {
         double actual = bestRoute.length();
         assertEquals(expected, actual);
     }
+
     @Test
     void bestRouteBetweenWorksOnCH_West() throws IOException {
         Graph g = Graph.loadFrom(Path.of("ch_west"));
@@ -34,9 +35,8 @@ public class RouteComputerTest {
         assertEquals(expected, actual);
     }
 
-
     @Test
-    void bestTrouteThrowsOnIllegalItinerary() throws IOException {
+    void bestRouteThrowsOnIllegalItinerary() throws IOException {
         Graph g = Graph.loadFrom(Path.of("ch_west"));
         CostFunction cf = new CityBikeCF(g);
         RouteComputer rc = new RouteComputer(g, cf);
@@ -48,7 +48,6 @@ public class RouteComputerTest {
             });
         }
     }
-
 
     @Test @Disabled
     void bestRouteReturnsNullWithNonExistingItinerary() throws IOException {
