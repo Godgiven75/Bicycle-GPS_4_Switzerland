@@ -1,7 +1,5 @@
 package ch.epfl.javelo;
 
-import ch.epfl.javelo.routing.ElevationProfileComputer;
-
 /**
  *  Classe non-instanciable et finale permettant d'extraire une séquence de bit
  *  d'un vecteur de 32 bits.

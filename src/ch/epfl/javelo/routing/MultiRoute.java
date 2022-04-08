@@ -4,7 +4,6 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
