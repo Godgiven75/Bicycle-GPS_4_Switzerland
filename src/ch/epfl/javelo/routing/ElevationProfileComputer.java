@@ -15,9 +15,7 @@ import static java.lang.Float.isNaN;
  * @author Nathanaël Girod (329987)
  */
 public final class ElevationProfileComputer {
-    /**
-     * Personne ne doit être en mesure d'instancier cette classe
-     */
+
     private ElevationProfileComputer() {}
 
     /**

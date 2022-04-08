@@ -15,7 +15,11 @@ import java.util.List;
 
 /**
  * Représente le tableau de toutes les arêtes du graphe JaVelo.
- *
+ * @param edgesBuffer mémoire tampon contenant la valeur des attributs généraux
+ * des arêtes
+ * @param profileIds mémoire tampon contenant la valeur des attributs concernant
+ * le profil des arêtes.
+ * @param elevations mémoire tampon contenant
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
@@ -131,9 +135,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int samplesPerShort = Short.SIZE / sampleLength;
 
         boolean inverted = isInverted(edgeId);
-
         int k = inverted ? numberOfSamples - 1 : 0;
-
         for (int i = 0; i < elevations().capacity() - 1; ++i) {
             int start =  Short.SIZE  - sampleLength;
 
@@ -145,10 +147,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 k += inverted ? -1 : 1;
                 continue;
             }
-
             for (int j = 0; j < samplesPerShort; ++j) {
-                if (k < 0 || k >= samples.length) return samples;
-
+                if (k < 0 || k >= samples.length)
+                    return samples;
                 if (profileType == profileTypes.UNCOMPRESSED){
                     samples[k] = Q28_4.asFloat(s);
                 } else {

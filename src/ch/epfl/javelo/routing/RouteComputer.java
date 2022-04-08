@@ -88,6 +88,9 @@ public class RouteComputer {
                         + graph.edgeLength(edgeId) * costFactor;
 
                 if (distanceToTargetNodeId < distance[edgeTargetNodeId]) {
+                    // On empaquette dans un élément du tableau l'indice de l'arête
+                    // sur les 4 bits de poids le plus faible, et l'identité du
+                    // noeud sur les 28 autres bits.
                     predecessorsEdgeAndNode[edgeTargetNodeId] =
                             (nodeId << 4) | i;
                     distance[edgeTargetNodeId] = (float) distanceToTargetNodeId;
