@@ -30,6 +30,7 @@ public record AttributeSet(long bits) {
      * Retourne un ensemble contenant uniquement les attributs passés en argument.
      *
      * @param attributes l'ensemble d'attributs
+     *
      * @return un nouvel AttributeSet
      */
     public static AttributeSet of(Attribute... attributes) {

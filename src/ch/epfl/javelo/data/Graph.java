@@ -32,7 +32,8 @@ public class Graph {
      * @param edges les arêtes du graphe
      * @param attributeSets un ensembles d'attributs donnés
      */
-    public Graph (GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
+    public Graph (GraphNodes nodes, GraphSectors sectors, GraphEdges edges,
+                  List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;

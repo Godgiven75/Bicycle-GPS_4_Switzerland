@@ -60,7 +60,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
     public double length(int edgeId) {
-        int length = Short.toUnsignedInt(edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
+        int length = Short.toUnsignedInt(
+                edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
         return Q28_4.asDouble(length);
     }
 
@@ -72,7 +73,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return le dénivelé positif, en mètres, de l'arête d'identité donnée
      */
     public double elevationGain(int edgeId) {
-        int elevationGain = Short.toUnsignedInt(edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_ELEVATION_GAIN));
+        int elevationGain = Short.toUnsignedInt(
+                edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_ELEVATION_GAIN));
         return Q28_4.asDouble(elevationGain);
     }
 
@@ -87,7 +89,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int startOfRange = 30;
         int rangeLength = 2;
 
-        return Bits.extractSigned(profileIds.get(edgeId), startOfRange, rangeLength ) != profileTypes.NO_PROFILE.ordinal();
+        return Bits.extractSigned(profileIds.get(edgeId), startOfRange, rangeLength )
+                != profileTypes.NO_PROFILE.ordinal();
     }
 
     /**
@@ -108,7 +111,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         profileTypes profileType = allProfileTypes.get(profileTypeValue);
 
 
-        int lengthToQ28_4 = Short.toUnsignedInt(edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
+        int lengthToQ28_4 = Short.toUnsignedInt(
+                edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
         int twoToQ28_4 = Q28_4.ofInt(2);
         int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
 
@@ -122,8 +126,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             case COMPRESSED_Q04 -> sampleLength = Short.SIZE / 4;
         }
 
-
-        int samplesPerShort = Short.SIZE / sampleLength; // nombre d'échantillons contenu dans un des short du buffer, dépend du format de compression
+        // Nombre d'échantillons contenu dans un des short du buffer, dépend du
+        // format de compression
+        int samplesPerShort = Short.SIZE / sampleLength;
 
         boolean inverted = isInverted(edgeId);
 
@@ -159,16 +164,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      return samples;
     }
 
-    public static float[] reverse(float[] array) { //attention, ne pas laisser en public
-        float[] newArray = new float[array.length];
-
-        for (int i = 0; i < array.length; i++) {
-            newArray[array.length - 1 - i] = array[i];
-        }
-
-        return newArray;
-    }
-
     private enum profileTypes {
         NO_PROFILE,
         UNCOMPRESSED,
@@ -185,7 +180,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée
      */
     public int attributesIndex(int edgeId) {
-        return Short.toUnsignedInt(edgesBuffer.getShort(edgeId * BYTES_FOR_EDGES + OFFSET_ATTRIBUTES_INDEX));
+        return Short.toUnsignedInt(
+                edgesBuffer.getShort(edgeId * BYTES_FOR_EDGES + OFFSET_ATTRIBUTES_INDEX));
     }
 }
 
