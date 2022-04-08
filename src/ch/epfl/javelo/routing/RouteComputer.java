@@ -22,7 +22,6 @@ public class RouteComputer {
     private static final int OFFSET_EDGE = 4 + START_POSITION;
     private static final int NODE_BIT_RANGE_LENGTH = 28;
 
-
     /**
      * Construit un planificateur d'itinéraire pour le graphe et la fonction
      * de coût donnés.
@@ -51,8 +50,7 @@ public class RouteComputer {
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
-        record WeightedNode(int nodeId, float distance)
-                implements Comparable<WeightedNode> {
+        record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
                 return Float.compare(this.distance, that.distance);
@@ -76,8 +74,8 @@ public class RouteComputer {
                 continue;
 
             if (nodeId == endNodeId)
-                return new SingleRoute(shortestItinerary(startNodeId, endNodeId,
-                        predecessorsEdgeAndNode));
+                return shortestItinerary(startNodeId, endNodeId,
+                        predecessorsEdgeAndNode);
 
             for (int i = 0; i < graph.nodeOutDegree(nodeId); i++) {
                 int edgeId = graph.nodeOutEdgeId(nodeId, i);
@@ -107,7 +105,7 @@ public class RouteComputer {
     }
 
     // Reconstitue l'itinéraire à partir du tableau de prédecesseurs
-    private List<Edge> shortestItinerary(int startNodeId, int endNodeId, int[] predecessors) {
+    private Route shortestItinerary(int startNodeId, int endNodeId, int[] predecessors) {
         Deque<Edge> itinerary =  new ArrayDeque<>();
         int toNodeId = endNodeId;
         while (toNodeId != startNodeId) {
@@ -119,6 +117,6 @@ public class RouteComputer {
             itinerary.offerFirst(of(graph, edgeId, fromNodeId, toNodeId));
             toNodeId = fromNodeId;
         }
-        return new ArrayList<>(itinerary);
+        return new SingleRoute(List.copyOf(itinerary));
     }
 }

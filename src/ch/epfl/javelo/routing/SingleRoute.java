@@ -22,9 +22,8 @@ public final class SingleRoute implements Route {
     private final List<Edge> edges;
     private final double[] nodePositions;
 
-
     /**
-     * Retourne l'itinéraire simple composé des arêtes données.
+     * Construit l'itinéraire simple composé des arêtes données.
      *
      * @param edges la liste d'arêtes
      * @throws IllegalArgumentException si la liste d'arêtes est vide

@@ -4,13 +4,12 @@ import static java.lang.Math.fma;
 
 /**
  * Classe finale et non-instanciable permettant d'effectuer des opérations
- * mathématiques
+ * mathématiques.
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
 public final class Math2 {
-
     private Math2() {}
 
     /**
@@ -139,9 +138,8 @@ public final class Math2 {
      *
      * @return la norme de la projection de AP sur AB
      */
-    public static double projectionLength(double aX, double aY,
-                                          double bX, double bY,
-                                          double pX, double pY ) {
+    public static double projectionLength(double aX, double aY, double bX,
+                                          double bY, double pX, double pY ) {
         double AB_x = bX - aX;
         double AB_y = bY - aY;
         return dotProduct(AB_x, AB_y, pX - aX, pY - aY ) / norm(AB_x, AB_y);
