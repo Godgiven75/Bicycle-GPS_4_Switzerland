@@ -22,6 +22,7 @@ public class ElevationProfile {
      *
      * @param length la longueur de l'itinéraire, en mètres
      * @param elevationSamples les échantillons d'altitude
+     *
      * @throws IllegalArgumentException si la longueur de l'itinéraire est négative
      * ou si les échantillons ne sont pas au moins deux.
      */

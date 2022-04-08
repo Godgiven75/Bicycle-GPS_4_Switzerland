@@ -5,12 +5,12 @@ import java.util.StringJoiner;
 /**
  * Représente un ensemble d'attributs OpenStreetMap.
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ *
  * @param bits le long qui représente le contenu de l'ensemble d'attributs au moyen
  * d'un bit par valeur possible; càd que le bit d'index b de cette valeur est 1
  * ssi l'attribut b est contenu dans l'ensemble.
- *
- * @author Tanguy Dieudonné (326618)
- * @author Nathanaël Girod (329987)
  */
 public record AttributeSet(long bits) {
 

@@ -13,6 +13,8 @@ import static ch.epfl.javelo.data.Attribute.*;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 /**
  * Représente la fonction de coût adaptée à la pratique du vélo
+ *
+ * @author M. Schinz
  */
 public record CityBikeCF(Graph graph) implements CostFunction {
     // Any kind of marked cycle route (international, national, regional or local)

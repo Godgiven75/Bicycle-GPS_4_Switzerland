@@ -17,9 +17,10 @@ public final class Math2 {
      *
      * @param x un entier x
      * @param y un entier y
-     * @throws IllegalArgumentException si x est strictement négatif ou y négatif
      *
      * @return la division entière par excès de x par y
+     *
+     * @throws IllegalArgumentException si x est strictement négatif ou y négatif
      */
     public static int ceilDiv(int x, int y) {
         Preconditions.checkArgument(x >= 0 && y > 0 );
@@ -47,9 +48,10 @@ public final class Math2 {
      * @param min minimum de l'intervalle
      * @param v valeur à limiter
      * @param max maximum de l'intervalle
-     * @throws IllegalArgumentException si le max est supérieur ou min
      *
      * @return v si  min <= v <= max , min si v < min et max si v > max
+     *
+     * @throws IllegalArgumentException si le max est supérieur ou min
      */
     public static int clamp(int min, int v, int max) {
         Preconditions.checkArgument(min <= max);
@@ -65,9 +67,10 @@ public final class Math2 {
      * @param min minimum de l'intervalle
      * @param v valeur à limiter
      * @param max maximum de l'intervalle
-     * @throws IllegalArgumentException si max est supérieur à min
      *
      * @return v si  min <= v <= max , min si v < min et max si v > max
+     *
+     * @throws IllegalArgumentException si max est supérieur à min
      */
     public static double clamp(double min, double v, double max) {
         Preconditions.checkArgument (min <= max);

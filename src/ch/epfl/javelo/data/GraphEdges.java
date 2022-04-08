@@ -16,15 +16,15 @@ import java.util.List;
 /**
  * Représente le tableau de toutes les arêtes du graphe JaVelo.
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ *
  * @param edgesBuffer la mémoire tampon contenant la valeur des attributs généraux
  * des arêtes
  * @param profileIds la mémoire tampon contenant la valeur des attributs concernant
  * le profil des arêtes
  * @param elevations la mémoire tampon contenant la totalité des échantillons des
  * profils, compressés ou non
- *
- * @author Tanguy Dieudonné (326618)
- * @author Nathanaël Girod (329987)
  */
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
 

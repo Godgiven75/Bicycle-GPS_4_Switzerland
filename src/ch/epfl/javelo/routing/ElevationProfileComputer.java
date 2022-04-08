@@ -24,12 +24,13 @@ public final class ElevationProfileComputer {
      *
      * @param route la route
      * @param maxStepLength l'espacement maximal entre les échantillons du profil
-     * @throws IllegalArgumentException si l'espacement n'est pas strictement
-     * positif
      *
      * @return le profil en long de l'itinéraire route, en garantissant que
      * l'espacement entre les échantillons du profil est d'au maximum
      * maxStepLength mètres
+     *
+     * @throws IllegalArgumentException si l'espacement n'est pas strictement
+     * positif
      */
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         Preconditions.checkArgument(maxStepLength > 0);

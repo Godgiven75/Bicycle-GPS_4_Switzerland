@@ -45,11 +45,12 @@ public class Graph {
      * le répertoire donné.
      *
      * @param basePath le chemin du répertoire où se trouvent les fichiers
-     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des
-     * fichiers attendu n'existe pas
      *
      * @return retourne le graphe JaVelo obtenu à partir des fichiers se trouvant
      * dans le répertoire donné
+     *
+     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des
+     * fichiers attendu n'existe pas
      */
     public static Graph loadFrom(Path basePath) throws IOException {
 

@@ -9,15 +9,15 @@ import java.util.function.DoubleUnaryOperator;
 /**
  * Enregistrement représentant les arêtes d'un itinéraire
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ *
  * @param fromNodeId l'identité du nœud de départ
  * @param toNodeId l'identité du nœud de destination
  * @param fromPoint le point de départ de l'arête
  * @param toPoint le point d'arrivée de l'arête
  * @param length la longueur de l'arête, en mètres
  * @param profile le profil en long de l'arête
- *
- * @author Tanguy Dieudonné (326618)
- * @author Nathanaël Girod (329987)
  */
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint,
                    double length, DoubleUnaryOperator profile) {

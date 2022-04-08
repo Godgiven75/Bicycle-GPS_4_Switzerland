@@ -41,12 +41,13 @@ public class RouteComputer {
      *
      * @param startNodeId noeud de départ
      * @param endNodeId noeud d'arrivée
-     * @throws IllegalArgumentException si le noeud de départ et d'arrivée sont
-     * identiques
      *
      * @return l'itinéraire de coût total minimal allant du noeud d'identité
      * startNodeId au noeud d'identité endNodeId dans le graphe passé au
      * constructeur, ou null si aucun itinéraire n'existe
+     *
+     * @throws IllegalArgumentException si le noeud de départ et d'arrivée sont
+     * identiques
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);

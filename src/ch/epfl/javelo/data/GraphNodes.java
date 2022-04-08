@@ -9,13 +9,13 @@ import static ch.epfl.javelo.Q28_4.asDouble;
 /**
  * Représente le tableau de tous les noeuds du graphe Javelo.
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ *
  * @param buffer l'IntBuffer (mémoire tampon) stockant chaque noeud représenté
  * par trois valeurs de type int qui sont, dans l'ordre, sa coordonnée E, sa
  * coordonnées N et le nombre d'arêtes sortantes du noeud et l'index de la 1ère
  * d'entre-elles.
- *
- * @author Tanguy Dieudonné (326618)
- * @author Nathanaël Girod (329987)
  */
 public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_E = 0;

@@ -5,11 +5,11 @@ import ch.epfl.javelo.Preconditions;
 /**
  * Représente un point dans le système Web Mercator.
  *
- * @param x la coordonnée x du point
- * @param y la coordonnée y du point
- *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
+ *
+ * @param x la coordonnée x du point
+ * @param y la coordonnée y du point
  */
 public record PointWebMercator(double x, double y) {
 
@@ -20,6 +20,7 @@ public record PointWebMercator(double x, double y) {
      *
      * @param x coordonnée x du point
      * @param y coordonnée y du point
+     *
      * @throws IllegalArgumentException si l'une des coordonnées n'est pas comprise
      * dans l'intervalle [0;1]
      */

@@ -23,6 +23,7 @@ public final class MultiRoute implements Route {
      * Construit un itinéraire multiple composé des segments donnés.
      *
      * @param segments les segments de l'itinéraire
+     *
      * @throws IllegalArgumentException si la liste des segments est vide
      */
     public MultiRoute(List<Route> segments) {

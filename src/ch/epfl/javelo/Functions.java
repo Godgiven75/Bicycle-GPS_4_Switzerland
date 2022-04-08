@@ -31,11 +31,12 @@ public final class Functions {
      *
      * @param samples le tableau d'échantillons
      * @param xMax l'abscisse maximale
-     * @throws IllegalArgumentException si les échantillons ne sont pas au moins
-     * au nombre de deux, ou si l'abscisse maximale est négative
      *
      * @return une fonction obtenue par interpolation linéaire entre les
      * échantillons samples, espacés régulièrement
+     *
+     * @throws IllegalArgumentException si les échantillons ne sont pas au moins
+     * au nombre de deux, ou si l'abscisse maximale est négative
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
         Preconditions.checkArgument(samples.length >= 2 && xMax > 0);

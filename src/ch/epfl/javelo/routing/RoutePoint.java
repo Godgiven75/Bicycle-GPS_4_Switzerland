@@ -6,6 +6,9 @@ import ch.epfl.javelo.projection.PointCh;
  * Représente le point d'un itinéraire le plus proche d'un point de référence
  * donné, qui se trouve dans le voisinage de l'itinéraire.
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ *
  * @param point le point sur l'itinéraire
  * @param position la position du point le long de l'itinéraire, en mètres
  * @param distanceToReference la distance, en mètres, entre le point et la référence

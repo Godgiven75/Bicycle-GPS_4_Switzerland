@@ -12,11 +12,11 @@ import static java.lang.Short.toUnsignedInt;
 /**
  * Représente le tableau contenant les 16384 secteurs de Javelo.
  *
- * @param buffer le ByteBuffer contenant la valeur des attributs de la totalité
- * des secteurs
- *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
+ *
+ * @param buffer le ByteBuffer contenant la valeur des attributs de la totalité
+ * des secteurs
  */
 public record GraphSectors(ByteBuffer buffer) {
     private static final double SWISS_WIDTH = 349_000;

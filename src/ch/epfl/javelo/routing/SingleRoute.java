@@ -26,6 +26,7 @@ public final class SingleRoute implements Route {
      * Construit l'itinéraire simple composé des arêtes données.
      *
      * @param edges la liste d'arêtes
+     *
      * @throws IllegalArgumentException si la liste d'arêtes est vide
      */
     public SingleRoute(List<Edge> edges) {

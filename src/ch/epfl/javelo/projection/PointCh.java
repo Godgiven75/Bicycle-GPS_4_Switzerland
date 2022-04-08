@@ -5,11 +5,11 @@ import ch.epfl.javelo.Preconditions;
 /**
  * Enregistrement représentant un point dans le système de coordonnées suisse.
  *
- * @param e la coordonnée Est du point
- * @param n la coordonnée Nord du point
- *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
+ *
+ * @param e la coordonnée Est du point
+ * @param n la coordonnée Nord du point
  */
 public record PointCh(double e, double n ) {
 
@@ -19,6 +19,7 @@ public record PointCh(double e, double n ) {
      *
      * @param e la coordonnée Est du point
      * @param n la coordonnée Nord du point
+     *
      * @throws IllegalArgumentException si les coordonnées du point sont telles
      * que ce dernier n'est pas compris dans les limites de la Suisse
      */
