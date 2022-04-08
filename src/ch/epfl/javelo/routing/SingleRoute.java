@@ -180,7 +180,8 @@ public final class SingleRoute implements Route {
         double currentPosition = 0;
         for (Edge e : edges) {
             double closestPosition = e.positionClosestTo(point);
-            //On clamp pour s'assurer que l'on est bien sur l'arête, et pas sur sa projection à l'infini
+            // On clamp pour s'assurer que l'on est bien sur l'arête, et pas sur
+            // sa projection à l'infini.
             double closestPositionOnEdge = Math2.clamp(0.0, closestPosition, e.length());
             PointCh closestPointOnEdge = e.pointAt(closestPositionOnEdge);
             closestPoint = closestPoint.min(

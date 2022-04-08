@@ -18,7 +18,8 @@ import static ch.epfl.javelo.routing.Edge.of;
 public class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
-    private static final int OFFSET_EDGE = 4;
+    private static final int START_POSITION = 0;
+    private static final int OFFSET_EDGE = 4 + START_POSITION;
     private static final int NODE_BIT_RANGE_LENGTH = 28;
 
 
@@ -62,12 +63,10 @@ public class RouteComputer {
         int[] predecessorsEdgeAndNode = new int[distance.length];
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
         PointCh endPoint = graph.nodePoint(endNodeId);
-        distance[startNodeId] =  (float) endPoint.distanceTo(
-                graph.nodePoint(startNodeId));
+        distance[startNodeId] =  (float) endPoint.distanceTo(graph.nodePoint(startNodeId));
 
         Queue<WeightedNode> discoveredNodes = new PriorityQueue<>();
-        discoveredNodes.add(new WeightedNode(startNodeId,
-                distance[startNodeId]));
+        discoveredNodes.add(new WeightedNode(startNodeId, distance[startNodeId]));
 
 
         while (!discoveredNodes.isEmpty()) {
@@ -95,7 +94,7 @@ public class RouteComputer {
                     // sur les 4 bits de poids le plus faible, et l'identité du
                     // noeud sur les 28 autres bits.
                     predecessorsEdgeAndNode[edgeTargetNodeId] =
-                            (nodeId << 4) | i;
+                            (nodeId << OFFSET_EDGE) | i;
                     distance[edgeTargetNodeId] = (float) distanceToTargetNodeId;
                     discoveredNodes.add(new WeightedNode(edgeTargetNodeId,
                             (float) (distanceToTargetNodeId
@@ -113,11 +112,10 @@ public class RouteComputer {
         int toNodeId = endNodeId;
         while (toNodeId != startNodeId) {
             int edgeIdAndNodeId = predecessors[toNodeId];
-            int fromNodeId = Bits.extractUnsigned(edgeIdAndNodeId, 4, 28);
+            int fromNodeId = Bits.extractUnsigned(edgeIdAndNodeId, OFFSET_EDGE, NODE_BIT_RANGE_LENGTH);
             int edgeId = graph.nodeOutEdgeId(
                     fromNodeId,
-                    Bits.extractUnsigned(edgeIdAndNodeId, 0, 4)
-            );
+                    Bits.extractUnsigned(edgeIdAndNodeId, START_POSITION, OFFSET_EDGE));
             itinerary.offerFirst(of(graph, edgeId, fromNodeId, toNodeId));
             toNodeId = fromNodeId;
         }

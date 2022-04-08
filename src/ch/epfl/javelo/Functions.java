@@ -3,8 +3,9 @@ package ch.epfl.javelo;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Classe publique finale et non instanciable contenant des méthodes permettant de créer des objets représentants des
- * fonctions mathématiques R -> R (c-à-d des réels vers les réels).
+ * Classe publique finale et non instanciable contenant des méthodes permettant
+ * de créer des objets représentants des fonctions mathématiques R -> R (c-à-d
+ * des réels vers les réels).
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
@@ -28,8 +29,10 @@ public final class Functions {
      * échantillons samples, espacés régulièrement sur l'intervalle allant
      * de 0 à xMax.
      *
-     * @param samples tableau d'échantillons
-     * @param xMax abscisse maximale
+     * @param samples le tableau d'échantillons
+     * @param xMax l'abscisse maximale
+     * @throws IllegalArgumentException si les échantillons ne sont pas au moins
+     * au nombre de deux, ou si l'abscisse maximale est négative
      *
      * @return une fonction obtenue par interpolation linéaire entre les
      * échantillons samples, espacés régulièrement

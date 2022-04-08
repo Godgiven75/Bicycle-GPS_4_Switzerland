@@ -112,7 +112,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      *
      * @param edgeId l'identité de l'arête
      *
-     * @return le tableau des échantillons du profil de l'arête d'identité donnée, qui est vide si l'arête ne possède
+     * @return le tableau des échantillons du profil de l'arête d'identité donnée,
+     * qui est vide si l'arête ne possède pas de profil
      */
     public float[] profileSamples(int edgeId) {
         if (!hasProfile(edgeId))
