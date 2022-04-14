@@ -46,9 +46,10 @@ public final class KmlPrinter {
     /**
      * Prend un nom de fichier et un itinéraire et écrit la description de
      * l'itinéraire au format KML dans le fichier
-     * @param fileName
-     * @param route
-     * @throws IOException
+     *
+     * @param fileName le nom du fichier
+     * @param route l'itinéraire
+     * @throws IOException si le fichier est inexistant
      */
     public static void write(String fileName, Route route)
             throws IOException {

@@ -45,6 +45,8 @@ public interface Route {
     /**
      * Retourne le point se trouvant à la position donnée le long de l'itinéraire.
      *
+     * @param position la position, en mètres
+     *
      * @return le point se trouvant à la position donnée le long de l'itinéraire
      */
     PointCh pointAt(double position);
@@ -52,7 +54,7 @@ public interface Route {
     /**
      * Retourne l'altitude à la position donnée le long de l'itinéraire.
      *
-     * @param position la position, en mètres
+     * @param position la position donnée le long de l'itinéraire, en mètres
      *
      * @return l'altitude à la position donnée le long de l'itinéraire
      */
@@ -62,6 +64,8 @@ public interface Route {
      * Retourne l'identité du noeud appartenant à l'itinéraire et se trouvant
      * le plus proche de la position donnée.
      *
+     * @param position la position donnée, en mètres
+     *
      * @return l'identité du noeud appartenant à l'itinéraire et se trouvant
      * le plus proche de la position donnée
      */
@@ -70,6 +74,8 @@ public interface Route {
     /**
      * Retourne le point de l'itinéraire se trouvant le plus proche du point de
      * référence donné.
+     *
+     * @param point le point de référence
      *
      * @return le point de l'itinéraire se trouvant le plus proche du point de
      * référence donné

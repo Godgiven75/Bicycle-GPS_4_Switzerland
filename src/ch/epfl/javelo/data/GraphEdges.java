@@ -7,10 +7,6 @@ import ch.epfl.javelo.Q28_4;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.security.spec.RSAOtherPrimeInfo;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,11 +15,13 @@ import java.util.List;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  *
- * @param edgesBuffer la mémoire tampon contenant la valeur des attributs généraux
+ * @param edgesBuffer mémoire tampon contenant la valeur des attributs généraux
  * des arêtes
- * @param profileIds la mémoire tampon contenant la valeur des attributs concernant
+ *
+ * @param profileIds mémoire tampon contenant la valeur des attributs concernant
  * le profil des arêtes
- * @param elevations la mémoire tampon contenant la totalité des échantillons des
+ *
+ * @param elevations mémoire tampon contenant la totalité des échantillons des
  * profils, compressés ou non
  */
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
@@ -55,7 +53,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return l'identité du noeud destination de l'arête d'identité donnée
      */
     public int targetNodeId(int edgeId) {
-        int idWithEdgeDirection = edgesBuffer.getInt(edgeId * BYTES_FOR_EDGES + OFFSET_TARGET_NODE_ID);
+        int idWithEdgeDirection = edgesBuffer.getInt(
+                edgeId * BYTES_FOR_EDGES + OFFSET_TARGET_NODE_ID);
         return isInverted(edgeId) ? ~idWithEdgeDirection : idWithEdgeDirection;
     }
 
@@ -95,19 +94,19 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public boolean hasProfile(int edgeId) {
         int startOfRange = 30;
         int rangeLength = 2;
-
-        return Bits.extractSigned(profileIds.get(edgeId), startOfRange, rangeLength )
-                != profileTypes.NO_PROFILE.ordinal();
+        return Bits.extractSigned(profileIds.get(edgeId), startOfRange, rangeLength)
+                != ProfileTypes.NO_PROFILE.ordinal();
     }
     // Type énuméré représentant les différents types de profil
-    private enum profileTypes {
+    private enum ProfileTypes {
         NO_PROFILE,
         UNCOMPRESSED,
         COMPRESSED_Q44,
         COMPRESSED_Q04
     }
     // Liste contenant les différents types de profil
-    private final static List<profileTypes> allProfileTypes = List.of(profileTypes.values());
+    private final static List<ProfileTypes> allProfileTypes = List.of(ProfileTypes.values());
+
 
     /**
      * Retourne le tableau des échantillons du profil de l'arête d'identité donnée,
@@ -122,60 +121,103 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         if (!hasProfile(edgeId))
             return new float[]{};
 
-        int profileTypeValue = Bits.extractUnsigned(profileIds.get(edgeId), 30, 2);
-        int firstProfileId = Bits.extractUnsigned(profileIds.get(edgeId), 0, 29);
+        float[] samples = new float[numberOfSamplesInProfile(edgeId)];
+        ProfileTypes profileType = profileType(edgeId);
+        float firstUncompressedSample = Q28_4.asFloat(Short.toUnsignedInt(
+                elevations.get(firstProfileId(edgeId))));
+        samples[0] = firstUncompressedSample;
 
-        profileTypes profileType = allProfileTypes.get(profileTypeValue);
+        switch (profileType) {
+            case UNCOMPRESSED ->  extractSamplesUncompressed(edgeId, samples);
+            case COMPRESSED_Q44 -> extractSamplesCompressed(edgeId, Short.SIZE / 2,
+                    samples);
+            case COMPRESSED_Q04 -> extractSamplesCompressed(edgeId, Short.SIZE / 4,
+                    samples);
+        }
 
+        if (isInverted(edgeId))
+            reverse(samples);
+        return samples;
+    }
 
+    private void extractSamplesUncompressed(int edgeId, float[] samples) {
+        int sampleIndex = 1;
+        for (int i = 1; i < elevations.capacity() - 1; i++) {
+            int elevationsIndex = firstProfileId(edgeId) + i ;
+            int sample = Short.toUnsignedInt(elevations.get(elevationsIndex));
+            if (sampleIndex >= samples.length)
+                break;
+            samples[sampleIndex] = Q28_4.asFloat(sample);
+            sampleIndex++;
+        }
+    }
+    private void extractSamplesCompressed(int edgeId, int sampleRangeLength,float[] samples) {
+        int samplesPerShort = Short.SIZE / sampleRangeLength;
+        int samplesIndex = 1;
+        boolean isSamplesFull = false;
+
+        for (int i = 1; i < elevations().capacity() - 1; ++i) {
+            if(isSamplesFull)
+                break;
+            int start = Short.SIZE  - sampleRangeLength;
+            int elevationsIndex = firstProfileId(edgeId) + i ;
+            int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
+
+            for (int j = 0; j < samplesPerShort; ++j) {
+                if (samplesIndex > samples.length - 1) {
+                    isSamplesFull = true;
+                    break;
+                }
+
+                int sample = Bits.extractSigned(s, start, sampleRangeLength);
+                float difference = Q28_4.asFloat(sample);
+                int indexOfPreviousSample = samplesIndex - 1;
+                samples[samplesIndex] = difference + samples[indexOfPreviousSample];
+                start -= sampleRangeLength;
+                samplesIndex++;
+            }
+
+        }
+
+    }
+
+    //Inverse les éléments du tableau passé en argument
+    private void reverse(float[] arr) {
+        float temp;
+        for (int i = 0; i < arr.length / 2; i++) {
+            temp = arr[i];
+            arr[i] = arr[arr.length - i - 1];
+            arr[arr.length - i - 1] = temp;
+        }
+    }
+
+    // Retourne le type de profil d' l'arête d'identité edgeId
+    private ProfileTypes profileType(int edgeId) {
+        int profileTypeValueStartOfRange = 30;
+        int profileTypeValueRangeLength = 2;
+        int profileTypeValue = Bits.extractUnsigned(profileIds.get(edgeId),
+                profileTypeValueStartOfRange,
+                profileTypeValueRangeLength);
+        return allProfileTypes.get(profileTypeValue);
+    }
+
+    // Retourne l'identité du premier profil de l'arête d'identité edgeId
+    private int firstProfileId(int edgeId) {
+        int firstProfileIdStartOfRange = 0;
+        int firstProfileIdRangeLength = 29;
+        return Bits.extractUnsigned(profileIds.get(edgeId),
+                firstProfileIdStartOfRange,
+                firstProfileIdRangeLength);
+    }
+
+    // Retourne le nombre d'échantillons du profil de l'arête d'identité edgeId
+    private int numberOfSamplesInProfile(int edgeId) {
         int lengthToQ28_4 = Short.toUnsignedInt(
                 edgesBuffer.getShort(BYTES_FOR_EDGES * edgeId + OFFSET_LENGTH));
         int twoToQ28_4 = Q28_4.ofInt(2);
-        int numberOfSamples = 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
-
-
-        float[] samples = new float[numberOfSamples];
-
-        int sampleLength = 0;
-        switch (profileType) {
-            case UNCOMPRESSED -> sampleLength = Short.SIZE;
-            case COMPRESSED_Q44 -> sampleLength = Short.SIZE / 2;
-            case COMPRESSED_Q04 -> sampleLength = Short.SIZE / 4;
-        }
-
-        // Nombre d'échantillons contenu dans un des short du buffer, dépend du
-        // format de compression
-        int samplesPerShort = Short.SIZE / sampleLength;
-
-        boolean inverted = isInverted(edgeId);
-        int k = inverted ? numberOfSamples - 1 : 0;
-        for (int i = 0; i < elevations().capacity() - 1; ++i) {
-            int start =  Short.SIZE  - sampleLength;
-            int elevationsIndex =  firstProfileId + i ;
-            int s = Short.toUnsignedInt(elevations.get(elevationsIndex));
-
-            if (i == 0)  {
-                samples[k] = Q28_4.asFloat(s);
-                k += inverted ? -1 : 1;
-                continue;
-            }
-            for (int j = 0; j < samplesPerShort; ++j) {
-                if (k < 0 || k >= samples.length)
-                    return samples;
-                if (profileType == profileTypes.UNCOMPRESSED){
-                    samples[k] = Q28_4.asFloat(s);
-                } else {
-                    int sample =  Bits.extractSigned(s, start, sampleLength);
-                    float difference = Q28_4.asFloat(sample);
-                    int indexOfPreviousSample = inverted ?  k + 1 : k - 1;
-                    samples[k] = difference + samples[indexOfPreviousSample];
-                    start -=  sampleLength;
-                }
-                k += inverted ? -1 : 1;
-            }
-        }
-     return samples;
+        return 1 + Math2.ceilDiv(lengthToQ28_4, twoToQ28_4);
     }
+
     /**
      * Retourne l'identité de l'ensemble d'attributs attaché à l'arête d'identité donnée.
      *
@@ -188,5 +230,3 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 edgesBuffer.getShort(edgeId * BYTES_FOR_EDGES + OFFSET_ATTRIBUTES_INDEX));
     }
 }
-
-
