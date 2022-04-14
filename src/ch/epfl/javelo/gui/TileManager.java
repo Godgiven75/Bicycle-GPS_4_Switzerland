@@ -1,11 +1,11 @@
 package ch.epfl.javelo.gui;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,7 +46,8 @@ public final class TileManager {
 
 
     public TileManager(Path path, String tileServer) {
-        this.path = File.createDirectories();
+
+        this.path = Files.createDirectories(path, );
         this.tileServer = tileServer;
     }
 
@@ -59,6 +60,7 @@ public final class TileManager {
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
         StringJoiner tileSpecificDir = new StringJoiner("/", "", ".png");
+        // "<zoomLevel>/<xTileIndex>/<yTileIndex>.png"
         tileSpecificDir
                 .add(String.valueOf(tileId.zoomLevel()))
                 .add(String.valueOf(tileId.xTileIndex()))
@@ -70,7 +72,7 @@ public final class TileManager {
             return inMemoryCache.get(tileId);
         }
         // Cache disque
-        else if ()
+        else if (Files.exists())
         //serveur openstreetmap
         URL u = new URL(tileDir);
         URLConnection c = u.openConnection();
