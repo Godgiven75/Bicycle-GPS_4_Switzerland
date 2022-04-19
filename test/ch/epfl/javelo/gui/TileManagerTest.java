@@ -1,5 +1,12 @@
 package ch.epfl.javelo.gui;
 
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+
+import java.nio.file.Path;
+
 public class TileManagerTest {
     public final class TestTileManager extends Application {
         public static void main(String[] args) { launch(args); }

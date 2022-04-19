@@ -1,19 +1,17 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.WebMercator;
-
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
+import javafx.scene.image.Image;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 
 /**
  * Représente un gestionnaire de tuiles OSM.
@@ -25,8 +23,8 @@ public final class TileManager {
     private final Path path;
     private final String tileServer;
     private static final int MAX_ENTRIES = 100;
-    private Map<TileId,Image> inMemoryCache =
-            new LinkedHashMap<>(MAX_ENTRIES, .1f, true);
+    private Map<TileId,Image> cacheMemory =
+            new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
     protected boolean removeEldestEntry(Map m) {
         return m.size() > MAX_ENTRIES;
@@ -35,13 +33,15 @@ public final class TileManager {
     private record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
 
         /**
-         * Retourne l'image associée à l'identité d'une tuile
+         * Retourne true si les paramètres passés en argument correspondent à une
+         * tuile valide, et false sinon
          *
          * @param zoomLevel le niveau de zoom
          * @param xTileIndex l'index x de la tuile
          * @param yTileIndex l'index y de la tuile
          *
-         * @return l'image associée à l'identité de tuile donnée
+         * @return true si les paramètres passés en argument correspondent à une
+         * tuile valide, et false sinon
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
             //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
@@ -60,9 +60,9 @@ public final class TileManager {
     }
 
 
-    public TileManager(Path path, String tileServer) {
+    public TileManager(Path path, String tileServer) throws IOException {
 
-        this.path = Files.createDirectories(path, );
+        this.path = Files.createDirectories(path);
         this.tileServer = tileServer;
     }
 
@@ -74,25 +74,36 @@ public final class TileManager {
      * @throws IOException si l'URL ne correspond pas à une tuile connue
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
-        StringJoiner tileSpecificDir = new StringJoiner("/", "", ".png");
-        // "<zoomLevel>/<xTileIndex>/<yTileIndex>.png"
-        tileSpecificDir
-                .add(String.valueOf(tileId.zoomLevel()))
-                .add(String.valueOf(tileId.xTileIndex()))
-                .add(String.valueOf(tileId.yTileIndex()));
-        StringBuilder tileDir = new StringBuilder("https://tile.openstreetmap.org/");
-        tileDir.append(tileSpecificDir);
-        // Cache mémoire
-        if (inMemoryCache.containsKey(tileId)) {
-            return inMemoryCache.get(tileId);
+        int zoomLevel = tileId.zoomLevel();
+        int xTileIndex = tileId.xTileIndex();
+        int yTIleIndex = tileId.yTileIndex();
+        Preconditions.checkArgument(TileId.isValid(zoomLevel, xTileIndex, yTIleIndex));
+
+        if (cacheMemory.containsKey(tileId)) {
+            return cacheMemory.get(tileId);
         }
-        // Cache disque
-        else if (Files.exists())
-        //serveur openstreetmap
-        URL u = new URL(tileDir);
+
+        if (Files.exists(imagePath(path, tileId))) {
+            try (InputStream fis = new FileInputStream(imagePath(path, tileId).toString())) {
+                Image image = new Image(fis);
+                cacheMemory.put(tileId, image);
+                return image;
+            }
+        }
+        Files.createDirectories(imagePath(path, tileId));
+        OutputStream fos = new FileOutputStream(imagePath(path, tileId).toString());
+        URL u = new URL(imagePath(Path.of(tileServer), tileId) + ".png");
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
-        try (InputStream i = c.getInputStream()
+        try (InputStream i = c.getInputStream()) {
+            return new Image(i);
+        }
+    }
+    private Path imagePath(Path basePath, TileId tileId) {
+        return basePath
+                .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex())));
     }
 
 }
