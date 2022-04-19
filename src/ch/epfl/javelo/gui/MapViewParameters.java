@@ -1,5 +1,8 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.geometry.Point2D;
+
 /**
  * Représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
@@ -9,10 +12,55 @@ package ch.epfl.javelo.gui;
  * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
  * dans le système WGS 84, au niveau de zoom donné
  */
-public record MapViewParameters(int zoomLevel, int xImage, int yImage) {
+public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
 
-    public int topLeft() {
+    public Point2D topLeft() {
+        return new Point2D(xImage, yImage);
+    }
 
+    public MapViewParameters withMinXY(double newXImage, double newYImage) {
+
+        return
+    }
+
+    /**
+     * Prend les coordonnées d'un point exprimées par rapport au point haut-gauche
+     * de la portion de carte affichée à l'écran et retourne ce point sous la forme
+     * d'une instance de PointWebMercator.
+     *
+     * @param x la coordonnée x du point en PointWebMercator
+     * @param y la coordonnée y du point en PointWebMercator
+     *
+     * @return ce point sous la forme d'une instance de PointWebMercator
+     */
+    public PointWebMercator pointAt(double x, double y) {
+        return PointWebMercator.of(zoomLevel, x - xImage, y - yImage);
+    }
+
+    /**
+     * Retourne la position x correspondante au point p pris en argument, exprimée
+     * par rapport au coin haut-gauche de la portion de carte affichée à l'écran.
+     *
+     * @param p le point PointWebMercator
+     *
+     * @return la position x correspondante au point p pris en argument, exprimée
+     * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
+     */
+    public double viewX(PointWebMercator p) {
+        return xImage - p.xAtZoomLevel(zoomLevel);
+    }
+
+    /**
+     * Retourne la position x correspondante au point p pris en argument, exprimée
+     * par rapport au coin haut-gauche de la portion de carte affichée à l'écran.
+     *
+     * @param p le point PointWebMercator
+     *
+     * @return la position x correspondante au point p pris en argument, exprimée
+     * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
+     */
+    public double viewY(PointWebMercator p) {
+        return yImage - p.yAtZoomLevel(zoomLevel);
     }
 }
