@@ -1,5 +1,9 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.projection.Ch1903;
+import ch.epfl.javelo.projection.SwissBounds;
+import ch.epfl.javelo.projection.WebMercator;
+
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +44,18 @@ public final class TileManager {
          * @return l'image associée à l'identité de tuile donnée
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
-            return false;
+            //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
+            // WebMercator (je ne pense pas puisque xTileIndex et yTileIndex
+            // sont des entiers, donc utiliser Math.scalb semple superflu
+            double xWebMercator = xTileIndex << zoomLevel;
+            double yWebMercator = yTileIndex << zoomLevel;
+            // Cela dit, les lignes suivantes sont "dupliquées" car elles figurent
+            // aussi dans  WebMercator
+            double lon = WebMercator.lon(xWebMercator);
+            double lat = WebMercator.lat(yWebMercator);
+            double e = Ch1903.e(lon, lat);
+            double n = Ch1903.n(lon, lat);
+            return SwissBounds.containsEN(e, n);
         }
     }
 
