@@ -6,6 +6,14 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Path;
+
+import static java.nio.file.Files.newBufferedWriter;
 
 /**
  * Classe publique non instanciable représentant un générateur d'itinéraire au
@@ -77,6 +85,8 @@ public class GpxGenerator {
         Element ele = doc.createElement("point elevation");
         rtept.appendChild(ele);
         ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));
+
+        return doc;
     }
     private static Document newDocument() {
         try {
@@ -86,6 +96,33 @@ public class GpxGenerator {
                     .newDocument();
         } catch (ParserConfigurationException e) {
             throw new Error(e); // Ne devrait jamais se produire
+        }
+    }
+
+    /**
+     * Ecrit le document GPX correspondant à l'itinéraire et au profil de cet
+     * itinéraire dans le fichier.
+     *
+     * @param fileName le nom du fichier
+     * @param route l'itinéraire
+     * @param profile le profil de l'itinéraire
+     *
+     * @throws IOException en cas d'erreur entrée/sortie
+     */
+    public static void writeGpx(String path, Route route, ElevationProfile profile)
+            throws IOException {
+        Document doc = createGpx(route, profile);
+        Writer w = newBufferedWriter(Path.of(path));
+
+        try {
+            Transformer transformer = TransformerFactory
+                    .newDefaultInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(new DOMSource(doc),
+                    new StreamResult(w));
+        } catch(TransformerException e) {
+            throw new Error(e);
         }
     }
 }
