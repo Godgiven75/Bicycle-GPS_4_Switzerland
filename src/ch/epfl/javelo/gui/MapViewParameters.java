@@ -11,6 +11,9 @@ import javafx.geometry.Point2D;
  * dans le système WGS 84, au niveau de zoom donné
  * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
  * dans le système WGS 84, au niveau de zoom donné
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
