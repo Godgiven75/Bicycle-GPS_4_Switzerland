@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.projection.PointCh;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -13,6 +14,14 @@ import javax.xml.parsers.ParserConfigurationException;
 public class GpxGenerator {
     private GpxGenerator() {}
 
+    /**
+     * Retourne le document GPX correspondant à l'itinéraire et son profil.
+     *
+     * @param route l'itinéraire
+     * @param profile le profil de cet itinéraire
+     *
+     * @return le document GPX correspondant à l'itinéraire et son profil
+     */
     public static Document createGpx(Route route, ElevationProfile profile) {
         Document doc = newDocument();
 
@@ -37,7 +46,37 @@ public class GpxGenerator {
         name.setTextContent("Route JaVelo");
 
         Element rte = doc.createElement("route");
+        doc.appendChild(rte);
 
+        // Il faudrait plutôt un itérateur pour l'élégance
+
+        double position = 0.0;
+        for (int i = 0; i < route.edges().size(); i++) {
+
+            Edge e = route.edges().get(i);
+            PointCh p = e.fromPoint();
+            double lon = p.lon();
+            double lat = p.lat();
+
+            Element rtept = doc.createElement("route point");
+            rte.appendChild(rtept);
+            rtept.setAttribute("lat=", String.valueOf(lat));
+            rtept.setAttribute("lon=", String.valueOf(lon));
+
+            Element ele = doc.createElement("point elevation");
+            rtept.appendChild(ele);
+            ele.setTextContent(String.valueOf(profile.elevationAt(position)));
+
+            position += e.length();
+        }
+        Edge lastEdge = route.edges().get(route.edges().size() - 1);
+        Element rtept = doc.createElement("route point");
+        rte.appendChild(rtept);
+        rtept.setAttribute("lat=", String.valueOf(lastEdge.toPoint().lat()));
+        rtept.setAttribute("lon=", String.valueOf(lastEdge.toPoint().lon()));
+        Element ele = doc.createElement("point elevation");
+        rtept.appendChild(ele);
+        ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));
     }
     private static Document newDocument() {
         try {
