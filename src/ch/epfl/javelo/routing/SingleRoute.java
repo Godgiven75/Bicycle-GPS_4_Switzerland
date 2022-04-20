@@ -80,7 +80,7 @@ public final class SingleRoute implements Route {
     /**
      * Retourne la totalité des points situés aux extrémités des arêtes de l'itinéraire.
      *
-     * @return la totalité des points situés aux extrémintés des arêtes de l'itinéraire
+     * @return la totalité des points situés aux extrémités des arêtes de l'itinéraire
      */
     @Override
     public List<PointCh> points() {
