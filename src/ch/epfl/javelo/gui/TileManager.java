@@ -1,15 +1,23 @@
 package ch.epfl.javelo.gui;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
+
+import ch.epfl.javelo.projection.Ch1903;
+import ch.epfl.javelo.projection.SwissBounds;
+import ch.epfl.javelo.projection.WebMercator;
+
+import javafx.scene.image.Image;
+
+
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.StringJoiner;
+
+
 
 /**
  * Représente un gestionnaire de tuiles OSM.
@@ -20,34 +28,50 @@ import java.util.StringJoiner;
 public final class TileManager {
     private final Path path;
     private final String tileServer;
+    //On gardera au maximum 100 tuiles en mémoire
     private static final int MAX_ENTRIES = 100;
-    private Map<TileId,Image> inMemoryCache =
-            new LinkedHashMap<>(MAX_ENTRIES, .1f, true);
-
-    protected boolean removeEldestEntry(Map m) {
-        return m.size() > MAX_ENTRIES;
-    }
+    private final Map<TileId, Image> cacheMemory =
+            new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
     private record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
 
         /**
-         * Retourne l'image associée à l'identité d'une tuile
+         * Retourne vrai si les paramètres passés en argument correspondent à une
+         * tuile valide, et faux sinon
          *
          * @param zoomLevel le niveau de zoom
          * @param xTileIndex l'index x de la tuile
          * @param yTileIndex l'index y de la tuile
          *
-         * @return l'image associée à l'identité de tuile donnée
+         * @return vrai si les paramètres passés en argument correspondent à une
+         * tuile valide, et faux sinon
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
-            return false;
+            //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
+            // WebMercator (je ne pense pas puisque xTileIndex et yTileIndex
+            // sont des entiers, donc utiliser Math.scalb semple superflu
+            double xWebMercator = xTileIndex << zoomLevel;
+            double yWebMercator = yTileIndex << zoomLevel;
+            // Cela dit, les lignes suivantes sont "dupliquées" car elles figurent
+            // aussi dans  WebMercator
+            double lon = WebMercator.lon(xWebMercator);
+            double lat = WebMercator.lat(yWebMercator);
+            double e = Ch1903.e(lon, lat);
+            double n = Ch1903.n(lon, lat);
+            return SwissBounds.containsEN(e, n);
         }
     }
 
-
-    public TileManager(Path path, String tileServer) {
-
-        this.path = Files.createDirectories(path, );
+    /**
+     * Crée un nouveau gestionnaire de tuiles, avec un cache disque
+     * au le chemin spécifié, et qui charge les tuiles depuis le serveur de tuile
+     * passé en argument
+     * @param path chemin du cache disque
+     * @param tileServer nom serveur de tuile
+     * @throws IOException si le chemin pour le cache-disque est invalide
+     */
+    public TileManager(Path path, String tileServer) throws IOException {
+        this.path = Files.createDirectories(path);
         this.tileServer = tileServer;
     }
 
@@ -59,25 +83,38 @@ public final class TileManager {
      * @throws IOException si l'URL ne correspond pas à une tuile connue
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
-        StringJoiner tileSpecificDir = new StringJoiner("/", "", ".png");
-        // "<zoomLevel>/<xTileIndex>/<yTileIndex>.png"
-        tileSpecificDir
-                .add(String.valueOf(tileId.zoomLevel()))
-                .add(String.valueOf(tileId.xTileIndex()))
-                .add(String.valueOf(tileId.yTileIndex()));
-        StringBuilder tileDir = new StringBuilder("https://tile.openstreetmap.org/");
-        tileDir.append(tileSpecificDir);
-        // Cache mémoire
-        if (inMemoryCache.containsKey(tileId)) {
-            return inMemoryCache.get(tileId);
+        if (cacheMemory.containsKey(tileId)) {
+            return cacheMemory.get(tileId);
         }
-        // Cache disque
-        else if (Files.exists())
-        //serveur openstreetmap
-        URL u = new URL(tileDir);
+        //Permet de supprimer l'élément auquel on a accédé le moins récemment
+        //de la mémoire cache
+        if (cacheMemory.size() >= MAX_ENTRIES) {
+            Iterator<TileId> it = cacheMemory.keySet().iterator();
+            cacheMemory.remove(it.next());
+        }
+        if (Files.exists(imagePath(path, tileId))) {
+            try (InputStream fis = new FileInputStream(imagePath(path, tileId).toString())) {
+                Image image = new Image(fis);
+                cacheMemory.put(tileId, image);
+                return image;
+            }
+        }
+        Files.createDirectories(imagePath(path, tileId));
+        URL u = new URL(imagePath(Path.of(tileServer), tileId) + ".png");
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
-        try (InputStream i = c.getInputStream()
+        try (InputStream i = c.getInputStream();
+             OutputStream o = new FileOutputStream(imagePath(path, tileId).toString())) {
+            Image image = new Image(i);
+            cacheMemory.put(tileId, image);
+            i.transferTo(o);
+            return image;
+        }
     }
-
+    private Path imagePath(Path basePath, TileId tileId) {
+        return basePath
+                .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex())));
+    }
 }

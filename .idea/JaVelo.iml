@@ -22,5 +22,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="OpenJFX 18" level="application" />
   </component>
 </module>
