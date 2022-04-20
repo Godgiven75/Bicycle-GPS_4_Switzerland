@@ -23,8 +23,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
     }
 
     public MapViewParameters withMinXY(double newXImage, double newYImage) {
-
-        return
+        return new MapViewParameters(this.zoomLevel(), newXImage, newYImage);
     }
 
     /**

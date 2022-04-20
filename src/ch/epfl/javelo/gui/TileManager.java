@@ -64,7 +64,7 @@ public final class TileManager {
 
     /**
      * Crée un nouveau gestionnaire de tuiles, avec un cache disque
-     * au le chemin spécifié, et qui charge les tuiles depuis le serveur de tuile
+     * au chemin spécifié, et qui charge les tuiles depuis le serveur de tuile
      * passé en argument
      * @param path chemin du cache disque
      * @param tileServer nom serveur de tuile
@@ -83,15 +83,18 @@ public final class TileManager {
      * @throws IOException si l'URL ne correspond pas à une tuile connue
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
+
         if (cacheMemory.containsKey(tileId)) {
             return cacheMemory.get(tileId);
         }
         //Permet de supprimer l'élément auquel on a accédé le moins récemment
-        //de la mémoire cache
+        //de la mémoire cache si la mémoire cache est pleine, afin de pouvoir
+        //ajouter une nouvelle image
         if (cacheMemory.size() >= MAX_ENTRIES) {
             Iterator<TileId> it = cacheMemory.keySet().iterator();
             cacheMemory.remove(it.next());
         }
+
         if (Files.exists(imagePath(path, tileId))) {
             try (InputStream fis = new FileInputStream(imagePath(path, tileId).toString())) {
                 Image image = new Image(fis);
