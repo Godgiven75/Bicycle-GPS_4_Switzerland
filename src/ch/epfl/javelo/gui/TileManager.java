@@ -118,6 +118,6 @@ public final class TileManager {
         return basePath
                 .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
                 .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
-                .resolve(Path.of(String.valueOf(tileId.xTileIndex())));
+                .resolve(Path.of(String.valueOf(tileId.yTileIndex())));
     }
 }
