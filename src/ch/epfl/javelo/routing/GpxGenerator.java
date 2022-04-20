@@ -103,7 +103,7 @@ public class GpxGenerator {
      * Ecrit le document GPX correspondant à l'itinéraire et au profil de cet
      * itinéraire dans le fichier.
      *
-     * @param fileName le nom du fichier
+     * @param path le nom du fichier
      * @param route l'itinéraire
      * @param profile le profil de l'itinéraire
      *
