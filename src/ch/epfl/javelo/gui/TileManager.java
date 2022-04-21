@@ -5,6 +5,7 @@ import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.WebMercator;
 
+import com.sun.security.jgss.GSSUtil;
 import javafx.scene.image.Image;
 
 
@@ -33,7 +34,7 @@ public final class TileManager {
     private final Map<TileId, Image> cacheMemory =
             new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
-    private record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
+    public record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
 
         /**
          * Retourne vrai si les paramètres passés en argument correspondent à une
@@ -94,30 +95,40 @@ public final class TileManager {
             Iterator<TileId> it = cacheMemory.keySet().iterator();
             cacheMemory.remove(it.next());
         }
+        Path imagePath = path
+                .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
+                .resolve(Path.of(String.valueOf(tileId.yTileIndex()) + ".png"));
 
-        if (Files.exists(imagePath(path, tileId))) {
-            try (InputStream fis = new FileInputStream(imagePath(path, tileId).toString())) {
+        if (Files.exists(imagePath)) {
+            try (InputStream fis = new FileInputStream(imagePath.toString())) {
                 Image image = new Image(fis);
                 cacheMemory.put(tileId, image);
                 return image;
             }
         }
-        Files.createDirectories(imagePath(path, tileId));
-        URL u = new URL(imagePath(Path.of(tileServer), tileId) + ".png");
+        Files.createDirectories(path
+                .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
+                .resolve(Path.of(String.valueOf(tileId.xTileIndex()))));
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append("https://")
+                .append(tileServer).append("/")
+                .append(tileId.zoomLevel()).append("/")
+                .append(tileId.xTileIndex()).append("/")
+                .append(tileId.yTileIndex())
+                .append(".png");
+
+        URL u = new URL(urlBuilder.toString());
+        System.out.println(u);
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
         try (InputStream i = c.getInputStream();
-             OutputStream o = new FileOutputStream(imagePath(path, tileId).toString())) {
+             OutputStream o = new FileOutputStream(imagePath.toString())) {
             Image image = new Image(i);
             cacheMemory.put(tileId, image);
             i.transferTo(o);
             return image;
         }
     }
-    private Path imagePath(Path basePath, TileId tileId) {
-        return basePath
-                .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
-                .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
-                .resolve(Path.of(String.valueOf(tileId.yTileIndex())));
-    }
+
 }
