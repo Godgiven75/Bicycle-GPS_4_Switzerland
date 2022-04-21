@@ -5,7 +5,6 @@ import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.WebMercator;
 
-import com.sun.security.jgss.GSSUtil;
 import javafx.scene.image.Image;
 
 
@@ -50,7 +49,7 @@ public final class TileManager {
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
             //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
             // WebMercator (je ne pense pas puisque xTileIndex et yTileIndex
-            // sont des entiers, donc utiliser Math.scalb semple superflu
+            // sont des entiers, donc utiliser Math.scalb semble superflu
             double xWebMercator = xTileIndex << zoomLevel;
             double yWebMercator = yTileIndex << zoomLevel;
             // Cela dit, les lignes suivantes sont "dupliquées" car elles figurent
@@ -110,6 +109,7 @@ public final class TileManager {
         Files.createDirectories(path
                 .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
                 .resolve(Path.of(String.valueOf(tileId.xTileIndex()))));
+
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append("https://")
                 .append(tileServer).append("/")
@@ -119,16 +119,17 @@ public final class TileManager {
                 .append(".png");
 
         URL u = new URL(urlBuilder.toString());
-        System.out.println(u);
+
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
         try (InputStream i = c.getInputStream();
              OutputStream o = new FileOutputStream(imagePath.toString())) {
-            Image image = new Image(i);
-            cacheMemory.put(tileId, image);
             i.transferTo(o);
-            return image;
         }
+        FileInputStream f = new FileInputStream(imagePath.toString());
+        Image image = new Image(f);
+        cacheMemory.put(tileId, image);
+        return image;
     }
 
 }
