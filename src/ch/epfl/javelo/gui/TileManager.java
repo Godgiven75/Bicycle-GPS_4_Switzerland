@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 
+import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.projection.WebMercator;
@@ -83,7 +84,7 @@ public final class TileManager {
      * @throws IOException si l'URL ne correspond pas à une tuile connue
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
-
+        //preconditions ?
         if (cacheMemory.containsKey(tileId)) {
             return cacheMemory.get(tileId);
         }
@@ -97,7 +98,7 @@ public final class TileManager {
         Path imagePath = path
                 .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
                 .resolve(Path.of(String.valueOf(tileId.xTileIndex())))
-                .resolve(Path.of(String.valueOf(tileId.yTileIndex()) + ".png"));
+                .resolve(Path.of(tileId.yTileIndex() + ".png"));
 
         if (Files.exists(imagePath)) {
             try (InputStream fis = new FileInputStream(imagePath.toString())) {
@@ -122,6 +123,7 @@ public final class TileManager {
 
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
+
         try (InputStream i = c.getInputStream();
              OutputStream o = new FileOutputStream(imagePath.toString())) {
             i.transferTo(o);
@@ -131,5 +133,4 @@ public final class TileManager {
         cacheMemory.put(tileId, image);
         return image;
     }
-
 }
