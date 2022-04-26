@@ -7,17 +7,17 @@ import javafx.stage.Stage;
 
 import java.nio.file.Path;
 
-public class TileManagerTest {
-    public final class TestTileManager extends Application {
-        public static void main(String[] args) { launch(args); }
+public class TileManagerTest extends Application {
 
-        @Override
-        public void start(Stage primaryStage) throws Exception {
-            TileManager tm = new TileManager(
-                    Path.of("."), "tile.openstreetmap.org");
-            Image tileImage = tm.imageForTileAt(
-                    new TileManager.TileId(19, 271725, 185422));
-            Platform.exit();
-        }
+    public static void main(String[] args) { launch(args); }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        TileManager tm = new TileManager(
+                Path.of("."), "tile.openstreetmap.org");
+        Image tileImage = tm.imageForTileAt(
+                new TileManager.TileId(19, 271725, 185422));
+        Platform.exit();
     }
 }
+

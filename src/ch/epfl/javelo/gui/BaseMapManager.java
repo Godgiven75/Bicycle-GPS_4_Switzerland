@@ -30,10 +30,10 @@ public final class BaseMapManager {
         Pane pane = new Pane();
         Canvas canvas = new Canvas();
         canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-        graphicsContext.
 
 
-
+        return null;
     }
 }

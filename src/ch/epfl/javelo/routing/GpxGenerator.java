@@ -12,6 +12,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.StringJoiner;
 
 import static java.nio.file.Files.newBufferedWriter;
 
@@ -53,8 +54,8 @@ public class GpxGenerator {
         metadata.appendChild(name);
         name.setTextContent("Route JaVelo");
 
-        Element rte = doc.createElement("route");
-        doc.appendChild(rte);
+        Element rte = doc.createElement("rte");
+        root.appendChild(rte);
 
         // Il faudrait plutôt un itérateur pour l'élégance
 
@@ -63,26 +64,26 @@ public class GpxGenerator {
 
             Edge e = route.edges().get(i);
             PointCh p = e.fromPoint();
-            double lon = p.lon();
-            double lat = p.lat();
+            double lon = Math.toDegrees(p.lon());
+            double lat = Math.toDegrees(p.lat());
 
-            Element rtept = doc.createElement("route point");
+            Element rtept = doc.createElement("rtept");
             rte.appendChild(rtept);
-            rtept.setAttribute("lat=", String.valueOf(lat));
-            rtept.setAttribute("lon=", String.valueOf(lon));
+            rtept.setAttribute("lat", String.valueOf(lat));
+            rtept.setAttribute("lon", String.valueOf(lon));
 
-            Element ele = doc.createElement("point elevation");
+            Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
             ele.setTextContent(String.valueOf(profile.elevationAt(position)));
 
             position += e.length();
         }
         Edge lastEdge = route.edges().get(route.edges().size() - 1);
-        Element rtept = doc.createElement("route point");
+        Element rtept = doc.createElement("rtept");
         rte.appendChild(rtept);
-        rtept.setAttribute("lat=", String.valueOf(lastEdge.toPoint().lat()));
-        rtept.setAttribute("lon=", String.valueOf(lastEdge.toPoint().lon()));
-        Element ele = doc.createElement("point elevation");
+        rtept.setAttribute("lat", String.valueOf(lastEdge.toPoint().lat()));
+        rtept.setAttribute("lon", String.valueOf(lastEdge.toPoint().lon()));
+        Element ele = doc.createElement("ele");
         rtept.appendChild(ele);
         ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));
 
