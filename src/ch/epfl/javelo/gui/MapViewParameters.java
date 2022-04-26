@@ -17,11 +17,22 @@ import javafx.geometry.Point2D;
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
-
+    /**
+     * Retourne un Point2D correspondant au coin en haut à gauche de l'image
+     * @return un point2D correspondant au coin en haut à gauche de l'image
+     */
     public Point2D topLeft() {
         return new Point2D(xImage, yImage);
     }
 
+    /**
+     * Retourne une nouvelle instance de MapViewParameters, avec les nouvelles
+     * coordonnées du coin en haut à gauche de l'image, passées en arguments
+     * @param newXImage la nouvelle coordonnée x du coin en haut à gauche
+     * @param newYImage la nouvelle coordonnée y du coin en haut à gauche
+     * @return une nouvelle instance de MapViewParameters, avec les nouvelles
+     * coordonnées du coin en haut à gauche de l'image
+     */
     public MapViewParameters withMinXY(double newXImage, double newYImage) {
         return new MapViewParameters(this.zoomLevel(), newXImage, newYImage);
     }

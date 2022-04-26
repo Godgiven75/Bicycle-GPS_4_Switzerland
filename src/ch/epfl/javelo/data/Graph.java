@@ -94,7 +94,7 @@ public class Graph {
     }
 
     private static MappedByteBuffer mappedBuffer(Path filePath) throws IOException {
-        try (FileChannel channel =  FileChannel.open(filePath)) {
+        try (FileChannel channel = FileChannel.open(filePath)) {
             return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
     }
