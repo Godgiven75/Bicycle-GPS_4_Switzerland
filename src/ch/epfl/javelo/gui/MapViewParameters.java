@@ -18,16 +18,7 @@ import static java.lang.Math.scalb;
  * @author Nathanaël Girod (329987)
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
-    public static void main(String[] args) {
-        MapViewParameters mvp = new MapViewParameters(10, 135735, 92327);
-        PointWebMercator p = mvp.pointAt(0, 0);
-        double lon = Math.toDegrees(p.lon());
-        double lat = Math.toDegrees(p.lat());
-        System.out.printf("%.5f, %.5f", lon, lat);
-        System.out.println();
-        System.out.println(mvp.viewX(p));
-        System.out.println(mvp.viewY(p));
-    }
+
     /**
      * Retourne un Point2D correspondant au coin en haut à gauche de l'image
      * @return un point2D correspondant au coin en haut à gauche de l'image
