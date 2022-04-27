@@ -246,7 +246,7 @@ public class Graph {
      */
     public DoubleUnaryOperator edgeProfile(int edgeId) {
         float[] samples = edges.profileSamples(edgeId);
-        return edges.hasProfile(edgeId)?
+        return edges.hasProfile(edgeId) ?
                 Functions.sampled(samples, edgeLength(edgeId))
                 : Functions.constant(Double.NaN);
     }

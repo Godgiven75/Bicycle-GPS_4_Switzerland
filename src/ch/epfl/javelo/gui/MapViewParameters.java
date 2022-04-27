@@ -3,6 +3,8 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.geometry.Point2D;
 
+import static java.lang.Math.scalb;
+
 /**
  * Représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
@@ -16,7 +18,16 @@ import javafx.geometry.Point2D;
  * @author Nathanaël Girod (329987)
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
-
+    public static void main(String[] args) {
+        MapViewParameters mvp = new MapViewParameters(10, 135735, 92327);
+        PointWebMercator p = mvp.pointAt(0, 0);
+        double lon = Math.toDegrees(p.lon());
+        double lat = Math.toDegrees(p.lat());
+        System.out.printf("%.5f, %.5f", lon, lat);
+        System.out.println();
+        System.out.println(mvp.viewX(p));
+        System.out.println(mvp.viewY(p));
+    }
     /**
      * Retourne un Point2D correspondant au coin en haut à gauche de l'image
      * @return un point2D correspondant au coin en haut à gauche de l'image
@@ -34,7 +45,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * coordonnées du coin en haut à gauche de l'image
      */
     public MapViewParameters withMinXY(double newXImage, double newYImage) {
-        return new MapViewParameters(this.zoomLevel(), newXImage, newYImage);
+        return new MapViewParameters(zoomLevel, newXImage, newYImage);
     }
 
     /**
@@ -48,7 +59,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * @return ce point sous la forme d'une instance de PointWebMercator
      */
     public PointWebMercator pointAt(double x, double y) {
-        return PointWebMercator.of(zoomLevel, x - xImage, y - yImage);
+        return PointWebMercator.of(zoomLevel, x + xImage, y + yImage);
     }
 
     /**

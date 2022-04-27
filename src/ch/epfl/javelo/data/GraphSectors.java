@@ -80,7 +80,6 @@ public record GraphSectors(ByteBuffer buffer) {
                 inArea.add(new Sector(startNodeId, endNodeId));
             }
         }
-
         return inArea;
     }
 }

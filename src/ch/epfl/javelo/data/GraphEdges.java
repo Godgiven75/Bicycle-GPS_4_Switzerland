@@ -128,7 +128,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         samples[0] = firstUncompressedSample;
 
         switch (profileType) {
-            case UNCOMPRESSED ->  extractSamplesUncompressed(edgeId, samples);
+            case UNCOMPRESSED -> extractSamplesUncompressed(edgeId, samples);
             case COMPRESSED_Q44 -> extractSamplesCompressed(edgeId, Short.SIZE / 2,
                     samples);
             case COMPRESSED_Q04 -> extractSamplesCompressed(edgeId, Short.SIZE / 4,
