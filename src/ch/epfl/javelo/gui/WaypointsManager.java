@@ -22,7 +22,7 @@ public final class WaypointsManager {
                             ObservableList<Waypoint> waypoints, Consumer<String> errorConsumer) {
         this.graph = graph;
         this.mapViewParametersP = mapViewParametersP;
-        this.waypoints = (ObservableList<Waypoint>) List.copyOf(waypoints);
+        this.waypoints = waypoints;
         this.errorConsumer = errorConsumer;
     }
 }
