@@ -16,9 +16,10 @@ public class GpxGeneratorTest {
         Graph graph = Graph.loadFrom(basePath);
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer routeComputer = new RouteComputer(graph, costFunction);
-        Route route = routeComputer.bestRouteBetween(159049 , 117669);
-        ElevationProfile elevationProfile = elevationProfile(route, 5);
+        Route route = routeComputer.bestRouteBetween(159049, 117669 );
+        System.out.println(route.length());
+        ElevationProfile elevationProfile = ElevationProfileComputer.elevationProfile(route, 5f);
         GpxGenerator.createGpx(route, elevationProfile);
-        GpxGenerator.writeGpx("test", route, elevationProfile);
+        GpxGenerator.writeGpx("test.gpx", route, elevationProfile);
     }
 }

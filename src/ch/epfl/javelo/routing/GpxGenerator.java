@@ -12,6 +12,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.StringJoiner;
 
 import static java.nio.file.Files.newBufferedWriter;
@@ -74,18 +75,18 @@ public class GpxGenerator {
 
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
-            ele.setTextContent(String.valueOf(profile.elevationAt(position)));
+            ele.setTextContent(String.format(Locale.ROOT,"%.2f",profile.elevationAt(position)));
 
             position += e.length();
         }
-        Edge lastEdge = route.edges().get(route.edges().size() - 1);
+        /*Edge lastEdge = route.edges().get(route.edges().size() - 1);
         Element rtept = doc.createElement("rtept");
         rte.appendChild(rtept);
         rtept.setAttribute("lat", String.valueOf(lastEdge.toPoint().lat()));
         rtept.setAttribute("lon", String.valueOf(lastEdge.toPoint().lon()));
         Element ele = doc.createElement("ele");
         rtept.appendChild(ele);
-        ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));
+        ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));*/
 
         return doc;
     }
@@ -122,8 +123,9 @@ public class GpxGenerator {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
+
         } catch(TransformerException e) {
-            throw new Error(e);
+            throw new Error(e); // Ne devrait jamais se produire
         }
     }
 }
