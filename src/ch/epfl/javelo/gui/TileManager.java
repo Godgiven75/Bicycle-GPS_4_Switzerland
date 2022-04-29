@@ -1,6 +1,5 @@
 package ch.epfl.javelo.gui;
 
-
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.SwissBounds;
@@ -18,8 +17,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
-
 /**
  * Représente un gestionnaire de tuiles OSM.
  *
@@ -35,12 +32,11 @@ public final class TileManager {
             new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
     /**
-     * Représente l'identité d'une tuile OSM.
+     * Enregistrement imbriqué représentant l'identité d'une tuile OSM.
      *
-     * @param zoomLevel le niveau de zoom de la tuile correspondante
-     * @param xTileIndex l'index x de la tuile correspondante, au niveau de zoom donné
-     * @param yTileIndex l'index y de la tuile correspondante, au niveau de zoom donné
-     *
+     * @param zoomLevel le niveau de zoom de la tuile
+     * @param xTileIndex l'index X de la tuile
+     * @param yTileIndex l'index Y de la tuile
      */
     public record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
 
@@ -56,19 +52,9 @@ public final class TileManager {
          * tuile valide, et faux sinon
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
-           //CE QUI SUIT EST ABSOLUMENT FAUX
-            //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
-            // WebMercator (je ne pense pas puisque xTileIndex et yTileIndex
-            // sont des entiers, donc utiliser Math.scalb semble superflu
-            double xWebMercator = xTileIndex << zoomLevel;
-            double yWebMercator = yTileIndex << zoomLevel;
-            // Cela dit, les lignes suivantes sont "dupliquées" car elles figurent
-            // aussi dans  WebMercator
-            double lon = WebMercator.lon(xWebMercator);
-            double lat = WebMercator.lat(yWebMercator);
-            double e = Ch1903.e(lon, lat);
-            double n = Ch1903.n(lon, lat);
-            return SwissBounds.containsEN(e, n);
+            int maxIndex = 1 << (zoomLevel + 8);
+            return (0 < xTileIndex && xTileIndex <= maxIndex)
+                    && (0 < yTileIndex && yTileIndex <= maxIndex);
         }
     }
 
