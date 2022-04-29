@@ -1,6 +1,8 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
@@ -29,10 +31,22 @@ public final class WaypointsManager {
     }
 
     public Pane pane() {
-        return null;
+
     }
 
-    public void addWayPoint() {
+    /**
+     * Prend les coordonnées x et y d'un point et ajoute un nouveau point de
+     * passage au noeud du graphe qui en est le plus proche (dans un rayon de
+     * 500m).
+     *
+     * @param x la coordonnée x du point
+     * @param y la coordonnée y du point
+     */
+    public void addWayPoint(double x, double y) {
+        PointCh p = (new PointWebMercator(x, y)).toPointCh();
+        int closestNodeId = graph.nodeClosestTo(p, 500);
+        if (closestNodeId == -1)
+            errorConsumer.accept("Aucune route à proximité !");
 
     }
 }
