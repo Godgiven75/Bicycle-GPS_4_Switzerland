@@ -30,7 +30,7 @@ public final class BaseMapManager {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParametersP = mapViewParametersP;
-        this.canvas = new Canvas(500, 500);
+        this.canvas = new Canvas(600, 300);
         this.canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
@@ -58,7 +58,7 @@ public final class BaseMapManager {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         try {
-            canvas = new Canvas(500, 500);
+            canvas = new Canvas(600, 300);
             MapViewParameters mvp = mapViewParametersP.get();
             int zoomLevel = mvp.zoomLevel();
             double xImage = mvp.xImage();
