@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.canvas.Canvas;
@@ -9,8 +10,6 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
-import static java.lang.Math.multiplyExact;
-import static java.lang.Math.scalb;
 
 /**
  * Gère l'affichage et l'interaction avec le fond de carte
@@ -24,21 +23,26 @@ public final class BaseMapManager {
     private Pane pane;
     private Canvas canvas;
     private boolean redrawNeeded;
+    private static final int PIXELS_IN_TILE = 256;
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
-                          ObjectProperty<MapViewParameters> mapViewParametersP) throws IOException {
+                          ObjectProperty<MapViewParameters> mapViewParametersP) {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParametersP = mapViewParametersP;
-        this.canvas = new Canvas(600, 300);
-        redrawOnNextPulse();
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+        this.canvas = new Canvas(500, 500);
+        this.canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        pane = new Pane(this.canvas);
-        canvas.widthProperty().bind(pane.widthProperty());
-        canvas.heightProperty().bind(pane.heightProperty());
+        redrawOnNextPulse();
+        this.pane = new Pane();
+        this.pane.getChildren()
+                .add(canvas);
+        this.canvas.widthProperty()
+                .bind(pane.widthProperty());
+        this.canvas.heightProperty()
+                .bind(pane.heightProperty());
     }
 
     /**
@@ -53,28 +57,51 @@ public final class BaseMapManager {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         try {
-            Canvas newC = new Canvas(600, 300);
+            canvas = new Canvas(500, 500);
             MapViewParameters mvp = mapViewParametersP.get();
             int zoomLevel = mvp.zoomLevel();
             double xImage = mvp.xImage();
             double yImage = mvp.yImage();
-            final int TILE_SIZE = 256;
-            int xIndex =  Math2.ceilDiv((int)xImage , 256);
-            int yIndex =  Math2.ceilDiv((int)yImage , 256);
-            for (int x = 0; x <= newC.getWidth(); x += TILE_SIZE) {
-                for (int y = 0; y <= newC.getHeight(); y += TILE_SIZE) {
-                    System.out.println(xIndex + " " + yIndex);
-                    TileManager.TileId tileId = new TileManager.TileId(zoomLevel, xIndex++, yIndex++);
+
+            // Index de la première tuile que l'on va dessiner (celle qui contient
+            // le coin en haut à gauche donné dans les MapViewParameters)
+            int firstXIndex = Math.floorDiv( (int) xImage, PIXELS_IN_TILE);
+            int firstYIndex = Math.floorDiv( (int) yImage, PIXELS_IN_TILE);
+
+            //Nombre de tuiles sur l'axe horizontal
+            int tilesInWidth = (int) canvas.getWidth() / PIXELS_IN_TILE + 1;
+            //Nombre de tuiles sur l'axe vertical
+            int tilesInHeight = (int) canvas.getHeight() / PIXELS_IN_TILE + 1;
+
+            PointWebMercator topLeft = mvp.pointAt(mvp.xImage(), mvp.yImage());
+            double topLeftX = mvp.viewX(topLeft);
+            double topLeftY = mvp.viewY(topLeft);
+
+            // Coordonées du pixel correspondant au coin en haut à gauche de la
+            // première tuile à dessiner sur le canevas
+            double firstX = firstXIndex * PIXELS_IN_TILE - topLeftX;
+            double firstY = firstYIndex * PIXELS_IN_TILE - topLeftY;
+
+            int xIndex = firstXIndex;
+            double x = firstX;
+            for (int i = 0; i <= tilesInWidth; i += 1) {
+                int yIndex = firstYIndex;
+                double y = firstY;
+                for (int j = 0; j <= tilesInHeight; j += 1) {
+                    TileManager.TileId tileId =
+                            new TileManager.TileId(zoomLevel, xIndex, yIndex++);
                     Image image = tileManager.imageForTileAt(tileId);
-                    newC.getGraphicsContext2D()
-                            .drawImage(image, x, y);
-                    System.out.println(x + " " + y );
+                    canvas.getGraphicsContext2D()
+                            .drawImage(image,x, y);
+                    y += PIXELS_IN_TILE;
                 }
-                canvas = newC;
-                pane.getChildren().remove(canvas);
-                pane.getChildren().add(newC);
+                xIndex++;
+                x += PIXELS_IN_TILE;
             }
-        } catch (Exception ignored) {
+
+            pane.getChildren()
+                    .add(canvas);
+        } catch (IOException ignored) {
             System.out.println(ignored);
         }
 
