@@ -56,8 +56,11 @@ public final class Ch1903 {
     public static double lon(double e, double n) {
         double x = 1e-6 * (e - 2600000);
         double y = 1e-6 * (n - 1200000);
-        double l0 = 2.6779094 + 4.728982 * x + 0.791484 * x * y
-                + 0.1306 * x * y * y - 0.0436 * x * x * x;
+        double l0 = 2.6779094
+                + 4.728982 * x
+                + 0.791484 * x * y
+                + 0.1306 * x * y * y
+                - 0.0436 * x * x * x;
 
         return Math.toRadians(l0 * 100.0/36.0);
     }

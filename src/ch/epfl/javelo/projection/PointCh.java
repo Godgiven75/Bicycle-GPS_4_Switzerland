@@ -1,5 +1,6 @@
 package ch.epfl.javelo.projection;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
 /**
