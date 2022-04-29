@@ -35,6 +35,7 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+        //this.canvas
         redrawOnNextPulse();
         this.pane = new Pane();
         this.pane.getChildren()
@@ -101,9 +102,7 @@ public final class BaseMapManager {
 
             pane.getChildren()
                     .add(canvas);
-        } catch (IOException ignored) {
-            System.out.println(ignored);
-        }
+        } catch (IOException ignored) {}
 
     }
     private void redrawOnNextPulse() {
