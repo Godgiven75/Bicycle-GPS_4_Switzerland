@@ -53,8 +53,8 @@ public final class TileManager {
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
             int maxIndex = 1 << (zoomLevel + 8);
-            return (0 < xTileIndex && xTileIndex <= maxIndex)
-                    && (0 < yTileIndex && yTileIndex <= maxIndex);
+            return (0 <= xTileIndex && xTileIndex < maxIndex)
+                    && (0 <= yTileIndex && yTileIndex < maxIndex);
         }
     }
 
