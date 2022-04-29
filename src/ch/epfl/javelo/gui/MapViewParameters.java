@@ -1,18 +1,20 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 
-import static java.lang.Math.scalb;
+
+
 
 /**
  * Représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
  * @param zoomLevel le niveau de zoom
  * @param xImage la coordonnée x du coin haut-gauche de la portion de carte affichée
- * dans le système WGS 84, au niveau de zoom donné
+ * dans le système Web Mercator, au niveau de zoom donné
  * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
- * dans le système WGS 84, au niveau de zoom donné
+ * dans le système Web Mercator, au niveau de zoom donné
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
@@ -44,13 +46,15 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * de la portion de carte affichée à l'écran et retourne ce point sous la forme
      * d'une instance de PointWebMercator.
      *
-     * @param x la coordonnée x du point en PointWebMercator
-     * @param y la coordonnée y du point en PointWebMercator
+     * @param x la coordonnée x du point par rapport au point en haut à gauche
+     *          de l'image
+     * @param y la coordonnée y du point par rapport au point en haut à gauche
+     *          de l'image
      *
      * @return ce point sous la forme d'une instance de PointWebMercator
      */
     public PointWebMercator pointAt(double x, double y) {
-        return PointWebMercator.of(zoomLevel, x + xImage, y + yImage);
+        return PointWebMercator.of(zoomLevel,x - xImage , yImage - y);
     }
 
     /**
@@ -63,7 +67,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
      */
     public double viewX(PointWebMercator p) {
-        return xImage - p.xAtZoomLevel(zoomLevel);
+        return xImage + p.xAtZoomLevel(zoomLevel);
     }
 
     /**

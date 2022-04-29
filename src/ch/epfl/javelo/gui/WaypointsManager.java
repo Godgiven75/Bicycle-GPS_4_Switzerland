@@ -7,7 +7,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -31,7 +30,7 @@ public final class WaypointsManager {
     }
 
     public Pane pane() {
-
+        return null;
     }
 
     /**
@@ -47,6 +46,5 @@ public final class WaypointsManager {
         int closestNodeId = graph.nodeClosestTo(p, 500);
         if (closestNodeId == -1)
             errorConsumer.accept("Aucune route à proximité !");
-
     }
 }
