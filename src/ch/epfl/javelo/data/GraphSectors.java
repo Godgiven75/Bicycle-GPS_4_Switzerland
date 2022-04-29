@@ -2,6 +2,7 @@ package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.SwissBounds;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -19,14 +20,10 @@ import static java.lang.Short.toUnsignedInt;
  * des secteurs
  */
 public record GraphSectors(ByteBuffer buffer) {
-    private static final double SWISS_WIDTH = 349_000;
-    private static final double SWISS_HEIGHT = 221_000;
-    private static final double SWISS_E_MIN = 2_485_000;
-    private static final double SWISS_N_MIN = 1_075_000;
     private static final int SUBDIVISIONS_PER_SIDE = 128;
     private static final int SUBDIVISIONS_PER_SIDE_INDEX = SUBDIVISIONS_PER_SIDE - 1;
-    private static final double SECTOR_WIDTH = SWISS_WIDTH / SUBDIVISIONS_PER_SIDE;
-    private static final double SECTOR_HEIGHT = SWISS_HEIGHT / SUBDIVISIONS_PER_SIDE;
+    private static final double SECTOR_WIDTH = SwissBounds.WIDTH / SUBDIVISIONS_PER_SIDE;
+    private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT / SUBDIVISIONS_PER_SIDE;
     private static final int OFFSET_SECTOR = Integer.BYTES + Short.BYTES;
 
     /**
@@ -53,8 +50,10 @@ public record GraphSectors(ByteBuffer buffer) {
 
         double leftSide = center.e() - distance;
         double lowerSide = center.n() - distance;
-        double distanceToWestLimit = leftSide - SWISS_E_MIN;
-        double distanceToSouthLimit = lowerSide - SWISS_N_MIN;
+        double distanceToWestLimit = leftSide - SwissBounds.MIN_E;
+        double
+
+                distanceToSouthLimit = lowerSide - SwissBounds.MIN_N;
         final double EDGE_LENGTH = 2 * distance;
 
         int xMin = Math2.clamp(0,

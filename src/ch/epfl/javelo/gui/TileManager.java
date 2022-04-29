@@ -34,6 +34,14 @@ public final class TileManager {
     private final Map<TileId, Image> cacheMemory =
             new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
+    /**
+     * Représente l'identité d'une tuile OSM.
+     *
+     * @param zoomLevel le niveau de zoom de la tuile correspondante
+     * @param xTileIndex l'index x de la tuile correspondante, au niveau de zoom donné
+     * @param yTileIndex l'index y de la tuile correspondante, au niveau de zoom donné
+     *
+     */
     public record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
 
         /**
@@ -48,6 +56,7 @@ public final class TileManager {
          * tuile valide, et faux sinon
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
+           //CE QUI SUIT EST ABSOLUMENT FAUX
             //devrait-on utiliser les méthodes xAtZoomLevel() et yAtZoomLevel de
             // WebMercator (je ne pense pas puisque xTileIndex et yTileIndex
             // sont des entiers, donc utiliser Math.scalb semble superflu

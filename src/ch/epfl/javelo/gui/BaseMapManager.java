@@ -3,7 +3,6 @@ package ch.epfl.javelo.gui;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
@@ -21,8 +20,8 @@ public final class BaseMapManager {
     private final TileManager tileManager;
     private final WaypointsManager waypointsManager;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
-    private final Pane pane;
-    private final Canvas canvas;
+    private Pane pane;
+    private Canvas canvas;
     private boolean redrawNeeded;
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
@@ -30,12 +29,14 @@ public final class BaseMapManager {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParametersP = mapViewParametersP;
-        this.canvas = new Canvas();
+        this.canvas = new Canvas(300, 600);
+        redrawOnNextPulse();
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        this.pane = drawPane();
+        pane = new Pane(this.canvas);
+        canvas.widthProperty().bind(pane.widthProperty());
     }
 
     /**
@@ -45,26 +46,33 @@ public final class BaseMapManager {
     public Pane pane() {
        return pane;
     }
-    private Pane drawPane() throws IOException {
-        MapViewParameters mvp = mapViewParametersP.get();
-        double x = mvp.xImage();
-        double y = mvp.yImage();
-        int zoomLevel = mvp.zoomLevel();
-        int xIndex = (int) scalb(x, -zoomLevel);
-        int yIndex = (int) scalb(y, - zoomLevel);
-        TileManager.TileId tileId = new TileManager.TileId(zoomLevel, xIndex, yIndex);
-        Image image = tileManager.imageForTileAt(tileId);
-        canvas.getGraphicsContext2D().drawImage(image, x, y);
-        new Pane(canvas);
-        canvas.widthProperty().bind(pane.widthProperty());
-        return pane;
-    }
+
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         try {
-            drawPane();
-        } catch (IOException ignored) {}
+            Canvas newC = new Canvas(300, 600);
+            MapViewParameters mvp = mapViewParametersP.get();
+            int zoomLevel = mvp.zoomLevel();
+            double xImage = mvp.xImage();
+            double yImage = mvp.yImage();
+            final int TILE_SIZE = 256;
+            for (int x = 0; x <= newC.getWidth(); x += TILE_SIZE) {
+                for (int y = 0; y <= newC.getHeight(); y += TILE_SIZE) {
+                    int xId = (int) scalb(xImage, -zoomLevel) + x;
+                    int yId = (int) scalb(yImage, -zoomLevel) + y;
+                    TileManager.TileId tileId = new TileManager.TileId(zoomLevel, xId, yId);
+                    Image image = tileManager.imageForTileAt(tileId);
+                    newC.getGraphicsContext2D()
+                            .drawImage(image, x, y);
+                }
+                canvas = newC;
+                pane = new Pane(canvas);
+            }
+        } catch (Exception ignored) {
+            System.out.println(ignored);
+        }
+
     }
     private void redrawOnNextPulse() {
         redrawNeeded = true;
