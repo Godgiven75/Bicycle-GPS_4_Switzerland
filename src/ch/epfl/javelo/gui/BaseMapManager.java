@@ -35,7 +35,7 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        //this.canvas
+        //this.canvas.widthProperty().addListener();
         redrawOnNextPulse();
         this.pane = new Pane();
         this.pane.getChildren()
