@@ -78,7 +78,7 @@ public final class BaseMapManager {
             double topLeftX = mvp.viewX(topLeft);
             double topLeftY = mvp.viewY(topLeft);
 
-            // Coordonées du pixel correspondant au coin en haut à gauche de la
+            // Coordonnées du pixel correspondant au coin en haut à gauche de la
             // première tuile à dessiner sur le canevas
             double firstX = firstXIndex * PIXELS_IN_TILE - topLeftX;
             double firstY = firstYIndex * PIXELS_IN_TILE - topLeftY;

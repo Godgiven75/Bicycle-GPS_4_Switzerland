@@ -67,7 +67,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
      */
     public double viewX(PointWebMercator p) {
-        return xImage + p.xAtZoomLevel(zoomLevel);
+        return p.xAtZoomLevel(zoomLevel) - xImage;
     }
 
     /**
@@ -80,6 +80,6 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
      */
     public double viewY(PointWebMercator p) {
-        return yImage - p.yAtZoomLevel(zoomLevel);
+        return p.yAtZoomLevel(zoomLevel) - yImage;
     }
 }

@@ -70,12 +70,12 @@ public final class WaypointsManager {
             PointCh pointCh = waypoint.p();
             System.out.println(pointCh);
             PointWebMercator p = PointWebMercator.ofPointCh(pointCh);
-            double finalX = p.x();
-            double finalY = p.y();
+            double finalX = mvp.viewX(p);
+            double finalY = mvp.viewY(p);
             System.out.println(finalX);
             System.out.println(finalY);
-            group.setLayoutX(finalX - group.getLayoutBounds().getMinX());
-            group.setLayoutY(finalY - group.getLayoutBounds().getMinY());
+            group.setLayoutX(finalX);
+            group.setLayoutY(finalY);
             pane.getChildren().add(group);
         }
         System.out.printf("Il y a %d marqueurs", pane.getChildren().size());
