@@ -54,6 +54,7 @@ public final class WaypointsManager {
             Group group = new Group();
             group.getChildren().addAll(exteriorMarker, interiorMarker);
             group.getStyleClass().add("map.pin");
+            //group.setOnMousePressed();
             if (i != 0 && i != waypoints.size()) {
                 group.getStyleClass().add("map.middle");
                 exteriorMarker.setFill(Color.DARKTURQUOISE);
