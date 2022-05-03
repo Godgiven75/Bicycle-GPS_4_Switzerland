@@ -2,10 +2,17 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.geometry.Point2D;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -20,9 +27,11 @@ public final class BaseMapManager {
     private final TileManager tileManager;
     private final WaypointsManager waypointsManager;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
+    private ObjectProperty<Point2D> mousePositionP;
     private Pane pane;
     private Canvas canvas;
     private boolean redrawNeeded;
+    private int currentZoomLevel;
     private static final int PIXELS_IN_TILE = 256;
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
@@ -30,20 +39,25 @@ public final class BaseMapManager {
         this.tileManager = tileManager;
         this.waypointsManager = waypointsManager;
         this.mapViewParametersP = mapViewParametersP;
+        this.currentZoomLevel = mapViewParametersP.get().zoomLevel();
         this.canvas = new Canvas(600, 300);
-        this.canvas.sceneProperty().addListener((p, oldS, newS) -> {
+        this.pane = new Pane(canvas);
+        pane.setPickOnBounds(false);
+        addBindings();
+        addMouseEventsManager();
+
+        System.out.println(pane);
+
+        //addMouseEventsManager();
+
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        //this.canvas.widthProperty().addListener();
-        redrawOnNextPulse();
-        this.pane = new Pane();
-        this.pane.getChildren()
-                .add(canvas);
-        this.canvas.widthProperty()
-                .bind(pane.widthProperty());
-        this.canvas.heightProperty()
-                .bind(pane.heightProperty());
+        canvas.widthProperty().addListener((p) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((p) -> redrawOnNextPulse());
+
+
     }
 
     /**
@@ -51,16 +65,16 @@ public final class BaseMapManager {
      * @return le panneau JavaFX affichant le fond de carte
      */
     public Pane pane() {
-       return pane;
+        return pane;
     }
 
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         try {
-            canvas = new Canvas(600, 300);
+
             MapViewParameters mvp = mapViewParametersP.get();
-            int zoomLevel = mvp.zoomLevel();
+
             double xImage = mvp.xImage();
             double yImage = mvp.yImage();
 
@@ -80,9 +94,8 @@ public final class BaseMapManager {
 
             // Coordonnées du pixel correspondant au coin en haut à gauche de la
             // première tuile à dessiner sur le canevas
-            double firstX = firstXIndex * PIXELS_IN_TILE - topLeftX;
-            double firstY = firstYIndex * PIXELS_IN_TILE - topLeftY;
-
+            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE;
+            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE;
             int xIndex = firstXIndex;
             double x = firstX;
             for (int i = 0; i <= tilesInWidth; i += 1) {
@@ -90,23 +103,47 @@ public final class BaseMapManager {
                 double y = firstY;
                 for (int j = 0; j <= tilesInHeight; j += 1) {
                     TileManager.TileId tileId =
-                            new TileManager.TileId(zoomLevel, xIndex, yIndex++);
+                            new TileManager.TileId(currentZoomLevel, xIndex, yIndex++);
                     Image image = tileManager.imageForTileAt(tileId);
                     canvas.getGraphicsContext2D()
-                            .drawImage(image,x, y);
+                            .drawImage(image, x, y);
                     y += PIXELS_IN_TILE;
                 }
                 xIndex++;
                 x += PIXELS_IN_TILE;
             }
-
-            pane.getChildren()
-                    .add(canvas);
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {}  // Ne devrait jamais se produire
 
     }
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
+    private void addBindings() {
+        canvas.widthProperty()
+                .bind(pane.widthProperty());
+        canvas.heightProperty()
+                .bind(pane.heightProperty());
+    }
+    private void addMouseEventsManager() {
+
+        pane.setOnMouseDragged(event -> {
+            Point2D previousPosition = mousePositionP.get();
+            Point2D currentPosition = new Point2D(event.getX(), event.getY());
+
+
+            redrawOnNextPulse();
+        });
+        //pane.setOnMousePressed();
+        //pane.setOnMouseReleased();
+
+
+        pane.setOnScroll(e -> {
+            mapViewParametersP.set(new MapViewParameters(currentZoomLevel + (int)e.getDeltaY(),
+                    mapViewParametersP.get().xImage(), mapViewParametersP.get().yImage()));
+            redrawOnNextPulse();
+        });
+
+    }
+
 }

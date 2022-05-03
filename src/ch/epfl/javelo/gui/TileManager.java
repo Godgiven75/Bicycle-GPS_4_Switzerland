@@ -39,6 +39,7 @@ public final class TileManager {
      * @param yTileIndex l'index Y de la tuile
      */
     public record TileId(int zoomLevel, int xTileIndex, int yTileIndex) {
+        private static final int BASE_ZOOM_LEVEL = 8;
 
         /**
          * Retourne vrai si les paramètres passés en argument correspondent à une
@@ -52,7 +53,7 @@ public final class TileManager {
          * tuile valide, et faux sinon
          */
         public static boolean isValid(int zoomLevel, int xTileIndex, int yTileIndex) {
-            int maxIndex = 1 << (zoomLevel + 8);
+            int maxIndex = 1 << (zoomLevel + BASE_ZOOM_LEVEL);
             return (0 <= xTileIndex && xTileIndex < maxIndex)
                     && (0 <= yTileIndex && yTileIndex < maxIndex);
         }

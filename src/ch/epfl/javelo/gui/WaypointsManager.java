@@ -3,8 +3,12 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -26,6 +30,7 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorConsumer;
     private final Pane pane;
+    private ObjectProperty<Point2D> mousePositionP;
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
                             ObservableList<Waypoint> waypoints, Consumer<String> errorConsumer) {
@@ -34,6 +39,11 @@ public final class WaypointsManager {
         this.waypoints = waypoints;
         this.errorConsumer = errorConsumer;
         this.pane = drawPane();
+        pane.setPickOnBounds(false);
+        this.mousePositionP = new SimpleObjectProperty<>();
+        //mousePositionP.addListener(m -> mousePositionP.set(new Point2D(mousePositionP.get().getX(), mousePositionP.get().getY())));
+        mapViewParametersP.addListener(mvp -> drawPane());
+        waypoints.addListener((Observable o) -> drawPane());
     }
 
     public Pane pane() {
@@ -55,7 +65,7 @@ public final class WaypointsManager {
             group.getChildren().addAll(exteriorMarker, interiorMarker);
             group.getStyleClass().add("map.pin");
             //group.setOnMousePressed();
-            if (i != 0 && i != waypoints.size()) {
+            if (i != 0 && i != (waypoints.size() - 1)) {
                 group.getStyleClass().add("map.middle");
                 exteriorMarker.setFill(Color.DARKTURQUOISE);
             } else {
@@ -63,7 +73,7 @@ public final class WaypointsManager {
                     group.getStyleClass().add("map.first");
                     exteriorMarker.setFill(Color.LIMEGREEN);
                 }
-                if (i == waypoints.size()) {
+                if (i == (waypoints.size() - 1)) {
                     group.getStyleClass().add("map.last");
                     exteriorMarker.setFill(Color.ORANGERED);
                 }
@@ -78,9 +88,20 @@ public final class WaypointsManager {
             group.setLayoutX(finalX);
             group.setLayoutY(finalY);
             pane.getChildren().add(group);
+            group.setOnMousePressed(e -> {
+                mousePositionP.set(new Point2D(e.getX(), e.getY()));
+            });
+            group.setOnMouseDragged(m -> mousePositionP.set(new Point2D(m.getX(), m.getY())));
+            group.setOnMouseReleased(e -> {
+                addWayPoint(mousePositionP.get().getX(), mousePositionP.get().getY());
+            });
         }
         System.out.printf("Il y a %d marqueurs", pane.getChildren().size());
         return pane;
+    }
+
+    private void updateContent() {
+
     }
 
 
