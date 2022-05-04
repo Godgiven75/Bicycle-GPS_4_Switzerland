@@ -40,7 +40,7 @@ public final class WaypointsManager {
         this.errorConsumer = errorConsumer;
         this.pane = drawPane();
         pane.setPickOnBounds(false);
-        this.mousePositionP = new SimpleObjectProperty<>();
+        this.mousePositionP = new SimpleObjectProperty<>(new Point2D(0, 0));
         //mousePositionP.addListener(m -> mousePositionP.set(new Point2D(mousePositionP.get().getX(), mousePositionP.get().getY())));
         mapViewParametersP.addListener(mvp -> drawPane());
         waypoints.addListener((Observable o) -> drawPane());
@@ -64,7 +64,6 @@ public final class WaypointsManager {
             Group group = new Group();
             group.getChildren().addAll(exteriorMarker, interiorMarker);
             group.getStyleClass().add("map.pin");
-            //group.setOnMousePressed();
             if (i != 0 && i != (waypoints.size() - 1)) {
                 group.getStyleClass().add("map.middle");
                 exteriorMarker.setFill(Color.DARKTURQUOISE);
@@ -88,12 +87,14 @@ public final class WaypointsManager {
             group.setLayoutX(finalX);
             group.setLayoutY(finalY);
             pane.getChildren().add(group);
-            group.setOnMousePressed(e -> {
+            pane.setOnMousePressed(e -> {
                 mousePositionP.set(new Point2D(e.getX(), e.getY()));
             });
-            group.setOnMouseDragged(m -> mousePositionP.set(new Point2D(m.getX(), m.getY())));
-            group.setOnMouseReleased(e -> {
-                addWayPoint(mousePositionP.get().getX(), mousePositionP.get().getY());
+            pane.setOnMouseDragged(m -> mousePositionP.set(new Point2D(m.getX(), m.getY())));
+            pane.setOnMouseReleased(e -> {
+                System.out.println(mousePositionP);
+                PointWebMercator mousePWM = mvp.pointAt(mousePositionP.get().getX(), mousePositionP.get().getY());
+                addWayPoint(mousePWM.x(), mousePWM.y());
             });
         }
         System.out.printf("Il y a %d marqueurs", pane.getChildren().size());
