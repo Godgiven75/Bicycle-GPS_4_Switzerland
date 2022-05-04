@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -42,6 +43,7 @@ public final class BaseMapManager {
         this.currentZoomLevel = mapViewParametersP.get().zoomLevel();
         this.canvas = new Canvas(600, 300);
         this.pane = new Pane(canvas);
+        this.mousePositionP = new SimpleObjectProperty<>(new Point2D(0, 0));
         pane.setPickOnBounds(false);
         addBindings();
         addMouseEventsManager();
@@ -94,8 +96,9 @@ public final class BaseMapManager {
 
             // Coordonnées du pixel correspondant au coin en haut à gauche de la
             // première tuile à dessiner sur le canevas
-            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE;
-            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE;
+            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE - mousePositionP.get().getX();
+            System.out.println(firstX);
+            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE - mousePositionP.get().getY();
             int xIndex = firstXIndex;
             double x = firstX;
             for (int i = 0; i <= tilesInWidth; i += 1) {
@@ -130,10 +133,11 @@ public final class BaseMapManager {
         pane.setOnMouseDragged(event -> {
             Point2D previousPosition = mousePositionP.get();
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
-
-
+            mousePositionP.set(mousePositionP.get().add(event.getX(), event.getY()));
+            Point2D offset = currentPosition.subtract(previousPosition);
             redrawOnNextPulse();
         });
+
         //pane.setOnMousePressed();
         //pane.setOnMouseReleased();
 
