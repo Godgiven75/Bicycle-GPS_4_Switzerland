@@ -41,25 +41,14 @@ public final class BaseMapManager {
         this.waypointsManager = waypointsManager;
         this.mapViewParametersP = mapViewParametersP;
         this.currentZoomLevel = mapViewParametersP.get().zoomLevel();
-        this.canvas = new Canvas(600, 300);
+        this.canvas = new Canvas();
         this.pane = new Pane(canvas);
         this.mousePositionP = new SimpleObjectProperty<>(new Point2D(0, 0));
         pane.setPickOnBounds(false);
+
         addBindings();
+        addListeners();
         addMouseEventsManager();
-
-        System.out.println(pane);
-
-        //addMouseEventsManager();
-
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
-        canvas.widthProperty().addListener((p) -> redrawOnNextPulse());
-        canvas.heightProperty().addListener((p) -> redrawOnNextPulse());
-
-
     }
 
     /**
@@ -96,9 +85,9 @@ public final class BaseMapManager {
 
             // Coordonnées du pixel correspondant au coin en haut à gauche de la
             // première tuile à dessiner sur le canevas
-            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE - mousePositionP.get().getX();
-            System.out.println(firstX);
-            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE - mousePositionP.get().getY();
+            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE;
+            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE;
+
             int xIndex = firstXIndex;
             double x = firstX;
             for (int i = 0; i <= tilesInWidth; i += 1) {
@@ -133,21 +122,43 @@ public final class BaseMapManager {
         pane.setOnMouseDragged(event -> {
             Point2D previousPosition = mousePositionP.get();
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
-            mousePositionP.set(mousePositionP.get().add(event.getX(), event.getY()));
-            Point2D offset = currentPosition.subtract(previousPosition);
+            if (!currentPosition.equals(previousPosition)) {
+                mousePositionP.set(currentPosition);
+                Point2D offset = previousPosition.subtract(currentPosition);
+                MapViewParameters mvp = mapViewParametersP.get();
+                double oldTopLeftX = mvp.xImage();
+                double oldTopLeftY = mvp.yImage();
+                double newTopLeftX = oldTopLeftX + offset.getX();
+                double newTopLeftY = oldTopLeftY + offset.getY();
+                mapViewParametersP.set(mvp.withMinXY(newTopLeftX, newTopLeftY));
+            }
             redrawOnNextPulse();
         });
-
-        //pane.setOnMousePressed();
-        //pane.setOnMouseReleased();
-
-
+        pane.setOnMousePressed(event -> {
+            Point2D currentPosition = new Point2D(event.getX(), event.getY());
+            mousePositionP.set(currentPosition);
+        });
+        pane.setOnMouseReleased(event -> {
+            Point2D currentPosition = new Point2D(event.getX(), event.getY());
+            mousePositionP.set(currentPosition);
+        });
         pane.setOnScroll(e -> {
-            mapViewParametersP.set(new MapViewParameters(currentZoomLevel + (int)e.getDeltaY(),
+            int newZoomLevel = currentZoomLevel + (int) e.getDeltaY();
+            System.out.println(currentZoomLevel);
+
+            currentZoomLevel = newZoomLevel;
+            mapViewParametersP.set(new MapViewParameters(newZoomLevel,
                     mapViewParametersP.get().xImage(), mapViewParametersP.get().yImage()));
             redrawOnNextPulse();
         });
-
+    }
+    private void addListeners() {
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
+        canvas.widthProperty().addListener((p) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((p) -> redrawOnNextPulse());
     }
 
 }
