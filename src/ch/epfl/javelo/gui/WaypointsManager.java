@@ -29,6 +29,7 @@ public final class WaypointsManager {
     private final Consumer<String> errorConsumer;
     private final Pane pane;
     private ObjectProperty<Point2D> mousePosition;
+    private ObjectProperty<Point2D> gpOldPosition;
     private boolean hasClosestNode = false;
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
@@ -37,6 +38,7 @@ public final class WaypointsManager {
         this.mapViewParametersP = mapViewParametersP;
         this.waypoints = waypoints;
         this.errorConsumer = errorConsumer;
+        this.gpOldPosition = new SimpleObjectProperty<>(new Point2D(0, 0));
         this.pane = drawPane();
         pane.setPickOnBounds(false);
         this.mousePosition = new SimpleObjectProperty<>(new Point2D(0, 0));
@@ -127,7 +129,7 @@ public final class WaypointsManager {
             System.out.println("Y du nouveau WayPoint: " + finalY);
             group.setLayoutX(finalX);
             group.setLayoutY(finalY);
-
+            gpOldPosition.set(new Point2D(finalX, finalY));
 
             group.setOnMousePressed(e -> {
                 mousePosition.set(new Point2D(e.getX(), e.getY()));
@@ -150,9 +152,10 @@ public final class WaypointsManager {
                     PointWebMercator tempP = PointWebMercator.ofPointCh(waypoints.get(finalI).p());
                     group.setLayoutX(mvp.viewX(tempP));
                     group.setLayoutY(mvp.viewY(tempP));
+                    gpOldPosition.set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
                 } else {
-                    group.setLayoutX(finalX);
-                    group.setLayoutY(finalY);
+                    group.setLayoutX(gpOldPosition.get().getX());
+                    group.setLayoutY(gpOldPosition.get().getY());
                 }
             });
 
