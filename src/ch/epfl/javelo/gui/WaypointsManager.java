@@ -29,8 +29,7 @@ public final class WaypointsManager {
     private final Consumer<String> errorConsumer;
     private final Pane pane;
     private ObjectProperty<Point2D> mousePosition;
-    double mouseAnchorX = 0;
-    double mouseAnchorY = 0;
+    private boolean hasClosestNode = false;
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
                             ObservableList<Waypoint> waypoints, Consumer<String> errorConsumer) {
@@ -47,30 +46,40 @@ public final class WaypointsManager {
     }
 
     private void addMouseEventsManager() {
+        MapViewParameters mvp = mapViewParametersP.get();
+
         for (Node group : pane.getChildren()) {
+            int gpIndex = waypoints.indexOf(group);
+            double finalX = group.getLayoutX();
+            double finalY = group.getLayoutY();
+
             group.setOnMousePressed(m -> {
                 mousePosition.set(new Point2D(m.getX(), m.getY()));
-                group.setLayoutX(m.getX());
-                group.setLayoutY(m.getY());
             });
             group.setOnMouseDragged(m -> {
-                mousePosition.set(new Point2D(m.getX(), m.getY()));
-                group.setLayoutX(m.getX());
-                group.setLayoutY(m.getY());
+                group.setLayoutX(m.getSceneX() - mousePosition.get().getX());
+                group.setLayoutY(m.getSceneY() - mousePosition.get().getY());
             });
-            group.setOnMouseReleased(m -> {
-                /*
-                boolean hasClosestNode =
-                if (hasClosestNode) {
-                    double x = m.getX();
-                    double y = m.getY();
-                    group.setLayoutX(x);
-                    group.setLayoutY(y);
-                    waypoints.set(pane.getChildren().indexOf(group), );
-                }
 
-                 */
+            group.setOnMouseReleased(m -> {
+                PointWebMercator mousePWM = mvp.pointAt(
+                        mousePosition.get().getX() - m.getSceneX(),
+                        mousePosition.get().getY() - m.getSceneY());
+                addWayPoint(mousePWM.x(), mousePWM.y());
+                if (hasClosestNode) {
+                    waypoints.set(gpIndex, waypoints.get(waypoints.size() - 1));
+                    waypoints.remove(waypoints.size() - 1);
+                    PointWebMercator tempP = PointWebMercator.ofPointCh(waypoints.get(gpIndex).p());
+                    System.out.printf("Nouveau marqueur d'abscisse PWM %f \n", tempP.x());
+                    System.out.printf("Nouveau marqueur d'abscisse %f \n", mvp.viewX(tempP));
+                    group.setLayoutX(mvp.viewX(tempP));
+                    group.setLayoutY(mvp.viewY(tempP));
+                } else {
+                    group.setLayoutX(finalX);
+                    group.setLayoutY(finalY);
+                }
             });
+
         }
     }
 
@@ -111,7 +120,6 @@ public final class WaypointsManager {
                 }
             }
             PointCh pointCh = waypoint.p();
-            System.out.println(pointCh);
             PointWebMercator p = PointWebMercator.ofPointCh(pointCh);
             double finalX = mvp.viewX(p);
             double finalY = mvp.viewY(p);
@@ -119,24 +127,25 @@ public final class WaypointsManager {
             System.out.println("Y du nouveau WayPoint: " + finalY);
             group.setLayoutX(finalX);
             group.setLayoutY(finalY);
+
+
             group.setOnMousePressed(e -> {
                 mousePosition.set(new Point2D(e.getX(), e.getY()));
-                //mouseAnchorX = e.getX();
-                //mouseAnchorY = e.getY();
             });
+
             group.setOnMouseDragged(m -> {
-                //mousePosition.set(new Point2D(m.getX(), m.getY()));
                 group.setLayoutX(m.getSceneX() - mousePosition.get().getX());
                 group.setLayoutY(m.getSceneY() - mousePosition.get().getY());
             });
+
             int finalI = i;
-            group.setOnMouseReleased(e -> {
-                System.out.println(mousePosition);
-                PointWebMercator mousePWM = mvp.pointAt(mousePosition.get().getX(), mousePosition.get().getY());
-                int oldSize = waypoints.size();
+            group.setOnMouseReleased(m -> {
+                PointWebMercator mousePWM = mvp.pointAt(
+                        mousePosition.get().getX() - m.getSceneX(),
+                        mousePosition.get().getY() - m.getSceneY());
                 addWayPoint(mousePWM.x(), mousePWM.y());
-                if (waypoints.size() != oldSize) {
-                    waypoints.set(finalI, waypoints.get(waypoints.size()- 1));
+                if (hasClosestNode) {
+                    waypoints.set(finalI, waypoints.get(waypoints.size() - 1));
                     waypoints.remove(waypoints.size() - 1);
                     PointWebMercator tempP = PointWebMercator.ofPointCh(waypoints.get(finalI).p());
                     group.setLayoutX(mvp.viewX(tempP));
@@ -146,9 +155,10 @@ public final class WaypointsManager {
                     group.setLayoutY(finalY);
                 }
             });
+
             pane.getChildren().add(group);
         }
-        System.out.printf("Il y a %d marqueurs", pane.getChildren().size());
+        System.out.printf("Il y a %d marqueurs \n", pane.getChildren().size());
         pane.setPickOnBounds(false);
         return pane;
     }
@@ -175,10 +185,11 @@ public final class WaypointsManager {
         int closestNodeId = graph.nodeClosestTo(p, 500);
         if (closestNodeId == -1) {
             errorConsumer.accept("Aucune route à proximité !");
+            hasClosestNode = false;
         }
         else {
             waypoints.add(new Waypoint(p, closestNodeId));
+            hasClosestNode = true;
         }
-        System.out.println("PointCh du nouveau WayPoint" + p);
     }
 }

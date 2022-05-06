@@ -40,8 +40,6 @@ public record PointWebMercator(double x, double y) {
     public static PointWebMercator of(int zoomLevel, double x, double y) {
         double scaledX = Math.scalb(x, -(actualZoomLevel(zoomLevel)));
         double scaledY = Math.scalb(y, -(actualZoomLevel(zoomLevel)));
-        System.out.println("WayPoint en PWM: " + scaledX);
-        System.out.println("WayPoint en PWM: " + scaledY);
         return new PointWebMercator(scaledX, scaledY);
     }
 
