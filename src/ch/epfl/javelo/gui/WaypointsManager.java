@@ -72,13 +72,12 @@ public final class WaypointsManager {
                     waypoints.set(gpIndex, waypoints.get(waypoints.size() - 1));
                     waypoints.remove(waypoints.size() - 1);
                     PointWebMercator tempP = PointWebMercator.ofPointCh(waypoints.get(gpIndex).p());
-                    System.out.printf("Nouveau marqueur d'abscisse PWM %f \n", tempP.x());
-                    System.out.printf("Nouveau marqueur d'abscisse %f \n", mvp.viewX(tempP));
                     group.setLayoutX(mvp.viewX(tempP));
                     group.setLayoutY(mvp.viewY(tempP));
+                    gpOldPosition.set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
                 } else {
-                    group.setLayoutX(finalX);
-                    group.setLayoutY(finalY);
+                    group.setLayoutX(gpOldPosition.get().getX());
+                    group.setLayoutY(gpOldPosition.get().getY());
                 }
             });
 
