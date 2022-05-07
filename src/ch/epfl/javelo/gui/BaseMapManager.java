@@ -1,7 +1,9 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.application.Platform;
@@ -132,24 +134,34 @@ public final class BaseMapManager {
                 double newTopLeftY = oldTopLeftY + offset.getY();
                 mapViewParametersP.set(mvp.withMinXY(newTopLeftX, newTopLeftY));
             }
-            redrawOnNextPulse();
         });
         pane.setOnMousePressed(event -> {
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
             mousePositionP.set(currentPosition);
+
         });
         pane.setOnMouseReleased(event -> {
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
             mousePositionP.set(currentPosition);
+            if (event.isStillSincePress()) {
+                MapViewParameters mvp = mapViewParametersP.get();
+                PointWebMercator pwm = mvp.pointAt(
+                        event.getX(), event.getY());
+                waypointsManager.addWayPoint(pwm.x(), pwm.y());
+            }
         });
+        SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
-            int newZoomLevel = currentZoomLevel + (int) e.getDeltaY();
-            System.out.println(currentZoomLevel);
-
-            currentZoomLevel = newZoomLevel;
-            mapViewParametersP.set(new MapViewParameters(newZoomLevel,
-                    mapViewParametersP.get().xImage(), mapViewParametersP.get().yImage()));
-            redrawOnNextPulse();
+            long currentTime = System.currentTimeMillis();
+            System.out.println(currentTime);
+            if (currentTime < minScrollTime.get()) return;
+            minScrollTime.set(currentTime + 250);
+            double zoomDelta = Math.signum(e.getDeltaY());
+            MapViewParameters currentMvp = mapViewParametersP.get();
+            double currentTopLeftX = currentMvp.xImage();
+            double currentTopLeftY = currentMvp.yImage();
+            mapViewParametersP.set(new MapViewParameters(currentZoomLevel + (int) zoomDelta,
+                    currentTopLeftX, currentTopLeftY));
         });
     }
     private void addListeners() {
@@ -159,6 +171,7 @@ public final class BaseMapManager {
         });
         canvas.widthProperty().addListener((p) -> redrawOnNextPulse());
         canvas.heightProperty().addListener((p) -> redrawOnNextPulse());
+        mapViewParametersP.addListener((p) -> redrawOnNextPulse());
     }
 
 }
