@@ -3,6 +3,9 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.gui.*;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.routing.CityBikeCF;
+import ch.epfl.javelo.routing.Route;
+import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,10 +39,17 @@ public final class Stage9Test extends Application {
                         new Waypoint(new PointCh(2538659, 1154350), 117669));
         Consumer<String> errorConsumer = new ErrorConsumer();
 
+        RouteBean routeBean =
+                new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
+        routeBean.setHighlightedPosition(1000);
+
+        RouteManager routeManager =
+                new RouteManager(routeBean, mapViewParametersP, errorConsumer);
+
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,
                         mapViewParametersP,
-                        waypoints,
+                        routeBean.waypoints,
                         errorConsumer);
         BaseMapManager baseMapManager =
                 new BaseMapManager(tileManager,
@@ -48,7 +58,7 @@ public final class Stage9Test extends Application {
 
         StackPane mainPane =
                 new StackPane(baseMapManager.pane(),
-                        waypointsManager.pane());
+                        waypointsManager.pane(), routeManager.pane());
         mainPane.getStylesheets().add("map.css");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);

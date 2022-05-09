@@ -1,25 +1,16 @@
 package ch.epfl.javelo.gui;
 
-import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
-
 
 /**
  * Gère l'affichage et l'interaction avec le fond de carte
@@ -31,11 +22,12 @@ public final class BaseMapManager {
     private final WaypointsManager waypointsManager;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
     private ObjectProperty<Point2D> mousePositionP;
-    private Pane pane;
-    private Canvas canvas;
+    private final Pane pane;
+    private final Canvas canvas;
     private boolean redrawNeeded;
     private int currentZoomLevel;
     private static final int PIXELS_IN_TILE = 256;
+
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
                           ObjectProperty<MapViewParameters> mapViewParametersP) {
@@ -128,42 +120,57 @@ public final class BaseMapManager {
                 mousePositionP.set(currentPosition);
                 Point2D offset = previousPosition.subtract(currentPosition);
                 MapViewParameters mvp = mapViewParametersP.get();
-                double oldTopLeftX = mvp.xImage();
-                double oldTopLeftY = mvp.yImage();
-                double newTopLeftX = oldTopLeftX + offset.getX();
-                double newTopLeftY = oldTopLeftY + offset.getY();
-                mapViewParametersP.set(mvp.withMinXY(newTopLeftX, newTopLeftY));
+                Point2D topLeft = mvp.topLeft();
+                Point2D newTopLeft = topLeft.add(offset);
+                mapViewParametersP.set(mvp.withMinXY(newTopLeft.getX(), newTopLeft.getY()));
             }
         });
+        // On enregistre dans une propriété la position de la souris lors de
+        // l'appui afin de pouvoir calculer le défilement
         pane.setOnMousePressed(event -> {
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
             mousePositionP.set(currentPosition);
 
         });
+
         pane.setOnMouseReleased(event -> {
-            Point2D currentPosition = new Point2D(event.getX(), event.getY());
-            mousePositionP.set(currentPosition);
             if (event.isStillSincePress()) {
                 MapViewParameters mvp = mapViewParametersP.get();
+                // Tenter de s'en convaincre !
                 PointWebMercator pwm = mvp.pointAt(
-                        event.getX(), event.getY());
+                        -event.getX(), -event.getY());
                 waypointsManager.addWayPoint(pwm.x(), pwm.y());
             }
         });
+
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(e -> {
             long currentTime = System.currentTimeMillis();
-            System.out.println(currentTime);
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 250);
             double zoomDelta = Math.signum(e.getDeltaY());
+            int newZoomLevel = currentZoomLevel + (int) zoomDelta;
+            if (! (0 <= newZoomLevel  && newZoomLevel <= 19)) return;
             MapViewParameters currentMvp = mapViewParametersP.get();
+            double currentMouseX = e.getX();
+            double currentMouseY = e.getY();
             double currentTopLeftX = currentMvp.xImage();
             double currentTopLeftY = currentMvp.yImage();
-            mapViewParametersP.set(new MapViewParameters(currentZoomLevel + (int) zoomDelta,
-                    currentTopLeftX, currentTopLeftY));
+            PointWebMercator pwm = PointWebMercator.of(currentZoomLevel, currentTopLeftX, currentTopLeftY);
+            PointWebMercator mousePwm = currentMvp.pointAt(currentMouseX, currentMouseY);
+            double x = pwm.xAtZoomLevel(newZoomLevel);
+            double y = pwm.yAtZoomLevel(newZoomLevel);
+            MapViewParameters newMvp = new MapViewParameters(newZoomLevel, x, y);
+            PointWebMercator newMousePwm = newMvp.pointAt(currentMouseX, currentMouseY);
+            double newMousePwmX = newMousePwm.xAtZoomLevel(newZoomLevel);
+            double newMousePwmY = newMousePwm.yAtZoomLevel(newZoomLevel);
+            double offsetX = newMousePwmX  - mousePwm.xAtZoomLevel(newZoomLevel);
+            double offsetY = newMousePwmY  - mousePwm.yAtZoomLevel(newZoomLevel);
+            mapViewParametersP.set(newMvp.withMinXY(x + offsetX, y + offsetY));
+            currentZoomLevel = newZoomLevel;
         });
     }
+
     private void addListeners() {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
