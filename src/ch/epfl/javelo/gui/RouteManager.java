@@ -23,6 +23,7 @@ public final class RouteManager {
     private RouteBean routeBean;
     private ReadOnlyObjectProperty<MapViewParameters> mapViewParametersP;
     private Consumer<String> errorConsumer;
+    private final static int HIGHLIGHTED_POINT_POSITION = 1;
 
     public RouteManager(RouteBean routeBean,
                         ReadOnlyObjectProperty<MapViewParameters> mvp,
@@ -32,6 +33,15 @@ public final class RouteManager {
         this.errorConsumer = errorConsumer;
         this.pane = new Pane();
         pane.setPickOnBounds(false);
+        addMouseEventsManager();
+    }
+
+    public void addMouseEventsManager() {
+
+        Node highlightedPosition = pane.getChildren().get(HIGHLIGHTED_POINT_POSITION);
+
+
+
     }
 
     /**
@@ -45,27 +55,29 @@ public final class RouteManager {
         MapViewParameters mvp = mapViewParametersP.get();
         List<PointCh> routeBeanItineraryPoints = routeBean.route().points();
         List<Node> paneChildren = pane.getChildren();
-        int zoomLevel = mvp.zoomLevel();
 
         double[] polylinePoints = new double[2 * routeBeanItineraryPoints.size()];
         for (int i = 0; i < routeBeanItineraryPoints.size(); i++) {
             PointCh pch = routeBean.route().points().get(i);
             PointWebMercator pwm = PointWebMercator.ofPointCh(pch);
-            double x = pwm.xAtZoomLevel(zoomLevel);
-            double y = pwm.yAtZoomLevel(zoomLevel);
+            double x = mvp.viewX(pwm);
+            double y = mvp.viewY(pwm);
             polylinePoints[i] = x;
             polylinePoints[i + 1] = y;
         }
         Polyline itineraryGUI = new Polyline(polylinePoints);
         itineraryGUI.setId("route");
+        //itineraryGUI.setLayoutX();
+        //itineraryGUI.setLayoutY();
+        paneChildren.clear();
         paneChildren.add(itineraryGUI);
 
         double highlightedPosition = routeBean.highlightedPosition();
         PointWebMercator highlightedPoint =
                 PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
         Circle highlightedPositionGUI = new Circle();
-        highlightedPositionGUI.setCenterX(highlightedPoint.xAtZoomLevel(zoomLevel));
-        highlightedPositionGUI.setCenterY(highlightedPoint.yAtZoomLevel(zoomLevel));
+        highlightedPositionGUI.setCenterX(mvp.viewX(highlightedPoint));
+        highlightedPositionGUI.setCenterY(mvp.viewY(highlightedPoint));
         highlightedPositionGUI.setRadius(5f);
         highlightedPositionGUI.setId("highlighted");
         paneChildren.add(highlightedPositionGUI);
