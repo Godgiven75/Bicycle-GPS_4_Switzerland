@@ -65,8 +65,13 @@ public final class RouteBean {
      *
      * @return l'itinéraire calculé
      */
-    public ReadOnlyObjectProperty<Route> route() {
+    public ReadOnlyObjectProperty<Route> routeProperty() {
         return route;
+    }
+
+
+    public Route route() {
+        return route.get();
     }
 
     /**
