@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -34,15 +35,21 @@ public final class RouteManager {
         this.pane = new Pane();
         pane.setPickOnBounds(false);
         addMouseEventsManager();
+        addListeners();
     }
 
-    public void addMouseEventsManager() {
+    private void addMouseEventsManager() {
 
         if (pane.getChildren().size() > 1) {
             Node highlightedPosition = pane.getChildren().get(HIGHLIGHTED_POINT_POSITION);
         }
 
+
     }
+    private void addListeners() {
+        routeBean.routeProperty().addListener((p) -> drawPane());
+    }
+
 
     /**
      * Retourne le panneau JavaFX contenant la ligne représentant l'itinéraire
@@ -52,13 +59,16 @@ public final class RouteManager {
      * et le disque de mise en évidence
      */
     public Pane pane() {
+        return pane;
+    }
+    private void drawPane() {
         if (routeBean.route() != null) {
             MapViewParameters mvp = mapViewParametersP.get();
             List<PointCh> routeBeanItineraryPoints = routeBean.route().points();
             List<Node> paneChildren = pane.getChildren();
 
-            double[] polylinePoints = new double[2 * routeBeanItineraryPoints.size()];
-            for (int i = 0; i < routeBeanItineraryPoints.size(); i++) {
+            double[] polylinePoints = new double[routeBeanItineraryPoints.size()];
+            for (int i = 0; i < routeBeanItineraryPoints.size(); i += 2) {
                 PointCh pch = routeBean.route().points().get(i);
                 PointWebMercator pwm = PointWebMercator.ofPointCh(pch);
                 double x = mvp.viewX(pwm);
@@ -66,11 +76,21 @@ public final class RouteManager {
                 polylinePoints[i] = x;
                 polylinePoints[i + 1] = y;
             }
+            System.out.println(polylinePoints.length);
+            int c = 0;
+            for (double polylinePoint : polylinePoints) {
+                if (polylinePoint != 0) c++;
+            }
+            System.out.println(c);
+            //System.out.println(" bonjour" + polylinePoints[polylinePoints.length - 1]);
+            //System.out.println(polylinePoints[polylinePoints.length - 2]);
             Polyline itineraryGUI = new Polyline(polylinePoints);
             itineraryGUI.setId("route");
+            pane.getChildren().clear();
             //itineraryGUI.setLayoutX();
             //itineraryGUI.setLayoutY();
-            paneChildren.set(0, itineraryGUI);
+            paneChildren.add(itineraryGUI);
+
 
             double highlightedPosition = routeBean.highlightedPosition();
             PointWebMercator highlightedPoint =
@@ -80,11 +100,9 @@ public final class RouteManager {
             highlightedPositionGUI.setCenterY(mvp.viewY(highlightedPoint));
             highlightedPositionGUI.setRadius(5f);
             highlightedPositionGUI.setId("highlighted");
-            paneChildren.set(HIGHLIGHTED_POINT_POSITION, highlightedPositionGUI);
-            System.out.println("CHILDREN" + pane.getChildren().size());
+            paneChildren.add(highlightedPositionGUI);
         }
 
-        return pane;
     }
 
 }
