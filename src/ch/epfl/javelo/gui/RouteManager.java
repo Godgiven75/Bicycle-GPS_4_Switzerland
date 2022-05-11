@@ -38,9 +38,9 @@ public final class RouteManager {
 
     public void addMouseEventsManager() {
 
-        Node highlightedPosition = pane.getChildren().get(HIGHLIGHTED_POINT_POSITION);
-
-
+        if (pane.getChildren().size() > 1) {
+            Node highlightedPosition = pane.getChildren().get(HIGHLIGHTED_POINT_POSITION);
+        }
 
     }
 
@@ -52,35 +52,37 @@ public final class RouteManager {
      * et le disque de mise en évidence
      */
     public Pane pane() {
-        MapViewParameters mvp = mapViewParametersP.get();
-        List<PointCh> routeBeanItineraryPoints = routeBean.route().points();
-        List<Node> paneChildren = pane.getChildren();
+        if (routeBean.route() != null) {
+            MapViewParameters mvp = mapViewParametersP.get();
+            List<PointCh> routeBeanItineraryPoints = routeBean.route().points();
+            List<Node> paneChildren = pane.getChildren();
 
-        double[] polylinePoints = new double[2 * routeBeanItineraryPoints.size()];
-        for (int i = 0; i < routeBeanItineraryPoints.size(); i++) {
-            PointCh pch = routeBean.route().points().get(i);
-            PointWebMercator pwm = PointWebMercator.ofPointCh(pch);
-            double x = mvp.viewX(pwm);
-            double y = mvp.viewY(pwm);
-            polylinePoints[i] = x;
-            polylinePoints[i + 1] = y;
+            double[] polylinePoints = new double[2 * routeBeanItineraryPoints.size()];
+            for (int i = 0; i < routeBeanItineraryPoints.size(); i++) {
+                PointCh pch = routeBean.route().points().get(i);
+                PointWebMercator pwm = PointWebMercator.ofPointCh(pch);
+                double x = mvp.viewX(pwm);
+                double y = mvp.viewY(pwm);
+                polylinePoints[i] = x;
+                polylinePoints[i + 1] = y;
+            }
+            Polyline itineraryGUI = new Polyline(polylinePoints);
+            itineraryGUI.setId("route");
+            //itineraryGUI.setLayoutX();
+            //itineraryGUI.setLayoutY();
+            paneChildren.set(0, itineraryGUI);
+
+            double highlightedPosition = routeBean.highlightedPosition();
+            PointWebMercator highlightedPoint =
+                    PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
+            Circle highlightedPositionGUI = new Circle();
+            highlightedPositionGUI.setCenterX(mvp.viewX(highlightedPoint));
+            highlightedPositionGUI.setCenterY(mvp.viewY(highlightedPoint));
+            highlightedPositionGUI.setRadius(5f);
+            highlightedPositionGUI.setId("highlighted");
+            paneChildren.set(HIGHLIGHTED_POINT_POSITION, highlightedPositionGUI);
+            System.out.println("CHILDREN" + pane.getChildren().size());
         }
-        Polyline itineraryGUI = new Polyline(polylinePoints);
-        itineraryGUI.setId("route");
-        //itineraryGUI.setLayoutX();
-        //itineraryGUI.setLayoutY();
-        paneChildren.clear();
-        paneChildren.add(itineraryGUI);
-
-        double highlightedPosition = routeBean.highlightedPosition();
-        PointWebMercator highlightedPoint =
-                PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
-        Circle highlightedPositionGUI = new Circle();
-        highlightedPositionGUI.setCenterX(mvp.viewX(highlightedPoint));
-        highlightedPositionGUI.setCenterY(mvp.viewY(highlightedPoint));
-        highlightedPositionGUI.setRadius(5f);
-        highlightedPositionGUI.setId("highlighted");
-        paneChildren.add(highlightedPositionGUI);
 
         return pane;
     }

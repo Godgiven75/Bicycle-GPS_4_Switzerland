@@ -1,10 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -42,6 +39,9 @@ public final class RouteBean {
     public RouteBean(RouteComputer routeComputer) {
         this.routeComputer = routeComputer;
         this.waypoints = FXCollections.observableArrayList();
+        this.highlightedPosition = new SimpleDoubleProperty();
+        this.route = new SimpleObjectProperty<>();
+        this.elevationProfile = new SimpleObjectProperty<>();
         // pas de waypoints ajoutés pour l'instant
         // encore initialiser d'autres choses
         addListeners();
@@ -49,14 +49,15 @@ public final class RouteBean {
 
     private void addListeners() {
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> {
+            System.out.println(waypoints.size());
             if (waypoints.size() >= 2) {
                 itineraryComputer();
+                ElevationProfile profile =
+                        ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH);
+                elevationProfile = new SimpleObjectProperty<>(profile);
             } else {
                 route.set(null);
             }
-            ElevationProfile profile =
-                    ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH);
-            elevationProfile = new SimpleObjectProperty<>(profile);
         });
     }
 

@@ -30,8 +30,8 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorConsumer;
     private final Pane pane;
-    private ObjectProperty<Point2D> mousePositionP;
-    private ObjectProperty<Point2D> previousMarkerPositionP;
+    private final ObjectProperty<Point2D> mousePositionP;
+    private final ObjectProperty<Point2D> previousMarkerPositionP;
 
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
@@ -48,12 +48,14 @@ public final class WaypointsManager {
         positionMarkers();
         addListeners();
         addMouseEventsManager();
+
     }
 
     private void addMouseEventsManager() {
         MapViewParameters mvp = mapViewParametersP.get();
 
         for (Node group : pane.getChildren()) {
+
 
             group.setOnMousePressed(m -> {
                 int markerIndex = pane.getChildren().indexOf(group);
@@ -76,8 +78,8 @@ public final class WaypointsManager {
                 if(!m.isStillSincePress()) {
                     int markerIndex = pane.getChildren().indexOf(group);
                     PointWebMercator mousePWM = mvp.pointAt(
-                            mousePositionP.get().getX() - m.getSceneX(),
-                            mousePositionP.get().getY() - m.getSceneY());
+                            m.getSceneX() - mousePositionP.get().getX(),
+                            m.getSceneY() - mousePositionP.get().getY());
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, 500);
@@ -150,8 +152,7 @@ public final class WaypointsManager {
             Node marker = pane.getChildren().get(i);
             marker.setLayoutX(x);
             marker.setLayoutY(y);
-            System.out.println(i);
-            System.out.println(w);
+
         }
     }
 
