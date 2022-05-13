@@ -11,7 +11,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
+
 import javafx.scene.shape.SVGPath;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public final class WaypointsManager {
     private final Pane pane;
     private final ObjectProperty<Point2D> mousePositionP;
     private final ObjectProperty<Point2D> previousMarkerPositionP;
+    private final static double SEARCH_DISTANCE = 500d;
 
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
@@ -55,8 +56,6 @@ public final class WaypointsManager {
         MapViewParameters mvp = mapViewParametersP.get();
 
         for (Node group : pane.getChildren()) {
-
-
             group.setOnMousePressed(m -> {
                 int markerIndex = pane.getChildren().indexOf(group);
                 Point2D mousePosition = new Point2D(m.getX(), m.getY());
@@ -82,7 +81,8 @@ public final class WaypointsManager {
                             m.getSceneY() - mousePositionP.get().getY());
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
-                    int nodeClosestTo = graph.nodeClosestTo(mousePointCh, 500);
+                    int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
+                    // Si un noeud a été trouvé,
                     if (nodeClosestTo != -1) {
                         Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
                         waypoints.set(markerIndex, newWayPoint);
@@ -100,10 +100,12 @@ public final class WaypointsManager {
     private void addListeners() {
         mapViewParametersP.addListener(mvp -> {
             createMarkers();
+            addMouseEventsManager();
             positionMarkers();
         });
         waypoints.addListener((Observable o) -> {
             createMarkers();
+            addMouseEventsManager();
             positionMarkers();
         });
     }
@@ -119,27 +121,23 @@ public final class WaypointsManager {
             SVGPath interiorMarker = new SVGPath();
             exteriorMarker.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
             interiorMarker.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
-            interiorMarker.setFill(Color.WHITE);
+            exteriorMarker.getStyleClass().add("pin_outside");
+            interiorMarker.getStyleClass().add("pin_inside");
             Group group = new Group();
-            group.getChildren().addAll(exteriorMarker, interiorMarker);
-            group.getStyleClass().add("map.pin");
-            if (i != 0 && i != (waypoints.size() - 1)) {
-                group.getStyleClass().add("map.middle");
-                exteriorMarker.setFill(Color.DARKTURQUOISE);
-            } else {
-                if (i == 0) {
-                    group.getStyleClass().add("map.first");
-                    exteriorMarker.setFill(Color.LIMEGREEN);
-                }
-                if (i == (waypoints.size() - 1)) {
-                    group.getStyleClass().add("map.last");
-                    exteriorMarker.setFill(Color.ORANGERED);
-                }
-            }
+            group.getChildren().addAll( exteriorMarker, interiorMarker);
+            group.getStyleClass().add("pin");
+
+            if (i == 0)
+                group.getStyleClass().add("first");
+            else if (i == waypoints.size() - 1)
+                group.getStyleClass().add("last");
+            else
+                group.getStyleClass().add("middle");
+
             markers.add(group);
         }
         pane.getChildren().setAll(markers);
-        addMouseEventsManager();
+        //addMouseEventsManager();
     }
 
     private void positionMarkers() {
@@ -172,6 +170,7 @@ public final class WaypointsManager {
         }
         else {
             waypoints.add(new Waypoint(p, closestNodeId));
+
         }
     }
 

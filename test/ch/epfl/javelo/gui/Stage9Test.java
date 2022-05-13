@@ -41,7 +41,7 @@ public final class Stage9Test extends Application {
 
         RouteBean routeBean =
                 new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
-        routeBean.setHighlightedPosition(1000);
+        routeBean.setHighlightedPositionP(1000);
 
         RouteManager routeManager =
                 new RouteManager(routeBean, mapViewParametersP, errorConsumer);
@@ -49,7 +49,7 @@ public final class Stage9Test extends Application {
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,
                         mapViewParametersP,
-                        routeBean.waypoints,
+                        routeBean.waypoints(),
                         errorConsumer);
         BaseMapManager baseMapManager =
                 new BaseMapManager(tileManager,

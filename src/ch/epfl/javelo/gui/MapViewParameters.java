@@ -4,11 +4,11 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 
+
+
+
 /**
  * Représente les paramètres du fond de carte présenté dans l'interface graphique.
- *
- * @author Tanguy Dieudonné (326618)
- * @author Nathanaël Girod (329987)
  *
  * @param zoomLevel le niveau de zoom
  * @param xImage la coordonnée x du coin haut-gauche de la portion de carte affichée
@@ -16,6 +16,8 @@ import javafx.geometry.Point2D;
  * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
  * dans le système Web Mercator, au niveau de zoom donné
  *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
@@ -52,7 +54,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * @return ce point sous la forme d'une instance de PointWebMercator
      */
     public PointWebMercator pointAt(double x, double y) {
-        return PointWebMercator.of(zoomLevel, xImage - x, yImage - y);
+        return PointWebMercator.of(zoomLevel,xImage + x,yImage + y);
     }
 
     /**
@@ -65,7 +67,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
      */
     public double viewX(PointWebMercator p) {
-        return p.xAtZoomLevel(zoomLevel) - xImage;
+        return  p.xAtZoomLevel(zoomLevel) - xImage;
     }
 
     /**
@@ -78,6 +80,6 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      * par rapport au coin haut-gauche de la portion de carte affichée à l'écran
      */
     public double viewY(PointWebMercator p) {
-        return p.yAtZoomLevel(zoomLevel) - yImage;
+        return  p.yAtZoomLevel(zoomLevel) - yImage;
     }
 }

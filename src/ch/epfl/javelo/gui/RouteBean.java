@@ -20,13 +20,13 @@ import java.util.Map;
  * @author Nathanaël Girod (329987)
  */
 public final class RouteBean {
-    private RouteComputer routeComputer;
-    public ObservableList<Waypoint> waypoints;
-    public ObjectProperty<Route> route;
-    public DoubleProperty highlightedPosition; // la position mise en évidence
-    public ObjectProperty<ElevationProfile> elevationProfile;
+    private final RouteComputer routeComputer;
+    private final ObservableList<Waypoint> waypoints;
+    private final ObjectProperty<Route> routeP;
+    private final DoubleProperty highlightedPositionP; // la position mise en évidence
+    private final ObjectProperty<ElevationProfile> elevationProfileP;
     private static final int MAX_ENTRIES = 50;
-    private static final double MAX_STEP_LENGTH = 5;
+    private static final double MAX_STEP_LENGTH = 5d;
     private final Map<Pair<Integer, Integer>, Route> cacheMemory =
             new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
@@ -39,95 +39,110 @@ public final class RouteBean {
     public RouteBean(RouteComputer routeComputer) {
         this.routeComputer = routeComputer;
         this.waypoints = FXCollections.observableArrayList();
-        this.highlightedPosition = new SimpleDoubleProperty();
-        this.route = new SimpleObjectProperty<>();
-        this.elevationProfile = new SimpleObjectProperty<>();
-        // pas de waypoints ajoutés pour l'instant
-        // encore initialiser d'autres choses
+        this.highlightedPositionP = new SimpleDoubleProperty();
+        this.routeP = new SimpleObjectProperty<>();
+        this.elevationProfileP = new SimpleObjectProperty<>();
         addListeners();
     }
 
     private void addListeners() {
+        // Syntaxe ?
         waypoints.addListener((ListChangeListener<? super Waypoint>) e -> {
-            System.out.println(waypoints.size());
-            if (waypoints.size() >= 2) {
-                itineraryComputer();
-                ElevationProfile profile =
-                        ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH);
-                elevationProfile = new SimpleObjectProperty<>(profile);
-            } else {
-                route.set(null);
+            Route itinerary = computeItinerary();
+            if (itinerary == null) {
+                routeP.set(null);
+                elevationProfileP.set(null);
+                return;
             }
+            routeP.set(itinerary);
+            ElevationProfile profile =
+                    ElevationProfileComputer.elevationProfile(itinerary, MAX_STEP_LENGTH);
+            elevationProfileP.set(profile);
         });
     }
 
     /**
-     * Retourne l'itinéraire calculé.
+     * Retourne la propriété contenant l'itinéraire calculé.
      *
-     * @return l'itinéraire calculé
+     * @return la proproété contenant l'itinéraire calculé
      */
     public ReadOnlyObjectProperty<Route> routeProperty() {
-        return route;
-    }
-
-
-    public Route route() {
-        return route.get();
+        return routeP;
     }
 
     /**
-     * Retourne la propriété de la position mise en évidence.
+     * Retourne l'itinéraire calculé.
+     * @return l'itinéraire calculé
+     */
+    public Route route() {
+        return routeP.get();
+    }
+
+
+    /**
+     * Retourne la propriété contenant la position mise en évidence.
      *
-     * @return la propriété de la position mise en évidence
+     * @return la propriété contenant  la position mise en évidence
      */
     public DoubleProperty highlightedPositionProperty() {
-        return highlightedPosition;
+        return highlightedPositionP;
     }
 
     /**
-     * Retourne le contenu de la propriété de la position mise en évidence.
-     *
-     * @return le contenu de la propriété de la position mise en évidence
+     * Retourne la position mise en évidence.
+     * @return la position mise en évidence
      */
     public double highlightedPosition() {
-        return highlightedPosition.get();
+        return highlightedPositionP.get();
     }
 
-    public void setHighlightedPosition(double newHighlightedPosition) {
-        this.highlightedPosition.set(newHighlightedPosition);
+    /**
+     * Assigne la propriété contenant la position mise en évidence à la valeur
+     * passée en argument.
+     * @param newHighlightedPosition nouvelle valeur de la propriété contenant
+     * la position mise en évidence
+     */
+    public void setHighlightedPositionP(double newHighlightedPosition) {
+        this.highlightedPositionP.set(newHighlightedPosition);
     }
 
-    // private non ?
-    private void itineraryComputer() {
+    /**
+     * Retourne la liste des points de passage de l'itinéraire
+     * @return la liste des points de passage de l'itinéraire
+     */
+    public ObservableList<Waypoint> waypoints() {
+        return waypoints;
+    }
+
+    // Crée la route correspondant à l'itinéraire
+    private Route computeItinerary() {
         List<Route> singleRoutes = new ArrayList<>();
 
         for (int i = 0; i < waypoints.size() - 1; i++) {
-
             int predecessorWaypointNodeId = waypoints.get(i).closestNodeId();
             int successorWaypointNodeId = waypoints.get(i + 1).closestNodeId();
             Pair<Integer, Integer> pair = new Pair<>(predecessorWaypointNodeId,
                     successorWaypointNodeId);
 
+            // Si la mémoire cache contient une route entre les deux points,
+            // on l'ajoute directement aux segments de l'itinérarire multiple
             if (cacheMemory.containsKey(pair)) {
                 singleRoutes.add(cacheMemory.get(pair));
                 continue;
             }
-
             Route singleRoute =
-                    routeComputer.bestRouteBetween(predecessorWaypointNodeId,
+                    routeComputer. bestRouteBetween(predecessorWaypointNodeId,
                             successorWaypointNodeId);
-
-            if (singleRoute == null) {
-                route.set(null);
-                elevationProfile.set(null);
-                break;
-            }
+            // Si un des itinéraires simples est null, on retourne null
+            if (singleRoute == null)
+                return null;
 
             singleRoutes.add(singleRoute);
+            cacheMemory.put(pair, singleRoute);
         }
-
-        route.set(new MultiRoute(singleRoutes));
+        //S'il y a moins de deux points de passage, on retourne également null
+        if (singleRoutes.isEmpty())
+            return null;
+        return new MultiRoute(singleRoutes);
     }
-
-
 }

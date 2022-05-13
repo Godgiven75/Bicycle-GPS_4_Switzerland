@@ -21,7 +21,7 @@ public final class BaseMapManager {
     private final TileManager tileManager;
     private final WaypointsManager waypointsManager;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
-    private ObjectProperty<Point2D> mousePositionP;
+    private final ObjectProperty<Point2D> mousePositionP;
     private final Pane pane;
     private final Canvas canvas;
     private boolean redrawNeeded;
@@ -73,14 +73,13 @@ public final class BaseMapManager {
             //Nombre de tuiles sur l'axe vertical
             int tilesInHeight = (int) canvas.getHeight() / PIXELS_IN_TILE + 1;
 
-            PointWebMercator topLeft = mvp.pointAt(mvp.xImage(), mvp.yImage());
-            double topLeftX = mvp.viewX(topLeft);
-            double topLeftY = mvp.viewY(topLeft);
+            double topLeftX = mvp.topLeft().getX();
+            double topLeftY = mvp.topLeft().getY();
 
             // Coordonnées du pixel correspondant au coin en haut à gauche de la
             // première tuile à dessiner sur le canevas
-            double firstX =  topLeftX + firstXIndex * PIXELS_IN_TILE;
-            double firstY = topLeftY + firstYIndex * PIXELS_IN_TILE;
+            double firstX = firstXIndex * PIXELS_IN_TILE - topLeftX;
+            double firstY = firstYIndex * PIXELS_IN_TILE - topLeftY;
 
             int xIndex = firstXIndex;
             double x = firstX;
@@ -136,9 +135,8 @@ public final class BaseMapManager {
         pane.setOnMouseReleased(event -> {
             if (event.isStillSincePress()) {
                 MapViewParameters mvp = mapViewParametersP.get();
-                // Tenter de s'en convaincre !
                 PointWebMercator pwm = mvp.pointAt(
-                        -event.getX(), -event.getY());
+                        event.getX(), event.getY());
                 waypointsManager.addWayPoint(pwm.x(), pwm.y());
             }
         });
@@ -150,7 +148,9 @@ public final class BaseMapManager {
             minScrollTime.set(currentTime + 250);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
-            if (! (0 <= newZoomLevel  && newZoomLevel <= 19)) return;
+            // Le niveau de zoom est compris entre 8 et 19 (ce qui est suffisant
+            // pour la Suisse) ==> poser des constantes
+            if (! (8 <= newZoomLevel && newZoomLevel <= 19)) return;
             MapViewParameters currentMvp = mapViewParametersP.get();
             double currentMouseX = e.getX();
             double currentMouseY = e.getY();
@@ -166,7 +166,7 @@ public final class BaseMapManager {
             double newMousePwmY = newMousePwm.yAtZoomLevel(newZoomLevel);
             double offsetX = newMousePwmX  - mousePwm.xAtZoomLevel(newZoomLevel);
             double offsetY = newMousePwmY  - mousePwm.yAtZoomLevel(newZoomLevel);
-            mapViewParametersP.set(newMvp.withMinXY(x + offsetX, y + offsetY));
+            mapViewParametersP.set(newMvp.withMinXY(x - offsetX , y - offsetY));
             currentZoomLevel = newZoomLevel;
         });
     }
