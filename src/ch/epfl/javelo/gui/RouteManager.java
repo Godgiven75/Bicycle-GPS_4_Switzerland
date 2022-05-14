@@ -50,6 +50,7 @@ public final class RouteManager {
     public Pane pane() {
         return pane;
     }
+
     // Méthode permettant d'ajouter la polyligne de l'initéraire ainsi que
     // le cercle correspondant à la position mise en évidence (méthode au nom
     // trop équivoque ? )

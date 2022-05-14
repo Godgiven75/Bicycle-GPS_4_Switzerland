@@ -1,10 +1,9 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
@@ -14,6 +13,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
 /**
@@ -29,7 +29,10 @@ public final class ElevationProfileManager {
     private ObjectProperty<Rectangle2D> rectangle2DP;
     private ObjectProperty<Transform> screenToWorldP;
     private ObjectProperty<Transform> worldToScreen;
-    private Pane pane;
+    private BorderPane pane;
+    private DoubleProperty mousePositionOnProfileProperty;
+    private Pane centerPane;
+    private VBox bottomPane;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile,
                                    ReadOnlyDoubleProperty position) {
@@ -38,7 +41,20 @@ public final class ElevationProfileManager {
         this.rectangle2DP = new SimpleObjectProperty<>();
         this.screenToWorldP = new SimpleObjectProperty<>();
         this.worldToScreen = new SimpleObjectProperty<>();
-        this.pane = new Pane();
+        this.pane = new BorderPane();
+        this.centerPane = new Pane();
+        this.bottomPane = new VBox();
+        this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
+
+    }
+
+    private void addListeners() {
+        rectangle2DP.addListener(e -> {
+            // la position mise en évidence
+            Line line = new Line();
+            centerPane.getChildren().add(line);
+            line
+        });
     }
 
     public Pane pane() {
@@ -46,16 +62,18 @@ public final class ElevationProfileManager {
     }
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-
+        return
     }
 
     private void createPane() {
+
         // contient les 2 conteneurs
         BorderPane rootPane = new BorderPane();
         rootPane.getStylesheets().add("elevation_profile");
 
-        Pane centerPane = new Pane();
+        Pane centerPane = this.centerPane;
         rootPane.setCenter(centerPane);
+        centerPane.setPadding(new Insets(10, 10, 20, 40));
 
         // le chemin représentant la grille
         Path path = new Path();
@@ -78,7 +96,7 @@ public final class ElevationProfileManager {
         Line line = new Line();
         centerPane.getChildren().add(line);
 
-        Pane bottomPane = new VBox();
+        Pane bottomPane = this.bottomPane;
         rootPane.setBottom(bottomPane);
         bottomPane.getStyleClass().add("profile_data");
         // texte contenant les statistiques du profil
@@ -86,5 +104,14 @@ public final class ElevationProfileManager {
         bottomPane.getChildren().add(textVBox);
 
         this.pane = rootPane;
+    }
+
+    // Passe du système de coordonnées du panneau JavaFX contenant la grille au
+    // système de coordonnées du "monde réel".
+    private void screenToWorld(Transform t) {
+        Affine transform = new Affine();
+        transform.prependTranslation(-40, 653);
+        transform.prependScale(1.0/t.getTx(), 1.0/t.getTy());
+
     }
 }
