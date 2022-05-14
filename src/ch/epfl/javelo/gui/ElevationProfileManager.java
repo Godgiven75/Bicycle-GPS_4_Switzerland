@@ -4,6 +4,8 @@ import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -12,6 +14,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Transform;
 
 /**
  * Publique et finale, gère l'affichage et l'interaction avec le profil en long
@@ -23,12 +26,18 @@ import javafx.scene.text.Text;
 public final class ElevationProfileManager {
     private ReadOnlyObjectProperty<ElevationProfile> profile;
     private ReadOnlyDoubleProperty position;
+    private ObjectProperty<Rectangle2D> rectangle2DP;
+    private ObjectProperty<Transform> screenToWorldP;
+    private ObjectProperty<Transform> worldToScreen;
     private Pane pane;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile,
                                    ReadOnlyDoubleProperty position) {
         this.profile = profile;
         this.position = position;
+        this.rectangle2DP = new SimpleObjectProperty<>();
+        this.screenToWorldP = new SimpleObjectProperty<>();
+        this.worldToScreen = new SimpleObjectProperty<>();
         this.pane = new Pane();
     }
 
