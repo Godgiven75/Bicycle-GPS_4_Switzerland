@@ -7,10 +7,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Classe finale regroupant les propriétés relatives aux points de passage et à l'itinéraire
@@ -114,6 +111,21 @@ public final class RouteBean {
         return waypoints;
     }
 
+    /**
+     * Retourne l'indice du segment non vide à la position passée en argument.
+     * @param position position le long de l'itinéraire
+     * @return l'indice du segment non vide à la position passée en argument
+     */
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i++) {
+            int n1 = waypoints.get(i).closestNodeId();
+            int n2 = waypoints.get(i + 1).closestNodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
+    }
+
     // Crée la route correspondant à l'itinéraire
     private Route computeItinerary() {
         List<Route> singleRoutes = new ArrayList<>();
@@ -121,9 +133,17 @@ public final class RouteBean {
         for (int i = 0; i < waypoints.size() - 1; i++) {
             int predecessorWaypointNodeId = waypoints.get(i).closestNodeId();
             int successorWaypointNodeId = waypoints.get(i + 1).closestNodeId();
+            // Si les noeuds sont indentiques, on ne fait pas de tentative de
+            // calcul d'itinéraire
+            if (predecessorWaypointNodeId == successorWaypointNodeId)
+                return null;
             Pair<Integer, Integer> pair = new Pair<>(predecessorWaypointNodeId,
                     successorWaypointNodeId);
-
+            // Faudrait-il mettre cela dans le if qui suit ?
+            if (cacheMemory.size() >= MAX_ENTRIES) {
+                Iterator<Pair<Integer, Integer>> it = cacheMemory.keySet().iterator();
+                cacheMemory.remove(it.next());
+            }
             // Si la mémoire cache contient une route entre les deux points,
             // on l'ajoute directement aux segments de l'itinérarire multiple
             if (cacheMemory.containsKey(pair)) {
@@ -131,7 +151,7 @@ public final class RouteBean {
                 continue;
             }
             Route singleRoute =
-                    routeComputer. bestRouteBetween(predecessorWaypointNodeId,
+                    routeComputer.bestRouteBetween(predecessorWaypointNodeId,
                             successorWaypointNodeId);
             // Si un des itinéraires simples est null, on retourne null
             if (singleRoute == null)
