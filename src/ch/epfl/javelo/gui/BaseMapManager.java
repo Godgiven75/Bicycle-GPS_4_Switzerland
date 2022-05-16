@@ -27,6 +27,8 @@ public final class BaseMapManager {
     private boolean redrawNeeded;
     private int currentZoomLevel;
     private static final int PIXELS_IN_TILE = 256;
+    private static final int MIN_ZOOM_LEVEL = 8;
+    private static final int MAX_ZOOM_LEVEL = 19;
 
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager,
@@ -112,9 +114,9 @@ public final class BaseMapManager {
     }
     private void addMouseEventsManager() {
 
-        pane.setOnMouseDragged(event -> {
+        pane.setOnMouseDragged(e -> {
             Point2D previousPosition = mousePositionP.get();
-            Point2D currentPosition = new Point2D(event.getX(), event.getY());
+            Point2D currentPosition = new Point2D(e.getX(), e.getY());
             if (!currentPosition.equals(previousPosition)) {
                 mousePositionP.set(currentPosition);
                 Point2D offset = previousPosition.subtract(currentPosition);
@@ -148,20 +150,14 @@ public final class BaseMapManager {
             minScrollTime.set(currentTime + 250);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
-            // Le niveau de zoom est compris entre 8 et 19 (ce qui est suffisant
-            // pour la Suisse) ==> poser des constantes
-            if (! (8 <= newZoomLevel && newZoomLevel <= 19)) return;
+            if (! (MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL)) return;
             MapViewParameters currentMvp = mapViewParametersP.get();
-            double currentMouseX = e.getX();
-            double currentMouseY = e.getY();
-            double currentTopLeftX = currentMvp.xImage();
-            double currentTopLeftY = currentMvp.yImage();
-            PointWebMercator pwm = PointWebMercator.of(currentZoomLevel, currentTopLeftX, currentTopLeftY);
-            PointWebMercator mousePwm = currentMvp.pointAt(currentMouseX, currentMouseY);
+            PointWebMercator pwm = PointWebMercator.of(currentZoomLevel, currentMvp.xImage(), currentMvp.yImage());
+            PointWebMercator mousePwm = currentMvp.pointAt(e.getX(), e.getY());
             double x = pwm.xAtZoomLevel(newZoomLevel);
             double y = pwm.yAtZoomLevel(newZoomLevel);
             MapViewParameters newMvp = new MapViewParameters(newZoomLevel, x, y);
-            PointWebMercator newMousePwm = newMvp.pointAt(currentMouseX, currentMouseY);
+            PointWebMercator newMousePwm = newMvp.pointAt(e.getX(), e.getY());
             double newMousePwmX = newMousePwm.xAtZoomLevel(newZoomLevel);
             double newMousePwmY = newMousePwm.yAtZoomLevel(newZoomLevel);
             double offsetX = newMousePwmX  - mousePwm.xAtZoomLevel(newZoomLevel);
