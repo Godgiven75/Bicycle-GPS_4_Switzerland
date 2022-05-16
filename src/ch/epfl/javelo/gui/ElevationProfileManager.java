@@ -33,6 +33,7 @@ public final class ElevationProfileManager {
     private final VBox bottomPane;
     private final Insets insets = new Insets(10, 10, 20, 40);
 
+
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile,
                                    ReadOnlyDoubleProperty position) {
         this.profile = profile;
@@ -69,7 +70,33 @@ public final class ElevationProfileManager {
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileProperty;
     }
+    private int computeVerticalStep() {
+        final int minVerticalDistance = 50;
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+        double height = rectangle2DP.get().getHeight();
+        double maxElevation = profile.get().maxElevation();
+        for (int step : ELE_STEPS) {
+            int nbIntervals = (int) (maxElevation / step);
+            if (height / nbIntervals >= minVerticalDistance)
+                return step;
+        }
+        return ELE_STEPS[ELE_STEPS.length - 1];
 
+    }
+    private int computeHorizontalStep() {
+        final int minHorizontalDistance = 50;
+        int[] POS_STEPS =
+                { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
+        double width = rectangle2DP.get().getWidth();
+        double length = profile.get().length();
+        for (int step : POS_STEPS) {
+            int nbIntervals = (int) (length / step);
+            if (width / nbIntervals >= minHorizontalDistance)
+                return step;
+        }
+        return POS_STEPS[POS_STEPS.length - 1];
+    }
 
     private void createPane() {
 
@@ -81,10 +108,8 @@ public final class ElevationProfileManager {
         mainPane.setCenter(centerPane);
 
         // le chemin représentant la grille
-        int[] POS_STEPS =
-                { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
-        int[] ELE_STEPS =
-                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
+
         Path path = new Path();
         centerPane.getChildren().add(path);
         path.getStyleClass().add("grid");
