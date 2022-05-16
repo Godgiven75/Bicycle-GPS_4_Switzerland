@@ -1,7 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
-import javafx.beans.binding.Bindings;
+import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -147,7 +147,8 @@ public final class ElevationProfileManager {
         Line line = new Line();
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> position.get()));
         line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
-
+        line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
+        line.visibleProperty().bind(position.greaterThanOrEqualTo(0));
         centerPane.getChildren().add(line);
 
         Pane bottomPane = this.bottomPane;
