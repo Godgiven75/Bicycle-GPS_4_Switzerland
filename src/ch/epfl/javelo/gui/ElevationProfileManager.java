@@ -1,10 +1,8 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
@@ -22,17 +20,18 @@ import javafx.scene.transform.Transform;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
+
 public final class ElevationProfileManager {
-    private ReadOnlyObjectProperty<ElevationProfile> profile;
-    private ReadOnlyDoubleProperty position;
-    private ObjectProperty<Rectangle2D> rectangle2DP;
-    private ObjectProperty<Transform> screenToWorldP;
-    private ObjectProperty<Transform> worldToScreen;
-    private BorderPane pane;
-    private DoubleProperty mousePositionOnProfileProperty; // contient la position du curseur sur le profil
-    private Pane centerPane;
-    private VBox bottomPane;
-    private Insets insets = new Insets(10, 10, 20, 40);
+    private final ReadOnlyObjectProperty<ElevationProfile> profile;
+    private final ReadOnlyDoubleProperty position;
+    private final ObjectProperty<Rectangle2D> rectangle2DP;
+    private final ObjectProperty<Transform> screenToWorldP;
+    private final ObjectProperty<Transform> worldToScreen;
+    private final BorderPane mainPane;
+    private final DoubleProperty mousePositionOnProfileProperty; // contient la position du curseur sur le profil
+    private final Pane centerPane;
+    private final VBox bottomPane;
+    private final Insets insets = new Insets(10, 10, 20, 40);
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile,
                                    ReadOnlyDoubleProperty position) {
@@ -40,7 +39,7 @@ public final class ElevationProfileManager {
         this.position = position;
         this.screenToWorldP = new SimpleObjectProperty<>();
         this.worldToScreen = new SimpleObjectProperty<>();
-        this.pane = new BorderPane();
+        this.mainPane = new BorderPane();
         this.centerPane = new Pane();
         this.bottomPane = new VBox();
         this.rectangle2DP = new SimpleObjectProperty<>(
@@ -63,7 +62,7 @@ public final class ElevationProfileManager {
     }
 
     public Pane pane() {
-        return pane;
+        return mainPane;
     }
 
 
@@ -75,11 +74,11 @@ public final class ElevationProfileManager {
     private void createPane() {
 
         // contient les 2 conteneurs
-        BorderPane rootPane = new BorderPane();
-        rootPane.getStylesheets().add("elevation_profile");
+
+        mainPane.getStylesheets().add("elevation_profile");
 
         Pane centerPane = this.centerPane;
-        rootPane.setCenter(centerPane);
+        mainPane.setCenter(centerPane);
 
         // le chemin représentant la grille
         int[] POS_STEPS =
@@ -110,13 +109,11 @@ public final class ElevationProfileManager {
         centerPane.getChildren().add(line);
 
         Pane bottomPane = this.bottomPane;
-        rootPane.setBottom(bottomPane);
+        mainPane.setBottom(bottomPane);
         bottomPane.getStyleClass().add("profile_data");
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
-
-        this.pane = rootPane;
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au

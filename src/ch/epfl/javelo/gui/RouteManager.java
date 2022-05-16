@@ -26,6 +26,7 @@ public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> mapViewParametersP;
     private final Polyline routePolyline;
     private final Circle highlightedPositionC;
+    private static final float CIRCLE_RADIUS = 5f;
 
     public RouteManager(RouteBean routeBean,
                         ReadOnlyObjectProperty<MapViewParameters> mvp) {
@@ -57,13 +58,13 @@ public final class RouteManager {
     private void addGUIElements() {
         routePolyline.setId("route");
         highlightedPositionC.setId("highlight");
-        highlightedPositionC.setRadius(5f);
+        highlightedPositionC.setRadius(CIRCLE_RADIUS);
         pane.getChildren().add(routePolyline);
         pane.getChildren().add(highlightedPositionC);
     }
 
     private void addMouseEventsManager() {
-        highlightedPositionC.setOnMousePressed((e) -> {
+        highlightedPositionC.setOnMousePressed(e -> {
             Point2D localToParent = highlightedPositionC.localToParent(e.getX(), e.getY());
             PointCh p = mapViewParametersP.get()
                     .pointAt(localToParent.getX(), localToParent.getY())
@@ -77,7 +78,7 @@ public final class RouteManager {
     }
 
     private void addListeners() {
-        routeBean.routeProperty().addListener((p) -> {
+        routeBean.routeProperty().addListener(p -> {
             // Devrait-on mettre le booléen dans RouteBean ?
             if (!hasItinerary()) {
                 routePolyline.setVisible(false);
@@ -135,7 +136,6 @@ public final class RouteManager {
         double highlightedPosition = routeBean.highlightedPositionProperty().get();
         PointWebMercator highlightedPoint =
                 PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
-
         highlightedPositionC.setCenterX(mvp.viewX(highlightedPoint));
         highlightedPositionC.setCenterY(mvp.viewY(highlightedPoint));
     }
