@@ -44,7 +44,7 @@ public final class Stage9Test extends Application {
         routeBean.setHighlightedPositionP(1000);
 
         RouteManager routeManager =
-                new RouteManager(routeBean, mapViewParametersP, errorConsumer);
+                new RouteManager(routeBean, mapViewParametersP);
 
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,

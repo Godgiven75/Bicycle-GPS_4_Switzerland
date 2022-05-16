@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -9,9 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
@@ -30,20 +29,26 @@ public final class ElevationProfileManager {
     private ObjectProperty<Transform> screenToWorldP;
     private ObjectProperty<Transform> worldToScreen;
     private BorderPane pane;
-    private DoubleProperty mousePositionOnProfileProperty;
+    private DoubleProperty mousePositionOnProfileProperty; // contient la position du curseur sur le profil
     private Pane centerPane;
     private VBox bottomPane;
+    private Insets insets = new Insets(10, 10, 20, 40);
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile,
                                    ReadOnlyDoubleProperty position) {
         this.profile = profile;
         this.position = position;
-        this.rectangle2DP = new SimpleObjectProperty<>();
         this.screenToWorldP = new SimpleObjectProperty<>();
         this.worldToScreen = new SimpleObjectProperty<>();
         this.pane = new BorderPane();
         this.centerPane = new Pane();
         this.bottomPane = new VBox();
+        this.rectangle2DP = new SimpleObjectProperty<>(
+                new Rectangle2D(
+                        centerPane.getWidth() + insets.getLeft(),
+                        centerPane.getHeight() - insets.getBottom(),
+                        centerPane.getWidth() - (insets.getRight() + insets.getLeft()),
+                        centerPane.getHeight() - (insets.getBottom() + insets.getTop())));
         this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
 
     }
@@ -53,7 +58,7 @@ public final class ElevationProfileManager {
             // la position mise en évidence
             Line line = new Line();
             centerPane.getChildren().add(line);
-            line
+            //Bindings.createDoubleBinding(() -> )
         });
     }
 
@@ -61,9 +66,11 @@ public final class ElevationProfileManager {
         return pane;
     }
 
+
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return
+        return mousePositionOnProfileProperty;
     }
+
 
     private void createPane() {
 
@@ -73,12 +80,18 @@ public final class ElevationProfileManager {
 
         Pane centerPane = this.centerPane;
         rootPane.setCenter(centerPane);
-        centerPane.setPadding(new Insets(10, 10, 20, 40));
 
         // le chemin représentant la grille
+        int[] POS_STEPS =
+                { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
         Path path = new Path();
         centerPane.getChildren().add(path);
         path.getStyleClass().add("grid");
+        // à mettre dans une boucle
+        path.getElements().add(new MoveTo());
+        path.getElements().add(new LineTo());
 
         // les étiquettes de la grille
         Group group = new Group();
@@ -87,7 +100,7 @@ public final class ElevationProfileManager {
         // le graphe du profil
         Polygon polygon = new Polygon();
         // ne pas oublier les 2 points additionnels du semi-rectangle
-        double[] profilePoints = new double[];
+        //double[] profilePoints = new double[];
 
         centerPane.getChildren().add(polygon);
         polygon.getStyleClass().add("profile");
@@ -108,10 +121,20 @@ public final class ElevationProfileManager {
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
     // système de coordonnées du "monde réel".
-    private void screenToWorld(Transform t) {
+    private void screenToWorld() {
+        Rectangle2D rect = rectangle2DP.get();
         Affine transform = new Affine();
+        ElevationProfile elevationProfile = profile.get();
         transform.prependTranslation(-40, 653);
-        transform.prependScale(1.0/t.getTx(), 1.0/t.getTy());
+        transform.prependScale(
+                (1.0 / rect.getWidth()) * elevationProfile.length(),
+                (1.0 / rect.getHeight())
+                        * (elevationProfile.maxElevation()
+                            - elevationProfile.minElevation()));
 
+    }
+
+    private void worldToScreen() {
+        //screenToWorld().createInverse()
     }
 }
