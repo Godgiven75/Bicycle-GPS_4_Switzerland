@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -11,7 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
+
+import java.util.Arrays;
 
 /**
  * Publique et finale, gère l'affichage et l'interaction avec le profil en long
@@ -50,7 +54,6 @@ public final class ElevationProfileManager {
                         centerPane.getWidth() - (insets.getRight() + insets.getLeft()),
                         centerPane.getHeight() - (insets.getBottom() + insets.getTop())));
         this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
-
     }
 
     private void addListeners() {
@@ -70,6 +73,7 @@ public final class ElevationProfileManager {
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileProperty;
     }
+
     private int computeVerticalStep() {
         final int minVerticalDistance = 50;
         int[] ELE_STEPS =
@@ -99,17 +103,13 @@ public final class ElevationProfileManager {
     }
 
     private void createPane() {
-
         // contient les 2 conteneurs
-
         mainPane.getStylesheets().add("elevation_profile");
 
         Pane centerPane = this.centerPane;
         mainPane.setCenter(centerPane);
 
         // le chemin représentant la grille
-
-
         Path path = new Path();
         centerPane.getChildren().add(path);
         path.getStyleClass().add("grid");
@@ -124,13 +124,30 @@ public final class ElevationProfileManager {
         // le graphe du profil
         Polygon polygon = new Polygon();
         // ne pas oublier les 2 points additionnels du semi-rectangle
-        //double[] profilePoints = new double[];
+        int verticalStep = computeVerticalStep();
+        int horizontalStep = computeHorizontalStep();
+        double[] verticalPoints = new double[(int) (profile.get().maxElevation() / verticalStep)];
+        double[] horizontalPoints = new double[(int) (profile.get().length() / horizontalStep)];
+        int j = 0;
+        for (int i = 0; i < verticalPoints.length; i++)
+            verticalPoints[i] = profile.get().elevationAt(j += verticalStep);
+        j = 0;
+        for (int i = 0; i < horizontalPoints.length; i++)
+            horizontalPoints[i] = profile.get().elevationAt(j += horizontalStep);
+        for (int i = 0; i < horizontalPoints.length; i++) {
+            if (i % 2 == 0)
+                polygon.getPoints().add(horizontalPoints[i]);
+            else polygon.getPoints().add(verticalPoints[i]);
+        }
 
         centerPane.getChildren().add(polygon);
         polygon.getStyleClass().add("profile");
 
         // la position mise en évidence
         Line line = new Line();
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> position.get()));
+        line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
+
         centerPane.getChildren().add(line);
 
         Pane bottomPane = this.bottomPane;
@@ -143,7 +160,7 @@ public final class ElevationProfileManager {
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
     // système de coordonnées du "monde réel".
-    private void screenToWorld() {
+    private Affine screenToWorld() {
         Rectangle2D rect = rectangle2DP.get();
         Affine transform = new Affine();
         ElevationProfile elevationProfile = profile.get();
@@ -153,10 +170,10 @@ public final class ElevationProfileManager {
                 (1.0 / rect.getHeight())
                         * (elevationProfile.maxElevation()
                             - elevationProfile.minElevation()));
-
+        return transform;
     }
 
-    private void worldToScreen() {
-        //screenToWorld().createInverse()
+    private Affine worldToScreen() throws NonInvertibleTransformException {
+        return screenToWorld().createInverse();
     }
 }

@@ -11,9 +11,9 @@ import java.util.DoubleSummaryStatistics;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
-public class ElevationProfile {
-     final double length;
-     final float[] elevationSamples;
+public final class ElevationProfile {
+     private final double length;
+     private final float[] elevationSamples;
 
     /**
      * Construit le profil en long d'un itinéraire de longueur length (en mètres)
