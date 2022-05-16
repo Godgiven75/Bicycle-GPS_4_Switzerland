@@ -45,7 +45,7 @@ public final class ElevationProfileManager {
         this.bottomPane = new VBox();
         this.rectangle2DP = new SimpleObjectProperty<>(
                 new Rectangle2D(
-                        centerPane.getWidth() + insets.getLeft(),
+                        centerPane.getHeight() - insets.getBottom(),
                         centerPane.getHeight() - insets.getBottom(),
                         centerPane.getWidth() - (insets.getRight() + insets.getLeft()),
                         centerPane.getHeight() - (insets.getBottom() + insets.getTop())));
