@@ -18,7 +18,7 @@ import javafx.scene.transform.Transform;
 /**
  * Publique et finale, gère l'affichage et l'interaction avec le profil en long
  * d'un itinéraire.
- *
+ * test
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
