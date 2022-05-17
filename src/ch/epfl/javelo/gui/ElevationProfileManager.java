@@ -4,6 +4,7 @@ import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
@@ -14,8 +15,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
-
-import java.util.Arrays;
 
 /**
  * Publique et finale, gère l'affichage et l'interaction avec le profil en long
@@ -30,7 +29,7 @@ public final class ElevationProfileManager {
     private final ReadOnlyDoubleProperty position;
     private final ObjectProperty<Rectangle2D> rectangle2DP;
     private final ObjectProperty<Transform> screenToWorldP;
-    private final ObjectProperty<Transform> worldToScreen;
+    private final ObjectProperty<Transform> worldToScreenP;
     private final BorderPane mainPane;
     private final DoubleProperty mousePositionOnProfileProperty; // contient la position du curseur sur le profil
     private final Pane centerPane;
@@ -43,7 +42,7 @@ public final class ElevationProfileManager {
         this.profile = profile;
         this.position = position;
         this.screenToWorldP = new SimpleObjectProperty<>();
-        this.worldToScreen = new SimpleObjectProperty<>();
+        this.worldToScreenP = new SimpleObjectProperty<>();
         this.mainPane = new BorderPane();
         this.centerPane = new Pane();
         this.bottomPane = new VBox();
@@ -159,20 +158,29 @@ public final class ElevationProfileManager {
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
     // système de coordonnées du "monde réel".
-    private Affine screenToWorld() {
+    private void screenToWorld(Point2D pointToTransform) {
         Rectangle2D rect = rectangle2DP.get();
-        Affine transform = new Affine();
+        Affine affine = new Affine();
         ElevationProfile elevationProfile = profile.get();
-        transform.prependTranslation(-40, 653);
-        transform.prependScale(
+        // translate le vecteur tel que son origine se positionne sur le coin
+        // haut-gauche du rectangle
+        affine.prependTranslation(- (pointToTransform.getX() + insets.getLeft()),
+                    pointToTransform.getY() + insets.getBottom());
+        // passe de l'échelle de l'écran au monde réel (dont les axes des ordonnées
+        // sont opposés)
+        affine.prependScale(
                 (1.0 / rect.getWidth()) * elevationProfile.length(),
-                (1.0 / rect.getHeight())
+                 - (1.0 / rect.getHeight())
                         * (elevationProfile.maxElevation()
                             - elevationProfile.minElevation()));
-        return transform;
+        // translate à nouveau de sorte que l'origine du vecteur se trouve au coin
+        // bas-gauche du rectangle
+        affine.prependTranslation(pointToTransform.getX() + insets.getLeft(),
+                    - (pointToTransform.getY() + insets.getBottom()));
+        screenToWorldP.set(affine);
     }
 
-    private Affine worldToScreen() throws NonInvertibleTransformException {
-        return screenToWorld().createInverse();
+    private void worldToScreen() throws NonInvertibleTransformException {
+        worldToScreenP.set(screenToWorldP.get().createInverse());
     }
 }
