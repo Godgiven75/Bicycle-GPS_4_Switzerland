@@ -61,14 +61,12 @@ public final class ElevationProfileManager {
             // la position mise en évidence
             Line line = new Line();
             centerPane.getChildren().add(line);
-            //Bindings.createDoubleBinding(() -> )
         });
     }
 
     public Pane pane() {
         return mainPane;
     }
-
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileProperty;
