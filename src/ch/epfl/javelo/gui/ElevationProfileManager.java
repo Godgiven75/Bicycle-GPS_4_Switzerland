@@ -5,8 +5,10 @@ import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -34,7 +36,7 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> screenToWorldP;
     private final ObjectProperty<Transform> worldToScreenP;
     private final BorderPane mainPane;
-    private final DoubleProperty mousePositionOnProfileProperty; // contient la position du curseur sur le profil
+    private final DoubleProperty mousePositionOnProfileP; // contient la position du curseur sur le profil
     private final Pane centerPane;
     private final VBox bottomPane;
     private final Insets insets = new Insets(10, 10, 20, 40);
@@ -46,23 +48,18 @@ public final class ElevationProfileManager {
         this.positionP = positionP;
         this.mainPane = new BorderPane();
         this.centerPane = new Pane();
-        mainPane.getStylesheets().add("elevation_profile.css");
-        mainPane.setCenter(centerPane);
         this.bottomPane = new VBox();
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
-        this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
+        this.mousePositionOnProfileP = new SimpleDoubleProperty();
         this.screenToWorldP = new SimpleObjectProperty<>();
         this.worldToScreenP = new SimpleObjectProperty<>();
-        screenToWorldP.set(screenToWorld());
-        try {
-            worldToScreenP.set(worldToScreen());
-        } catch (NonInvertibleTransformException error) {
-            throw new Error(error);
-        }
+        mainPane.getStylesheets().add("elevation_profile.css");
+        bottomPane.setId("profile_data");
+        mainPane.setCenter(centerPane);
+        mainPane.setBottom(bottomPane);
+        //createPane();
         addBindings();
         addListeners();
-        //createPane();
-        displayProfile();
     }
 
     public Pane pane() {
@@ -70,37 +67,38 @@ public final class ElevationProfileManager {
     }
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return mousePositionOnProfileProperty;
+        return mousePositionOnProfileP;
     }
 
     private void addListeners() {
-        rectangle2DP.addListener(e -> {
+        rectangle2DP.addListener((p, o, n) -> {
             screenToWorldP.set(screenToWorld());
             try {
                 worldToScreenP.set(worldToScreen());
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
+            displayProfile();
         });
-        elevationProfileP.addListener(e -> {
+        elevationProfileP.addListener((p, o, n) -> {
             screenToWorldP.set(screenToWorld());
             try {
                 worldToScreenP.set(worldToScreen());
-            } catch (NonInvertibleTransformException error){
+            } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
+            displayProfile();
         });
     }
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
         // largeur et la longueur du panneau central
-
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
             double width = Math2.clamp(0,
-                    centerPane.getWidth() - insets.getRight(),
+                    centerPane.getWidth() - insets.getRight() - insets.getLeft(),
                     centerPane.getWidth());
             double height = Math2.clamp(0,
-                    centerPane.getHeight() - insets.getBottom(),
+                    centerPane.getHeight() - insets.getBottom() - insets.getTop(),
                     centerPane.getWidth());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
@@ -123,7 +121,6 @@ public final class ElevationProfileManager {
                 return step;
         }
         return ELE_STEPS[ELE_STEPS.length - 1];
-
     }
     private int computeHorizontalStep() {
         final int minHorizontalDistance = 50;
@@ -149,15 +146,20 @@ public final class ElevationProfileManager {
         double maxX = r.getMaxX();
         Transform worldToScreen = worldToScreenP.get();
         Transform screenToWorld = screenToWorldP.get();
-        for (double x = minX; x <= maxX; x+= 1 ) {
+        points.add(minX);
+        points.add(r.getMaxY());
+        for (double x = minX; x <= maxX; x += 1) {
             double position = screenToWorld.transform(x, 0).getX();
             points.add(x);
-            points.add(worldToScreen.transform(0, p.elevationAt(position)).getX());
+            points.add(worldToScreen.transform(0, p.elevationAt(position)).getY());
         }
+        points.add(r.getMaxX());
+        points.add(r.getMaxY());
         polygon.getPoints().setAll(points);
-        polygon.getStyleClass().add("elevationProfileP");
+        polygon.setId("profile");
     }
     private void createPane() {
+
         // contient les 2 conteneurs
         // le chemin représentant la grille
         Path path = new Path();
@@ -171,7 +173,7 @@ public final class ElevationProfileManager {
         centerPane.getChildren().add(group);
         // le graphe du profil
         // la position mise en évidence
-        Line line = new Line();
+        /*Line line = new Line();
         line.layoutXProperty().bind(Bindings.createDoubleBinding(positionP::get));
         line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
@@ -183,6 +185,7 @@ public final class ElevationProfileManager {
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
+        */
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
@@ -193,7 +196,8 @@ public final class ElevationProfileManager {
         ElevationProfile elevationProfile = elevationProfileP.get();
         transform.prependTranslation(-rect.getMinX(), -rect.getMinY());
         double sx = elevationProfile.length() / (rect.getMaxX() - rect.getMinX());
-        double sy = elevationProfile.maxElevation() / (rect.getMaxY() - rect.getMinY());
+        double sy = (elevationProfile.minElevation() - elevationProfile.maxElevation())
+                / (rect.getMaxY() - rect.getMinY());
         transform.prependScale(sx, sy);
         transform.prependTranslation(0, elevationProfileP.get().maxElevation());
         return transform;
