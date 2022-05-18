@@ -40,6 +40,7 @@ public final class ElevationProfileManager {
     private final Pane centerPane;
     private final VBox bottomPane;
     private final Insets insets = new Insets(10, 10, 20, 40);
+    private Polygon polygon;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
@@ -57,6 +58,8 @@ public final class ElevationProfileManager {
         bottomPane.setId("profile_data");
         mainPane.setCenter(centerPane);
         mainPane.setBottom(bottomPane);
+        this.polygon = new Polygon();
+        centerPane.getChildren().add(polygon);
         //createPane();
         addBindings();
         addListeners();
@@ -102,10 +105,9 @@ public final class ElevationProfileManager {
                     centerPane.getWidth());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
-
     }
-    private void addMouseEventsManager() {
 
+    private void addMouseEventsManager() {
 
     }
 
@@ -137,8 +139,6 @@ public final class ElevationProfileManager {
     }
 
     private void displayProfile() {
-        Polygon polygon = new Polygon();
-        centerPane.getChildren().add(polygon);
         List<Double> points = new ArrayList<>();
         Rectangle2D r = rectangle2DP.get();
         ElevationProfile p = elevationProfileP.get();
@@ -158,13 +158,14 @@ public final class ElevationProfileManager {
         polygon.getPoints().setAll(points);
         polygon.setId("profile");
     }
+
     private void createPane() {
 
         // contient les 2 conteneurs
         // le chemin représentant la grille
         Path path = new Path();
         centerPane.getChildren().add(path);
-        path.getStyleClass().add("grid");
+        path.setId("grid");
         // à mettre dans une boucle
         path.getElements().add(new MoveTo());
         path.getElements().add(new LineTo());
