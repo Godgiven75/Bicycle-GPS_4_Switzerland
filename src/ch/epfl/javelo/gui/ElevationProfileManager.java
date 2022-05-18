@@ -60,7 +60,7 @@ public final class ElevationProfileManager {
         mainPane.setBottom(bottomPane);
         this.polygon = new Polygon();
         centerPane.getChildren().add(polygon);
-        //createPane();
+        createPane();
         addBindings();
         addListeners();
     }
@@ -174,7 +174,7 @@ public final class ElevationProfileManager {
         centerPane.getChildren().add(group);
         // le graphe du profil
         // la position mise en évidence
-        /*Line line = new Line();
+        Line line = new Line();
         line.layoutXProperty().bind(Bindings.createDoubleBinding(positionP::get));
         line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
@@ -186,7 +186,7 @@ public final class ElevationProfileManager {
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
-        */
+
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
