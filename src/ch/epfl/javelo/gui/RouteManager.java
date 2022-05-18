@@ -104,6 +104,7 @@ public final class RouteManager {
             highlightedPositionC.setVisible(true);
         });
         mapViewParametersP.addListener((p, o, n) -> {
+            //-mapviewparameters
             int oldZoomLevel = o.zoomLevel();
             int newZoomLevel = n.zoomLevel();
 
