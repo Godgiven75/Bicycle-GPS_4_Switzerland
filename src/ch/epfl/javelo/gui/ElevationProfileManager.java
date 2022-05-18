@@ -11,11 +11,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +47,13 @@ public final class ElevationProfileManager {
         this.elevationProfileP = elevationProfileP;
         this.positionP = positionP;
         this.mainPane = new BorderPane();
-        this.centerPane = new Pane();
         mainPane.getStylesheets().add("elevation_profile.css");
+        this.centerPane = new Pane();
+        centerPane.setStyle("-fx-background-color: green");
         mainPane.setCenter(centerPane);
         this.bottomPane = new VBox();
+        mainPane.setBottom(bottomPane);
+        bottomPane.setStyle("-fx-background-color: red");
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
         this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
         this.screenToWorldP = new SimpleObjectProperty<>();
@@ -61,7 +66,7 @@ public final class ElevationProfileManager {
         }
         addBindings();
         addListeners();
-        //createPane();
+        createPane();
         displayProfile();
     }
 
