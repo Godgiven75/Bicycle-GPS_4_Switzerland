@@ -147,9 +147,11 @@ public final class BaseMapManager {
         pane.setOnScroll(e -> {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + 250);
+            minScrollTime.set(currentTime + 200);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
+            //clamp
+            // scale factor de la différence des zoom levels
             if (! (MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL)) return;
             MapViewParameters currentMvp = mapViewParametersP.get();
             PointWebMercator pwm = PointWebMercator.of(currentZoomLevel, currentMvp.xImage(), currentMvp.yImage());

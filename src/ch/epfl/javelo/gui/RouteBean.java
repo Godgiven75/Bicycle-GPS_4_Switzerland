@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -44,7 +45,7 @@ public final class RouteBean {
 
     private void addListeners() {
         // Syntaxe ?
-        waypoints.addListener((ListChangeListener<? super Waypoint>) e -> {
+        waypoints.addListener((Observable o) -> {
             Route itinerary = computeItinerary();
             if (itinerary == null) {
                 routeP.set(null);
