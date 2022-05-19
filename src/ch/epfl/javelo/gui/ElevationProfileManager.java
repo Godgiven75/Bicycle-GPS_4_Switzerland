@@ -119,7 +119,8 @@ public final class ElevationProfileManager {
         final int minVerticalDistance = 25;
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-        double height = rectangle2DP.get().getHeight();
+        double height = rectangle2DP.get().getHeight() + insets.getTop() + insets.getBottom();
+        System.out.println("Height : " + height);
         double maxElevation = elevationProfileP.get().maxElevation();
         for (int step : ELE_STEPS) {
             double temp = (step * height) / maxElevation;
@@ -184,8 +185,13 @@ public final class ElevationProfileManager {
             path.getElements().add(new MoveTo(x, maxY));
             path.getElements().add(new LineTo(x, minY));
         }
-        for (double y = minY; y <= maxY; y+= verticalStep) {
-            path.getElements().add(new MoveTo(minY, y));
+        double minElevation = elevationProfileP.get().minElevation();
+        double minVertical = maxY - worldToScreen.transform(0,
+                Math2.ceilDiv((int) minElevation, computeVerticalStep()) * computeVerticalStep()).getY();
+        System.out.println("maxY : " + maxY);
+        System.out.println("minVertical : " + minVertical);
+        for (double y = minVertical; y <= maxY; y+= verticalStep) {
+            path.getElements().add(new MoveTo(minX, y));
             path.getElements().add(new LineTo(maxX, y));
         }
         centerPane.getChildren().add(path);
