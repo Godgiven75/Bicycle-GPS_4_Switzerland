@@ -187,7 +187,8 @@ public final class ElevationProfileManager {
         }
         double minElevation = elevationProfileP.get().minElevation();
         double minVertical = maxY - worldToScreen.transform(0,
-                Math2.ceilDiv((int) minElevation, computeVerticalStep()) * computeVerticalStep()).getY();
+                Math2.ceilDiv((int) minElevation, computeVerticalStep())
+                        * computeVerticalStep()).getY();
         System.out.println("maxY : " + maxY);
         System.out.println("minVertical : " + minVertical);
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
