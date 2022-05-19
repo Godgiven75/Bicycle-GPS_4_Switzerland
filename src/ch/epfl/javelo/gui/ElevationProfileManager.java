@@ -60,7 +60,6 @@ public final class ElevationProfileManager {
         mainPane.setBottom(bottomPane);
         this.polygon = new Polygon();
         centerPane.getChildren().add(polygon);
-        createPane();
         addBindings();
         addListeners();
     }
@@ -82,6 +81,7 @@ public final class ElevationProfileManager {
                 throw new Error(error);
             }
             displayProfile();
+            createPane();
         });
         elevationProfileP.addListener((p, o, n) -> {
             screenToWorldP.set(screenToWorld());
@@ -91,6 +91,7 @@ public final class ElevationProfileManager {
                 throw new Error(error);
             }
             displayProfile();
+            createPane();
         });
     }
     private void addBindings() {
@@ -98,11 +99,14 @@ public final class ElevationProfileManager {
         // largeur et la longueur du panneau central
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
             double width = Math2.clamp(0,
-                    centerPane.getWidth() - insets.getRight() - insets.getLeft(),
-                    centerPane.getWidth());
+                    mainPane.getWidth() - insets.getRight() - insets.getLeft(),
+                    mainPane.getWidth());
+            System.out.println(mainPane.getWidth() + " lol");
             double height = Math2.clamp(0,
-                    centerPane.getHeight() - insets.getBottom() - insets.getTop(),
-                    centerPane.getWidth());
+                    mainPane.getHeight() - insets.getBottom() - insets.getTop(),
+                    mainPane.getHeight());
+            System.out.println(mainPane.getHeight());
+            System.out.println(mainPane.getHeight() - insets.getBottom() - insets.getTop());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
     }
@@ -112,15 +116,17 @@ public final class ElevationProfileManager {
     }
 
     private int computeVerticalStep() {
-        final int minVerticalDistance = 50;
+        final int minVerticalDistance = 25;
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
         double height = rectangle2DP.get().getHeight();
         double maxElevation = elevationProfileP.get().maxElevation();
         for (int step : ELE_STEPS) {
-            int nbIntervals = (int) (maxElevation / step);
-            if (height / nbIntervals >= minVerticalDistance)
+            double temp = (step * height) / maxElevation;
+            if (temp >= minVerticalDistance) {
+                System.out.println("Vertical : " + step);
                 return step;
+            }
         }
         return ELE_STEPS[ELE_STEPS.length - 1];
     }
@@ -131,9 +137,11 @@ public final class ElevationProfileManager {
         double width = rectangle2DP.get().getWidth();
         double length = elevationProfileP.get().length();
         for (int step : POS_STEPS) {
-            int nbIntervals = (int) (length / step);
-            if (width / nbIntervals >= minHorizontalDistance)
+            double temp = (step * width) / length;
+            if (temp >= minHorizontalDistance) {
+                System.out.println("Horizontal : " + step);
                 return step;
+            }
         }
         return POS_STEPS[POS_STEPS.length - 1];
     }
@@ -160,15 +168,27 @@ public final class ElevationProfileManager {
     }
 
     private void createPane() {
-
         // contient les 2 conteneurs
         // le chemin représentant la grille
         Path path = new Path();
-        centerPane.getChildren().add(path);
         path.setId("grid");
-        // à mettre dans une boucle
-        path.getElements().add(new MoveTo());
-        path.getElements().add(new LineTo());
+        Rectangle2D r = rectangle2DP.get();
+        double minX = r.getMinX();
+        double minY = r.getMinY();
+        double maxX = r.getMaxX();
+        double maxY = r.getMaxY();
+        Transform worldToScreen = worldToScreenP.get();
+        double horizontalStep = worldToScreen.transform(computeHorizontalStep(), 0).getX();
+        double verticalStep = worldToScreen.transform(0, computeVerticalStep()).getY();
+        for (double x = minX; x <= maxX; x += horizontalStep) {
+            path.getElements().add(new MoveTo(x, maxY));
+            path.getElements().add(new LineTo(x, minY));
+        }
+        for (double y = minY; y <= maxY; y+= verticalStep) {
+            path.getElements().add(new MoveTo(minY, y));
+            path.getElements().add(new LineTo(maxX, y));
+        }
+        centerPane.getChildren().add(path);
         // les étiquettes de la grille
         Group group = new Group();
         centerPane.getChildren().add(group);
