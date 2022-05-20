@@ -63,7 +63,7 @@ public final class ElevationProfileManager {
         this.worldToScreenP = new SimpleObjectProperty<>();
         mainPane.getStylesheets().add("elevation_profile.css");
         bottomPane.setId("profile_data");
-        bottomPane.setBackground(Background.fill(Color.BLUE));
+        //bottomPane.setBackground(Background.fill(Color.BLUE));
         mainPane.setBottom(bottomPane);
         mainPane.setCenter(centerPane);
         this.polygon = new Polygon();
@@ -115,11 +115,11 @@ public final class ElevationProfileManager {
         // largeur et la longueur du panneau central
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
             double width = Math2.clamp(0,
-                    mainPane.getWidth() - insets.getRight() - insets.getLeft(),
-                    mainPane.getWidth());
+                    centerPane.getWidth() - insets.getRight() - insets.getLeft(),
+                    centerPane.getWidth());
             double height = Math2.clamp(0,
-                    mainPane.getHeight() - insets.getBottom() - insets.getTop(),
-                    mainPane.getHeight());
+                    centerPane.getHeight() - insets.getBottom() - insets.getTop(),
+                    centerPane.getHeight());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
     }
