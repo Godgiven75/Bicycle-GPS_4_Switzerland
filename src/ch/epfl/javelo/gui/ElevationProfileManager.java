@@ -44,6 +44,7 @@ public final class ElevationProfileManager {
     private final Insets insets = new Insets(10, 10, 20, 40);
     private Polygon polygon;
     private Path path;
+    private Group group;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
@@ -64,8 +65,10 @@ public final class ElevationProfileManager {
         mainPane.setBottom(bottomPane);
         this.polygon = new Polygon();
         this.path = new Path();
+        this.group = new Group();
         centerPane.getChildren().add(path);
         centerPane.getChildren().add(polygon);
+        centerPane.getChildren().add(group);
         addBindings();
         addListeners();
     }
@@ -169,8 +172,7 @@ public final class ElevationProfileManager {
     }
 
     private void createPane() {
-        // contient les 2 conteneurs
-        // le chemin représentant la grille
+        // Chemin représentant la grille :
         List<PathElement> lines = new ArrayList<>();
         path.setId("grid");
         Rectangle2D r = rectangle2DP.get();
@@ -195,10 +197,13 @@ public final class ElevationProfileManager {
             lines.add(new MoveTo(minX, y));
             lines.add(new LineTo(maxX, y));
         }
+        // Màj des lignes de la grille à chaque redimensionnement
+
         path.getElements().setAll(lines);
-        // les étiquettes de la grille
-        Group group = new Group();
-        centerPane.getChildren().add(group);
+
+        // Les étiquettes de la grille :
+
+        group.getStyleClass().addAll("grid_label", "horizontal");
         // le graphe du profil
         // la position mise en évidence
         Line line = new Line();
