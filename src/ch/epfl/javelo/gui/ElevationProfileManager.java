@@ -62,11 +62,13 @@ public final class ElevationProfileManager {
         this.worldToScreenP = new SimpleObjectProperty<>();
         mainPane.getStylesheets().add("elevation_profile.css");
         bottomPane.setId("profile_data");
-        //bottomPane.setBackground(Background.fill(Color.BLUE));
-        mainPane.setCenter(centerPane);
+        bottomPane.setBackground(Background.fill(Color.BLUE));
         mainPane.setBottom(bottomPane);
+        mainPane.setCenter(centerPane);
         this.polygon = new Polygon();
+        polygon.setId("profile");
         this.path = new Path();
+        path.setId("grid");
         this.group = new Group();
         centerPane.getChildren().add(path);
         centerPane.getChildren().add(polygon);
@@ -170,14 +172,12 @@ public final class ElevationProfileManager {
         points.add(r.getMaxX());
         points.add(r.getMaxY());
         polygon.getPoints().setAll(points);
-        polygon.setId("profile");
     }
 
     private void createPane() {
         // Chemin représentant la grille :
         List<PathElement> lines = new ArrayList<>();
         List<Text> texts = new ArrayList<>();
-        path.setId("grid");
         Rectangle2D r = rectangle2DP.get();
         double minX = r.getMinX();
         double minY = r.getMinY();
