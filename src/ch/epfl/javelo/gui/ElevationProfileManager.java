@@ -235,7 +235,6 @@ public final class ElevationProfileManager {
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
-
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
