@@ -181,8 +181,9 @@ public final class ElevationProfileManager {
         double maxX = r.getMaxX();
         double maxY = r.getMaxY();
         Transform worldToScreen = worldToScreenP.get();
-        double horizontalStep = worldToScreen.deltaTransform(computeHorizontalStep(), 0).getX();
-        double verticalStep = worldToScreen.deltaTransform(0, -computeVerticalStep()).getY();
+        Point2D p = new Point2D(computeHorizontalStep(), -computeVerticalStep());
+        double horizontalStep = worldToScreen.deltaTransform(p).getX();
+        double verticalStep = worldToScreen.deltaTransform(p).getY();
         // Lignes verticales
         for (double x = minX; x <= maxX; x += horizontalStep) {
             lines.add(new MoveTo(x, maxY));
