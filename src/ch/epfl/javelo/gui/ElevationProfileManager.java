@@ -7,6 +7,7 @@ import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
@@ -15,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -174,6 +176,7 @@ public final class ElevationProfileManager {
     private void createPane() {
         // Chemin représentant la grille :
         List<PathElement> lines = new ArrayList<>();
+        List<Text> texts = new ArrayList<>();
         path.setId("grid");
         Rectangle2D r = rectangle2DP.get();
         double minX = r.getMinX();
@@ -181,30 +184,46 @@ public final class ElevationProfileManager {
         double maxX = r.getMaxX();
         double maxY = r.getMaxY();
         Transform worldToScreen = worldToScreenP.get();
+        Transform screenToWorld = screenToWorldP.get();
         Point2D p = new Point2D(computeHorizontalStep(), -computeVerticalStep());
         double horizontalStep = worldToScreen.deltaTransform(p).getX();
         double verticalStep = worldToScreen.deltaTransform(p).getY();
         // Lignes verticales
+        int horizontalKilometers = 0;
         for (double x = minX; x <= maxX; x += horizontalStep) {
+            Text txt = new Text(x, maxY, String.valueOf(horizontalKilometers++));
+            txt.getStyleClass().addAll("grid_label", "horizontal");
+            txt.textOriginProperty().set(VPos.TOP);
+            txt.setFont(Font.font("Avenir", 10));
+            txt.setX(txt.getX() - txt.prefWidth(0) / 2);
+            texts.add(txt);
             lines.add(new MoveTo(x, maxY));
             lines.add(new LineTo(x, minY));
         }
         double minElevation = elevationProfileP.get().minElevation();
-        double minVertical = maxY - worldToScreen.transform(0,
-                Math2.ceilDiv((int) minElevation, computeVerticalStep())
-                        * computeVerticalStep()).getY();
-        // Lignes horizontales
+        int verticalKey = Math2.ceilDiv((int) minElevation, computeVerticalStep())
+                * computeVerticalStep();
+        double minVertical = maxY - worldToScreen.transform(0, verticalKey).getY();
+        int nbOfIterations = (int) ((maxY - minVertical) / verticalStep);
+        // Lignes et légende horizontales
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
+            Text txt = new Text(minX, y, String.valueOf(verticalKey + nbOfIterations * computeVerticalStep()));
+            txt.getStyleClass().addAll("grid_label", "vertical");
+            txt.textOriginProperty().set(VPos.CENTER);
+            txt.setFont(Font.font("Avenir", 10));
+            txt.setX(txt.getX() - (txt.prefWidth(0) + 2));
+            texts.add(txt);
             lines.add(new MoveTo(minX, y));
             lines.add(new LineTo(maxX, y));
+            verticalKey -= computeVerticalStep();
         }
         // Màj des lignes de la grille à chaque redimensionnement
-
         path.getElements().setAll(lines);
+        // Màj des légendes d'abscisses et ordonnées
+        group.getChildren().setAll(texts);
 
         // Les étiquettes de la grille :
-
-        group.getStyleClass().addAll("grid_label", "horizontal");
+        group.getStyleClass().add("grid_label.horizontal");
         // le graphe du profil
         // la position mise en évidence
         Line line = new Line();
@@ -213,9 +232,6 @@ public final class ElevationProfileManager {
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
         line.visibleProperty().bind(positionP.greaterThanOrEqualTo(0));
         centerPane.getChildren().add(line);
-        Pane bottomPane = this.bottomPane;
-        mainPane.setBottom(bottomPane);
-        bottomPane.getStyleClass().add("profile_data");
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
