@@ -9,9 +9,11 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
@@ -41,6 +43,7 @@ public final class ElevationProfileManager {
     private final VBox bottomPane;
     private final Insets insets = new Insets(10, 10, 20, 40);
     private Polygon polygon;
+    private Path path;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
@@ -56,9 +59,12 @@ public final class ElevationProfileManager {
         this.worldToScreenP = new SimpleObjectProperty<>();
         mainPane.getStylesheets().add("elevation_profile.css");
         bottomPane.setId("profile_data");
+        //bottomPane.setBackground(Background.fill(Color.BLUE));
         mainPane.setCenter(centerPane);
         mainPane.setBottom(bottomPane);
         this.polygon = new Polygon();
+        this.path = new Path();
+        centerPane.getChildren().add(path);
         centerPane.getChildren().add(polygon);
         addBindings();
         addListeners();
@@ -165,7 +171,7 @@ public final class ElevationProfileManager {
     private void createPane() {
         // contient les 2 conteneurs
         // le chemin représentant la grille
-        Path path = new Path();
+        List<PathElement> lines = new ArrayList<>();
         path.setId("grid");
         Rectangle2D r = rectangle2DP.get();
         double minX = r.getMinX();
@@ -177,8 +183,8 @@ public final class ElevationProfileManager {
         double verticalStep = worldToScreen.deltaTransform(0, -computeVerticalStep()).getY();
         // Lignes verticales
         for (double x = minX; x <= maxX; x += horizontalStep) {
-            path.getElements().add(new MoveTo(x, maxY));
-            path.getElements().add(new LineTo(x, minY));
+            lines.add(new MoveTo(x, maxY));
+            lines.add(new LineTo(x, minY));
         }
         double minElevation = elevationProfileP.get().minElevation();
         double minVertical = maxY - worldToScreen.transform(0,
@@ -186,11 +192,10 @@ public final class ElevationProfileManager {
                         * computeVerticalStep()).getY();
         // Lignes horizontales
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
-            path.getElements().add(new MoveTo(minX, y));
-            path.getElements().add(new LineTo(maxX, y));
+            lines.add(new MoveTo(minX, y));
+            lines.add(new LineTo(maxX, y));
         }
-
-        centerPane.getChildren().add(path);
+        path.getElements().setAll(lines);
         // les étiquettes de la grille
         Group group = new Group();
         centerPane.getChildren().add(group);
