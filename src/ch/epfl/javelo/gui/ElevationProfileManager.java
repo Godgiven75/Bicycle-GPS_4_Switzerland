@@ -101,12 +101,9 @@ public final class ElevationProfileManager {
             double width = Math2.clamp(0,
                     mainPane.getWidth() - insets.getRight() - insets.getLeft(),
                     mainPane.getWidth());
-            System.out.println(mainPane.getWidth() + " lol");
             double height = Math2.clamp(0,
                     mainPane.getHeight() - insets.getBottom() - insets.getTop(),
                     mainPane.getHeight());
-            System.out.println(mainPane.getHeight());
-            System.out.println(mainPane.getHeight() - insets.getBottom() - insets.getTop());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
     }
