@@ -63,7 +63,6 @@ public final class ElevationProfileManager {
         this.worldToScreenP = new SimpleObjectProperty<>();
         mainPane.getStylesheets().add("elevation_profile.css");
         bottomPane.setId("profile_data");
-        //bottomPane.setBackground(Background.fill(Color.BLUE));
         mainPane.setBottom(bottomPane);
         mainPane.setCenter(centerPane);
         this.polygon = new Polygon();
@@ -125,7 +124,19 @@ public final class ElevationProfileManager {
     }
 
     private void addMouseEventsManager() {
-
+        // Assigne dynamiquement la propriété contenant la position le long du
+        // profil correspondant à la position de la souris
+        centerPane.setOnMouseMoved(e -> {
+            Transform screenToWorld = screenToWorldP.get();
+            Rectangle2D rec = rectangle2DP.get();
+            if (!(rec.contains(e.getX(), e.getY()))) {
+                mousePositionOnProfileP.set(Double.NaN);
+                return;
+            }
+            double position = screenToWorld.transform(e.getX(), e.getY()).getX();
+            mousePositionOnProfileP.set(Math.round(position));
+        });
+        centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }
 
     private int computeVerticalStep() {
