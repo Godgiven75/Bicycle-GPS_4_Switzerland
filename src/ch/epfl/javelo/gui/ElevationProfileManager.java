@@ -47,6 +47,7 @@ public final class ElevationProfileManager {
     private Polygon polygon;
     private Path path;
     private Group group;
+    private Text textVbox;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
@@ -70,9 +71,11 @@ public final class ElevationProfileManager {
         this.path = new Path();
         path.setId("grid");
         this.group = new Group();
+        this.textVbox = new Text();
         centerPane.getChildren().add(path);
         centerPane.getChildren().add(polygon);
         centerPane.getChildren().add(group);
+        bottomPane.getChildren().add(textVbox);
         addBindings();
         addListeners();
     }
@@ -232,9 +235,18 @@ public final class ElevationProfileManager {
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
         line.visibleProperty().bind(positionP.greaterThanOrEqualTo(0));
         centerPane.getChildren().add(line);
+
         // texte contenant les statistiques du profil
-        Text textVBox = new Text();
-        bottomPane.getChildren().add(textVBox);
+        ElevationProfile profile = elevationProfileP.get();
+        textVbox.setText(String.format("Longueur : %.1f km" +
+                "     Montée : %.0f m" +
+                "     Descente : %.0f m" +
+                "     Altitude : de %.0f m à %.0f m",
+                profile.length() / 1000.0,
+                profile.totalAscent(),
+                profile.totalDescent(),
+                profile.minElevation(),
+                profile.maxElevation()));
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
