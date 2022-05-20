@@ -119,13 +119,11 @@ public final class ElevationProfileManager {
         final int minVerticalDistance = 25;
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-        double height = rectangle2DP.get().getHeight() + insets.getTop() + insets.getBottom();
-        System.out.println("Height : " + height);
-        double maxElevation = elevationProfileP.get().maxElevation();
+        double height = rectangle2DP.get().getHeight();
+        double maxElevation = elevationProfileP.get().maxElevation() - elevationProfileP.get().minElevation();
         for (int step : ELE_STEPS) {
             double temp = (step * height) / maxElevation;
             if (temp >= minVerticalDistance) {
-                System.out.println("Vertical : " + step);
                 return step;
             }
         }
@@ -140,7 +138,6 @@ public final class ElevationProfileManager {
         for (int step : POS_STEPS) {
             double temp = (step * width) / length;
             if (temp >= minHorizontalDistance) {
-                System.out.println("Horizontal : " + step);
                 return step;
             }
         }
@@ -179,8 +176,9 @@ public final class ElevationProfileManager {
         double maxX = r.getMaxX();
         double maxY = r.getMaxY();
         Transform worldToScreen = worldToScreenP.get();
-        double horizontalStep = worldToScreen.transform(computeHorizontalStep(), 0).getX();
-        double verticalStep = worldToScreen.transform(0, computeVerticalStep()).getY();
+        double horizontalStep = worldToScreen.deltaTransform(computeHorizontalStep(), 0).getX();
+        double verticalStep = worldToScreen.deltaTransform(0, -computeVerticalStep()).getY();
+        // Lignes verticales
         for (double x = minX; x <= maxX; x += horizontalStep) {
             path.getElements().add(new MoveTo(x, maxY));
             path.getElements().add(new LineTo(x, minY));
@@ -189,12 +187,12 @@ public final class ElevationProfileManager {
         double minVertical = maxY - worldToScreen.transform(0,
                 Math2.ceilDiv((int) minElevation, computeVerticalStep())
                         * computeVerticalStep()).getY();
-        System.out.println("maxY : " + maxY);
-        System.out.println("minVertical : " + minVertical);
+        // Lignes horizontales
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
             path.getElements().add(new MoveTo(minX, y));
             path.getElements().add(new LineTo(maxX, y));
         }
+
         centerPane.getChildren().add(path);
         // les étiquettes de la grille
         Group group = new Group();
