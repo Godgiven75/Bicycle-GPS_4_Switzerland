@@ -42,9 +42,9 @@ public final class ElevationProfileManager {
     private final Pane centerPane;
     private final VBox bottomPane;
     private final Insets insets = new Insets(10, 10, 20, 40);
-    private Polygon polygon;
-    private Path path;
-    private Group group;
+    private final Polygon polygon;
+    private final Path path;
+    private final Group group;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
@@ -71,6 +71,7 @@ public final class ElevationProfileManager {
         centerPane.getChildren().add(group);
         addBindings();
         addListeners();
+        addMouseEventsManager();
     }
 
     public Pane pane() {
@@ -103,6 +104,7 @@ public final class ElevationProfileManager {
             createPane();
         });
     }
+
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
         // largeur et la longueur du panneau central
@@ -118,7 +120,19 @@ public final class ElevationProfileManager {
     }
 
     private void addMouseEventsManager() {
-
+        // Assigne dynamiquement la propriété contenant la position le long du
+        // profil correspondant à la position de la souris
+        centerPane.setOnMouseMoved(e -> {
+            Transform screenToWorld = screenToWorldP.get();
+            Rectangle2D rec = rectangle2DP.get();
+            if (!(e.getX() >= rec.getMinX() && e.getX() <= rec.getMaxX())) {
+                mousePositionOnProfileP.set(Double.NaN);
+                return;
+            }
+            double position = screenToWorld.transform(e.getX(), e.getY()).getX();
+            mousePositionOnProfileP.set(Math.round(position));
+        });
+        centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }
 
     private int computeVerticalStep() {
@@ -219,7 +233,6 @@ public final class ElevationProfileManager {
         // texte contenant les statistiques du profil
         Text textVBox = new Text();
         bottomPane.getChildren().add(textVBox);
-
     }
 
     // Passe du système de coordonnées du panneau JavaFX contenant la grille au
