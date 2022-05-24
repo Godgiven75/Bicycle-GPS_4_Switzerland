@@ -1,6 +1,8 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.scene.layout.Pane;
 
 import java.util.function.Consumer;
 
@@ -24,6 +26,13 @@ public final class AnnotatedMapManager {
         this.errorConsumer = errorConsumer;
     }
 
+    public Pane pane() {
+        return pane;
+    }
+
+    public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
+        return mousePositionOnRouteP;
+    }
 
 
 }
