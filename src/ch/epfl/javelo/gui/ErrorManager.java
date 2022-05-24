@@ -29,10 +29,22 @@ public final class ErrorManager {
         this.sequentialTransition = new SequentialTransition(errorMessage);
     }
 
+    /**
+     * Retourne le panneau sur lequel apparaissent les messages d'erreur.
+     *
+     * @return le panneau de type Pane sur lequel apparaissent les messages
+     * d'erreur
+     */
     public Pane pane() {
         return pane;
     }
 
+    /**
+     * Fait apparaître temporairement un (court) message d'erreur, accompagné d'un
+     * son indiquant l'erreur.
+     *
+     * @param s le (court) message d'erreur
+     */
     public void displayError(String s) {
         sequentialTransition.stop();
         errorMessage.setText(s);
@@ -52,6 +64,4 @@ public final class ErrorManager {
                 .setAll(List.of(raiseOpacity, pause, lowerOpacity));
         sequentialTransition.play();
     }
-
-
 }
