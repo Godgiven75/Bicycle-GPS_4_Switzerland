@@ -79,10 +79,18 @@ public final class ElevationProfileManager {
         addMouseEventsManager();
     }
 
+    /**
+     *
+     * @return
+     */
     public Pane pane() {
         return mainPane;
     }
 
+    /**
+     *
+     * @return
+     */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileP;
     }
