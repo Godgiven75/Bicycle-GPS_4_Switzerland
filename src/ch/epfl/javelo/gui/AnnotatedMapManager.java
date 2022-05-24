@@ -34,5 +34,8 @@ public final class AnnotatedMapManager {
         return mousePositionOnRouteP;
     }
 
+    private void addMouseEventsManager() {
+
+    }
 
 }

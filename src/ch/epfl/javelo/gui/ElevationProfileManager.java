@@ -116,8 +116,8 @@ public final class ElevationProfileManager {
             displayProfile();
             createPane();
         });
-
     }
+
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
         // largeur et la longueur du panneau central
@@ -130,9 +130,6 @@ public final class ElevationProfileManager {
                     centerPane.getHeight());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
-
-
-
     }
 
     private void addMouseEventsManager() {
