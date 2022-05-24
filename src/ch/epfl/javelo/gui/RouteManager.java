@@ -29,9 +29,9 @@ public final class RouteManager {
     private static final float CIRCLE_RADIUS = 5f;
 
     public RouteManager(RouteBean routeBean,
-                        ReadOnlyObjectProperty<MapViewParameters> mvp) {
+                        ReadOnlyObjectProperty<MapViewParameters> mapViewParametersReadOnlyObjectProperty) {
         this.routeBean = routeBean;
-        this.mapViewParametersP = mvp;
+        this.mapViewParametersP = mapViewParametersReadOnlyObjectProperty;
         this.pane = new Pane();
         pane.setPickOnBounds(false);
         routePolyline = new Polyline();
