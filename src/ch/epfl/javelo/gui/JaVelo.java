@@ -69,46 +69,48 @@ public final class JaVelo extends Application {
         Menu menu = new Menu("Fichier");
         mapAndProfilePane.setOrientation(Orientation.VERTICAL);
         // Lorsqu'un itinéraire existe
-        if (routeBean.route() != null) {
-            ElevationProfile profile = ElevationProfileComputer
-                    .elevationProfile(routeBean.route(), MAX_STEP_LENGTH);
+        routeBean.routeProperty().addListener((p, o, n) -> {
+            if (routeBean.route() != null) {
+                ElevationProfile profile = ElevationProfileComputer
+                        .elevationProfile(routeBean.route(), MAX_STEP_LENGTH);
 
-            ObjectProperty<ElevationProfile> profileProperty =
-                    new SimpleObjectProperty<>(profile);
+                ObjectProperty<ElevationProfile> profileProperty =
+                        new SimpleObjectProperty<>(profile);
 
-            DoubleProperty highlightProperty = new SimpleDoubleProperty();
+                DoubleProperty highlightProperty = new SimpleDoubleProperty();
 
-            ElevationProfileManager elevationProfileManager =
-                    new ElevationProfileManager(profileProperty,
-                            highlightProperty);
+                ElevationProfileManager elevationProfileManager =
+                        new ElevationProfileManager(profileProperty,
+                                highlightProperty);
 
 
-            highlightProperty.bind(
-                    elevationProfileManager.mousePositionOnProfileProperty());
+                highlightProperty.bind(
+                        elevationProfileManager.mousePositionOnProfileProperty());
 
-            DoubleProperty highlightedPosition = routeBean.highlightedPositionProperty();
-            highlightedPosition.bind(annotatedMapManager.mousePositionOnRouteProperty().get() > 0 ?
-                    annotatedMapManager.mousePositionOnRouteProperty()
-                    : elevationProfileManager.mousePositionOnProfileProperty());
-            mapAndProfilePane
-                    .getItems()
-                    .setAll(annotatedMapManager.pane(), errorManager.pane());
-            SplitPane.setResizableWithParent(errorManager.pane(), false);
-            ElevationProfile elevationProfile =
-                    ElevationProfileComputer.elevationProfile(routeBean.route(), 5f);
-            menu.setOnAction(e -> {
-                GpxGenerator.createGpx(routeBean.route(), elevationProfile);
-                try {
-                    GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), elevationProfile);
-                } catch (IOException ex) {
-                    throw new UncheckedIOException(ex);
-                }
-            });
-        } else {
-            mapAndProfilePane
-                    .getItems()
-                    .setAll(annotatedMapManager.pane());
-        }
+                DoubleProperty highlightedPosition = routeBean.highlightedPositionProperty();
+                highlightedPosition.bind(annotatedMapManager.mousePositionOnRouteProperty().get() > 0 ?
+                        annotatedMapManager.mousePositionOnRouteProperty()
+                        : elevationProfileManager.mousePositionOnProfileProperty());
+                mapAndProfilePane
+                        .getItems()
+                        .setAll(annotatedMapManager.pane(), errorManager.pane());
+                SplitPane.setResizableWithParent(errorManager.pane(), false);
+                ElevationProfile elevationProfile =
+                        ElevationProfileComputer.elevationProfile(routeBean.route(), 5f);
+                menu.setOnAction(e -> {
+                    GpxGenerator.createGpx(routeBean.route(), elevationProfile);
+                    try {
+                        GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), elevationProfile);
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                });
+            } else {
+                mapAndProfilePane
+                        .getItems()
+                        .setAll(annotatedMapManager.pane());
+            }
+        });
         mainPane.setCenter(mapAndProfilePane);
         MenuItem menuItem = new MenuItem("Exporter GPX");
         menuItem.disableProperty().bind(routeBean.routeProperty().isNull());
