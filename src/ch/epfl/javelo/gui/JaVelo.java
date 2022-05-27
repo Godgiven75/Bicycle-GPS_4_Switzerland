@@ -59,15 +59,11 @@ public final class JaVelo extends Application {
         RouteBean routeBean =
                 new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
 
-
         AnnotatedMapManager annotatedMapManager =
                 new AnnotatedMapManager(graph,
                         tileManager,
                         routeBean,
                         errorConsumer);
-
-        DoubleProperty highlightedPosition = routeBean.highlightedPositionProperty();
-        highlightedPosition.bind(annotatedMapManager.mousePositionOnRouteProperty() > 0);
 
         Menu menu = new Menu("Fichier");
         mapAndProfilePane.setOrientation(Orientation.VERTICAL);
@@ -87,6 +83,12 @@ public final class JaVelo extends Application {
                             highlightProperty);
             highlightProperty.bind(
                     elevationProfileManager.mousePositionOnProfileProperty());
+
+            DoubleProperty highlightedPosition = routeBean.highlightedPositionProperty();
+            highlightedPosition.bind(annotatedMapManager.mousePositionOnRouteProperty().get() > 0 ?
+                    annotatedMapManager.mousePositionOnRouteProperty()
+                    : elevationProfileManager.mousePositionOnProfileProperty());
+
             stackPane
                     .getChildren()
                     .setAll(annotatedMapManager.pane(), errorManager.pane());
