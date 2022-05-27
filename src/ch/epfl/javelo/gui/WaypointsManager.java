@@ -81,7 +81,7 @@ public final class WaypointsManager {
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
-                    // nodeClosestTo est -1 si aucun noeud a été trouvé
+                    // nodeClosestTo est -1 si aucun noeud n'a été trouvé
                     if (nodeClosestTo != -1) {
                         Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
                         waypoints.set(markerIndex, newWayPoint);

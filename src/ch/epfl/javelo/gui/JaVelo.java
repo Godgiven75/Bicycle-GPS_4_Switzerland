@@ -81,6 +81,8 @@ public final class JaVelo extends Application {
             ElevationProfileManager elevationProfileManager =
                     new ElevationProfileManager(profileProperty,
                             highlightProperty);
+
+
             highlightProperty.bind(
                     elevationProfileManager.mousePositionOnProfileProperty());
 
@@ -120,6 +122,7 @@ public final class JaVelo extends Application {
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setScene(new Scene(mainPane));
+        primaryStage.show();
     }
 
     private static final class ErrorConsumer

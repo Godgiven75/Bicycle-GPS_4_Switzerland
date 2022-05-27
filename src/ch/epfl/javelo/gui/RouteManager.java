@@ -28,6 +28,12 @@ public final class RouteManager {
     private final Circle highlightedPositionC;
     private static final float CIRCLE_RADIUS = 5f;
 
+    /**
+     * Construit une nouvelle instance de RouteManger.
+     * @param routeBean le bean JavaFX de l'intinéraire
+     * @param mapViewParametersReadOnlyObjectProperty une propriété accessible
+     * en lecture seule contenant les paramètres d'affichage de la carte
+     */
     public RouteManager(RouteBean routeBean,
                         ReadOnlyObjectProperty<MapViewParameters> mapViewParametersReadOnlyObjectProperty) {
         this.routeBean = routeBean;
