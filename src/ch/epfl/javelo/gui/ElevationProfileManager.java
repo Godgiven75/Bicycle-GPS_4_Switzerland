@@ -154,8 +154,7 @@ public final class ElevationProfileManager {
             }));
             line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
             line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
-            line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));;
-            System.out.println(highlightedPositionP.get());
+            line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
 
         });
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));

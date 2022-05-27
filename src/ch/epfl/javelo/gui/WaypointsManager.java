@@ -62,7 +62,7 @@ public final class WaypointsManager {
                 mousePositionP.set(mousePosition);
                 PointWebMercator pwm = PointWebMercator.ofPointCh(waypoints.get(markerIndex).p());
                 previousMarkerPositionP.set(new Point2D(mvp.viewX(pwm), mvp.viewY(pwm)));
-                if (m.isSecondaryButtonDown()) {
+                if (m.isStillSincePress()) {
                     pane.getChildren().remove(group);
                     waypoints.remove(markerIndex);
                 }
@@ -82,7 +82,7 @@ public final class WaypointsManager {
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
-                    // Si un noeud a été trouvé,
+                    // nodeClosestTo est -1 si aucun noeud a été trouvé
                     if (nodeClosestTo != -1) {
                         Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
                         waypoints.set(markerIndex, newWayPoint);
@@ -150,7 +150,6 @@ public final class WaypointsManager {
             Node marker = pane.getChildren().get(i);
             marker.setLayoutX(x);
             marker.setLayoutY(y);
-
         }
     }
 
@@ -170,7 +169,6 @@ public final class WaypointsManager {
         }
         else {
             waypoints.add(new Waypoint(p, closestNodeId));
-
         }
     }
 

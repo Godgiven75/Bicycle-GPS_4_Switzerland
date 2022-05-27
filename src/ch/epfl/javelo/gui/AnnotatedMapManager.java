@@ -1,6 +1,12 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.routing.Route;
+import ch.epfl.javelo.routing.RoutePoint;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,6 +36,8 @@ public final class AnnotatedMapManager {
     private final StackPane pane;
     private final SimpleDoubleProperty mousePositionOnRouteP;
     private final ObjectProperty<Point2D> mousePositionP;
+    private final ObjectProperty<MapViewParameters> mapViewParametersP;
+    private static final double MOUSE_ON_ROUTE_DISTANCE = 25d;
 
 
 
@@ -47,7 +55,7 @@ public final class AnnotatedMapManager {
         this.errorConsumer = errorConsumer;
 
         MapViewParameters initMVP = new MapViewParameters(12, 543200, 370650 );
-        ObjectProperty<MapViewParameters> mapViewParametersP = new SimpleObjectProperty<>(initMVP);
+        mapViewParametersP = new SimpleObjectProperty<>(initMVP);
         waypointsManager = new WaypointsManager(graph, mapViewParametersP, routeBean.waypoints(), errorConsumer);
 
         baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
@@ -64,6 +72,8 @@ public final class AnnotatedMapManager {
         pane.getChildren().add(routeManager.pane());
         pane.getChildren().add(waypointsManager.pane());
 
+        createBindings();
+        addMouseEventsManager();
     }
 
     /**
@@ -91,13 +101,28 @@ public final class AnnotatedMapManager {
 
         pane.setOnMouseExited(e -> {
             mousePositionOnRouteP.set(Double.NaN);
-
         });
     }
 
-    private void addBindings() {
-
+    private void createBindings() {
+        mousePositionOnRouteP.bind(Bindings.createDoubleBinding(() -> {
+            Point2D mousePosition = mousePositionP.get();
+            MapViewParameters mvp = mapViewParametersP.get();
+            Route route = routeBean.route();
+            PointWebMercator p = mvp.pointAt(mousePosition.getX(), mousePosition.getY());
+            RoutePoint closestPoint = route.pointClosestTo(p.toPointCh());
+            double mouseX = mvp.viewX(p);
+            double mouseY = mvp.viewY(p);
+            PointWebMercator onRoute = PointWebMercator.ofPointCh(closestPoint.point());
+            double routeX = mvp.viewX(onRoute);
+            double routeY = mvp.viewY(onRoute);
+            if (Math2.norm(routeX - mouseX, routeY - mouseY) <=
+                    MOUSE_ON_ROUTE_DISTANCE)
+                    return closestPoint.position();
+            return Double.NaN;
+        }, mapViewParametersP, routeBean.routeProperty()));
     }
+
 
 
 }
