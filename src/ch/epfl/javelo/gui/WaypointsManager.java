@@ -49,7 +49,6 @@ public final class WaypointsManager {
         positionMarkers();
         addListeners();
         addMouseEventsManager();
-
     }
 
     private void addMouseEventsManager() {
