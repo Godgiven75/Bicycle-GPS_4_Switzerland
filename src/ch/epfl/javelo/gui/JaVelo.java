@@ -46,6 +46,7 @@ public final class JaVelo extends Application {
         CityBikeCF costFunction = new CityBikeCF(graph);
         String tileServerHost = "tile.openstreetmap.org";
         Path cacheBasePath = Path.of("osm-cache");
+        mainPane.getStylesheets().add("map.css");
 
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
@@ -110,7 +111,7 @@ public final class JaVelo extends Application {
                     .getChildren()
                     .setAll(annotatedMapManager.pane());
         }
-        mainPane.setCenter(mapAndProfilePane);
+        mainPane.setCenter(stackPane);
         MenuItem menuItem = new MenuItem("Exporter GPX");
         menuItem.disableProperty().bind(routeBean.routeProperty().isNull());
         menu.getItems().add(menuItem);
