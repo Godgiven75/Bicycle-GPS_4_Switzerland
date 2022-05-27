@@ -76,8 +76,8 @@ public final class WaypointsManager {
                 if(!m.isStillSincePress()) {
                     int markerIndex = pane.getChildren().indexOf(group);
                     PointWebMercator mousePWM = mvp.pointAt(
-                            m.getSceneX() - mousePositionP.get().getX(),
-                            m.getSceneY() - mousePositionP.get().getY());
+                            m.getX() + group.getLayoutX() - mousePositionP.get().getX(),
+                            m.getY() + group.getLayoutY() - mousePositionP.get().getY());
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
