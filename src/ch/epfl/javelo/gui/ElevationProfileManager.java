@@ -37,90 +37,97 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> screenToWorldP;
     private final ObjectProperty<Transform> worldToScreenP;
     private final DoubleProperty mousePositionOnProfileP; // contient la position du curseur sur le profil
-    private final BorderPane mainPane;
-    private final Pane centerPane;
-    private final Insets insets = new Insets(10, 10, 20, 40);
-    private final Polygon polygon;
-    private final Path path;
-    private final Group group;
-    private final Text textVbox;
-    private final Line line;
+    private final BorderPane mainPane = new BorderPane();
+    private final Pane centerPane = new Pane();
+    private final Polygon polygon = new Polygon();
+    private final Path path = new Path();
+    private final Group group = new Group();
+    private final Text textVbox = new Text();
+    private final Line line = new Line();
 
-
+    /**
+     * Crée une nouvelle instance de ElevationProfileManager.
+     * @param elevationProfileP une propriété (en lecture seule) contenant le profil
+     * @param highlightedPositionP une propriété (en lecture seule) contenant la
+     * position le long du profil à mettre en évidence
+     */
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
                                    ReadOnlyDoubleProperty highlightedPositionP) {
         this.elevationProfileP = elevationProfileP;
         this.highlightedPositionP = highlightedPositionP;
-        this.mainPane = new BorderPane();
-        this.centerPane = new Pane();
-        VBox bottomPane = new VBox();
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
         this.mousePositionOnProfileP = new SimpleDoubleProperty(highlightedPositionP.get());
         this.screenToWorldP = new SimpleObjectProperty<>();
         this.worldToScreenP = new SimpleObjectProperty<>();
-        mainPane.getStylesheets().add("elevation_profile.css");
-        bottomPane.setId("profile_data");
-        mainPane.setBottom(bottomPane);
-        mainPane.setCenter(centerPane);
-        this.polygon = new Polygon();
-        polygon.setId("profile");
-        this.path = new Path();
-        path.setId("grid");
-        this.group = new Group();
-        this.textVbox = new Text();
-        this.line = new Line();
-        centerPane.getChildren().add(line);
-        centerPane.getChildren().add(path);
-        centerPane.getChildren().add(polygon);
-        centerPane.getChildren().add(group);
-        bottomPane.getChildren().add(textVbox);
-        addBindings();
+        createSceneGraph();
         addListeners();
+        addBindings();
         addMouseEventsManager();
+
+
+
     }
 
     /**
-     *
-     * @return
+     * Retourne le panneau contenant le dessin du profil.
+     * @return le panneau contenant le dessin du profil
      */
     public Pane pane() {
         return mainPane;
     }
 
     /**
-     *
-     * @return
+     * Retourne une propriété en lecture seule contenant la position du pointeur
+     * de la souris le long du profil, ou NaN si le pointeur de la souris ne
+     * se trouve pas au-dessus du profil.
+     * @return une propriété en lecture seule contenant la position du pointeur
+     * de la souris le long du profil, ou NaN si le pointeur de la souris ne
+     * se trouve pas au-dessus du profil
      */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileP;
     }
-
+    private void createSceneGraph() {
+        mainPane.getStylesheets().add("elevation_profile.css");
+        VBox bottomPane = new VBox();
+        bottomPane.setId("profile_data");
+        mainPane.setBottom(bottomPane);
+        mainPane.setCenter(centerPane);
+        polygon.setId("profile");
+        path.setId("grid");
+        centerPane.getChildren().add(line);
+        centerPane.getChildren().add(path);
+        centerPane.getChildren().add(polygon);
+        centerPane.getChildren().add(group);
+        bottomPane.getChildren().add(textVbox);
+    }
     private void addListeners() {
         rectangle2DP.addListener((p, o, n) -> {
-            screenToWorldP.set(screenToWorld());
             try {
+                screenToWorldP.set(screenToWorld());
                 worldToScreenP.set(worldToScreen());
+                displayProfile();
+                createPane();
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
-            displayProfile();
-            createPane();
         });
         elevationProfileP.addListener((p, o, n) -> {
-            screenToWorldP.set(screenToWorld());
             try {
+                screenToWorldP.set(screenToWorld());
                 worldToScreenP.set(worldToScreen());
+                displayProfile();
+                createPane();
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
-            displayProfile();
-            createPane();
         });
     }
 
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
         // largeur et la longueur du panneau central
+        Insets insets = new Insets(10, 10, 20, 40);
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
             double width = Math2.clamp(0,
                     centerPane.getWidth() - insets.getRight() - insets.getLeft(),
@@ -130,6 +137,16 @@ public final class ElevationProfileManager {
                     centerPane.getHeight());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
+        line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
+        line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
+        line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+            Transform worldToScreen = worldToScreenP.get();
+            //if(worldToScreen != null)
+                return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
+            //return Double.NaN;
+        }, highlightedPositionP));
+
     }
 
     private void addMouseEventsManager() {
@@ -144,18 +161,6 @@ public final class ElevationProfileManager {
             }
             double position = screenToWorld.transform(e.getX(), e.getY()).getX();
             mousePositionOnProfileP.set(Math.round(position));
-
-            line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-                Transform worldToScreen = worldToScreenP.get();
-                // Pas sûr
-                if (worldToScreen == null)
-                    return Double.NaN;
-                return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
-            }));
-            line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
-            line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
-            line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
-
         });
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }

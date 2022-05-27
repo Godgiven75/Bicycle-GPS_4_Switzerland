@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Gère l'affichage et l'interaction avec le fond de carte
@@ -150,21 +151,17 @@ public final class BaseMapManager {
             minScrollTime.set(currentTime + 200);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
-            //clamp
-            // scale factor de la différence des zoom levels
-            if (! (MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL)) return;
-            MapViewParameters currentMvp = mapViewParametersP.get();
-            PointWebMercator pwm = PointWebMercator.of(currentZoomLevel, currentMvp.xImage(), currentMvp.yImage());
-            PointWebMercator mousePwm = currentMvp.pointAt(e.getX(), e.getY());
-            double x = pwm.xAtZoomLevel(newZoomLevel);
-            double y = pwm.yAtZoomLevel(newZoomLevel);
-            MapViewParameters newMvp = new MapViewParameters(newZoomLevel, x, y);
-            PointWebMercator newMousePwm = newMvp.pointAt(e.getX(), e.getY());
-            double newMousePwmX = newMousePwm.xAtZoomLevel(newZoomLevel);
-            double newMousePwmY = newMousePwm.yAtZoomLevel(newZoomLevel);
-            double offsetX = newMousePwmX  - mousePwm.xAtZoomLevel(newZoomLevel);
-            double offsetY = newMousePwmY  - mousePwm.yAtZoomLevel(newZoomLevel);
-            mapViewParametersP.set(newMvp.withMinXY(x - offsetX , y - offsetY));
+
+            if (!(MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL))
+                return;
+
+            Point2D mousePoint = new Point2D(e.getX(), e.getY());
+            MapViewParameters mvp = mapViewParametersP.get();
+            double scaleFactor = Math.scalb(1, (int) zoomDelta);
+            Point2D newTopLeft = (mvp.topLeft().add(mousePoint)
+                    .multiply(scaleFactor)
+                    .subtract(mousePoint));
+            mapViewParametersP.set(new MapViewParameters(newZoomLevel, newTopLeft.getX(), newTopLeft.getY()));
             currentZoomLevel = newZoomLevel;
         });
     }
