@@ -24,7 +24,6 @@ import java.util.function.Consumer;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
-
 public final class AnnotatedMapManager {
     private final Graph graph;
     private final TileManager tileManager;
@@ -38,8 +37,6 @@ public final class AnnotatedMapManager {
     private final ObjectProperty<Point2D> mousePositionP;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
     private static final double MOUSE_ON_ROUTE_DISTANCE = 25d;
-
-
 
     /**
      * Construit un gestionnaire de carte "annotée".
