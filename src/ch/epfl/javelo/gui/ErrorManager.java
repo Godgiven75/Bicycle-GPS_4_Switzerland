@@ -17,12 +17,11 @@ import java.util.List;
  * @author Nathanaël Girod (329987)
  */
 public final class ErrorManager {
-    private VBox pane;
-    private Text errorMessage;
+    private VBox pane = new VBox();
+    private Text errorMessage = new Text();
     private SequentialTransition sequentialTransition;
 
     public ErrorManager() {
-        this.pane = new VBox();
         pane.getStylesheets().add("error.css");
         pane.getChildren().add(errorMessage);
         errorMessage.setMouseTransparent(true);
