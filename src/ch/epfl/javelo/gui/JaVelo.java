@@ -68,7 +68,6 @@ public final class JaVelo extends Application {
 
         Menu menu = new Menu("Fichier");
         mapAndProfilePane.setOrientation(Orientation.VERTICAL);
-        StackPane stackPane = new StackPane();
         // Lorsqu'un itinéraire existe
         if (routeBean.route() != null) {
             ElevationProfile profile = ElevationProfileComputer
@@ -91,9 +90,8 @@ public final class JaVelo extends Application {
             highlightedPosition.bind(annotatedMapManager.mousePositionOnRouteProperty().get() > 0 ?
                     annotatedMapManager.mousePositionOnRouteProperty()
                     : elevationProfileManager.mousePositionOnProfileProperty());
-
-            stackPane
-                    .getChildren()
+            mapAndProfilePane
+                    .getItems()
                     .setAll(annotatedMapManager.pane(), errorManager.pane());
             SplitPane.setResizableWithParent(errorManager.pane(), false);
             ElevationProfile elevationProfile =
@@ -107,11 +105,11 @@ public final class JaVelo extends Application {
                 }
             });
         } else {
-            stackPane
-                    .getChildren()
+            mapAndProfilePane
+                    .getItems()
                     .setAll(annotatedMapManager.pane());
         }
-        mainPane.setCenter(stackPane);
+        mainPane.setCenter(mapAndProfilePane);
         MenuItem menuItem = new MenuItem("Exporter GPX");
         menuItem.disableProperty().bind(routeBean.routeProperty().isNull());
         menu.getItems().add(menuItem);
