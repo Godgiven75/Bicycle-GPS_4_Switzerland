@@ -42,6 +42,7 @@ public final class RouteManager {
         pane.setPickOnBounds(false);
         routePolyline = new Polyline();
         highlightedPositionC = new Circle();
+        highlightedPositionC.setVisible(false);
         addGUIElements();
         addMouseEventsManager();
         addListeners();
@@ -91,7 +92,7 @@ public final class RouteManager {
                 highlightedPositionC.setVisible(false);
                 return;
             }
-
+            highlightedPositionC.setVisible(true);
             Route route = routeBean.route();
             // L'emballage des doubles est-il un problème ?
             List<Double> points = new ArrayList<>();
@@ -107,7 +108,7 @@ public final class RouteManager {
             routePolyline.setVisible(true);
             // Pas entièrement sûr de la modularisation highlightPosition
             highlightPosition(mapViewParametersP.get());
-            highlightedPositionC.setVisible(true);
+
         });
         mapViewParametersP.addListener((p, o, n) -> {
             //-mapviewparameters
@@ -136,6 +137,10 @@ public final class RouteManager {
                     routePolyline.getPoints().setAll(pointsAtNewZoomLevel);
                 }
             }
+        });
+
+        routeBean.highlightedPositionProperty().addListener((p, o, n) -> {
+            highlightPosition(mapViewParametersP.get());
         });
     }
 

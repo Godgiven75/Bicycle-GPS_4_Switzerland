@@ -76,8 +76,8 @@ public final class WaypointsManager {
                 if(!m.isStillSincePress()) {
                     int markerIndex = pane.getChildren().indexOf(group);
                     PointWebMercator mousePWM = mvp.pointAt(
-                            m.getX() + group.getLayoutX() - mousePositionP.get().getX(),
-                            m.getY() + group.getLayoutY() - mousePositionP.get().getY());
+                            group.getLayoutX() + m.getX() - mousePositionP.get().getX(),
+                            group.getLayoutY() + m.getY() - mousePositionP.get().getY());
                     System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
@@ -136,7 +136,6 @@ public final class WaypointsManager {
             markers.add(group);
         }
         pane.getChildren().setAll(markers);
-        //addMouseEventsManager();
     }
 
     private void positionMarkers() {
@@ -165,8 +164,7 @@ public final class WaypointsManager {
         int closestNodeId = graph.nodeClosestTo(p, 500);
         if (closestNodeId == -1) {
             errorConsumer.accept("Aucune route à proximité !");
-        }
-        else {
+        } else {
             waypoints.add(new Waypoint(p, closestNodeId));
         }
     }

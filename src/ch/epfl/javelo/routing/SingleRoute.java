@@ -128,9 +128,9 @@ public final class SingleRoute implements Route {
         int binarySearchResult = Arrays.binarySearch(nodePositions, clampedPosition);
 
         int binarySearchIndex = binarySearchResult;
-        if(binarySearchResult == nodePositions.length - 1)
+        if (binarySearchResult == nodePositions.length - 1)
             binarySearchIndex = binarySearchResult  - 1;
-        if(binarySearchResult < 0)
+        if (binarySearchResult < 0)
             binarySearchIndex = -binarySearchResult - 2;
         return edges
                 .get(binarySearchIndex)

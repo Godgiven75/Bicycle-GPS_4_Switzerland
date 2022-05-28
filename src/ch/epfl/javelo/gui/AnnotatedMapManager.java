@@ -24,18 +24,12 @@ import java.util.function.Consumer;
  * @author Nathanaël Girod (329987)
  */
 public final class AnnotatedMapManager {
-    private final Graph graph;
-    private final TileManager tileManager;
     private final RouteBean routeBean;
-    private final Consumer<String> errorConsumer;
-    private final BaseMapManager baseMapManager;
-    private final WaypointsManager waypointsManager;
-    private final RouteManager routeManager;
     private final StackPane pane;
     private final SimpleDoubleProperty mousePositionOnRouteP;
     private final ObjectProperty<Point2D> mousePositionP;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
-    private static final double MOUSE_ON_ROUTE_DISTANCE = 25d;
+    private static final double MOUSE_ON_ROUTE_DISTANCE = 15d;
     private static final int INITIAL_ZOOM_LEVEL = 12;
     private static final int INITIAL_X = 543200;
     private static final int INITIAL_Y = 370650;
@@ -50,17 +44,14 @@ public final class AnnotatedMapManager {
      * @param errorConsumer le consommateur d'erreur
      */
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean, Consumer<String> errorConsumer) {
-        this.graph = graph;
-        this.tileManager = tileManager;
         this.routeBean = routeBean;
-        this.errorConsumer = errorConsumer;
 
         mapViewParametersP = new SimpleObjectProperty<>(INIT_MVP);
-        waypointsManager = new WaypointsManager(graph, mapViewParametersP, routeBean.waypoints(), errorConsumer);
+        WaypointsManager waypointsManager = new WaypointsManager(graph, mapViewParametersP, routeBean.waypoints(), errorConsumer);
 
-        baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
+        BaseMapManager baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
 
-        routeManager = new RouteManager(routeBean, mapViewParametersP);
+        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP);
 
         pane = new StackPane();
         pane.getStyleClass().add("map.css");
@@ -72,8 +63,9 @@ public final class AnnotatedMapManager {
         pane.getChildren().add(routeManager.pane());
         pane.getChildren().add(waypointsManager.pane());
 
-        createBindings();
         addMouseEventsManager();
+        createBindings();
+
     }
 
     /**
@@ -95,34 +87,35 @@ public final class AnnotatedMapManager {
     }
 
     private void addMouseEventsManager() {
-        pane.setOnMouseEntered(e -> {
+        pane.setOnMouseMoved(e -> {
             mousePositionP.set(new Point2D(e.getX(), e.getY()));
+            System.out.println(new Point2D(e.getX(), e.getY()));
         });
 
-        pane.setOnMouseExited(e -> {
-            mousePositionOnRouteP.set(Double.NaN);
-        });
+        pane.setOnMouseExited(e -> mousePositionP.set(null));
     }
 
     private void createBindings() {
         mousePositionOnRouteP.bind(Bindings.createDoubleBinding(() -> {
+            Route route = routeBean.route();
+            System.out.println("dqqfsd");
+            if (route == null || mousePositionP.get() == null)
+                return Double.NaN;
             Point2D mousePosition = mousePositionP.get();
             MapViewParameters mvp = mapViewParametersP.get();
-            Route route = routeBean.route();
-            if (route != null) {
-                PointWebMercator p = mvp.pointAt(mousePosition.getX(), mousePosition.getY());
-                RoutePoint closestPoint = route.pointClosestTo(p.toPointCh());
-                double mouseX = mvp.viewX(p);
-                double mouseY = mvp.viewY(p);
-                PointWebMercator onRoute = PointWebMercator.ofPointCh(closestPoint.point());
-                double routeX = mvp.viewX(onRoute);
-                double routeY = mvp.viewY(onRoute);
-                if (Math2.norm(routeX - mouseX, routeY - mouseY) <=
-                        MOUSE_ON_ROUTE_DISTANCE)
-                    return closestPoint.position();
+            PointWebMercator p = mvp.pointAt(mousePosition.getX(), mousePosition.getY());
+            RoutePoint closestPoint = route.pointClosestTo(p.toPointCh());
+            double mouseX = mvp.viewX(p);
+            double mouseY = mvp.viewY(p);
+            PointWebMercator onRoute = PointWebMercator.ofPointCh(closestPoint.point());
+            double routeX = mvp.viewX(onRoute);
+            double routeY = mvp.viewY(onRoute);
+            if (Math2.norm(routeX - mouseX, routeY - mouseY) <=
+                    MOUSE_ON_ROUTE_DISTANCE) {
+                return closestPoint.position();
             }
             return Double.NaN;
-        }, mapViewParametersP, routeBean.routeProperty()));
+        }, mousePositionP, mapViewParametersP, routeBean.routeProperty()));
     }
 
 

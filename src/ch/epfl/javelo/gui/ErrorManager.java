@@ -17,9 +17,9 @@ import java.util.List;
  * @author Nathanaël Girod (329987)
  */
 public final class ErrorManager {
-    private VBox pane = new VBox();
-    private Text errorMessage = new Text();
-    private SequentialTransition sequentialTransition;
+    private final VBox pane = new VBox();
+    private final  Text errorMessage = new Text();
+    private final SequentialTransition sequentialTransition;
 
     public ErrorManager() {
         pane.getStylesheets().add("error.css");

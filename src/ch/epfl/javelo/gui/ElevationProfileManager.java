@@ -45,27 +45,19 @@ public final class ElevationProfileManager {
     private final Text textVbox = new Text();
     private final Line line = new Line();
 
-    /**
-     * Crée une nouvelle instance de ElevationProfileManager.
-     * @param elevationProfileP une propriété (en lecture seule) contenant le profil
-     * @param highlightedPositionP une propriété (en lecture seule) contenant la
-     * position le long du profil à mettre en évidence
-     */
+
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
                                    ReadOnlyDoubleProperty highlightedPositionP) {
         this.elevationProfileP = elevationProfileP;
         this.highlightedPositionP = highlightedPositionP;
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
-        this.mousePositionOnProfileP = new SimpleDoubleProperty(highlightedPositionP.get());
-        this.screenToWorldP = new SimpleObjectProperty<>();
-        this.worldToScreenP = new SimpleObjectProperty<>();
+        this.mousePositionOnProfileP = new SimpleDoubleProperty();
+        this.screenToWorldP = new SimpleObjectProperty<>(new Affine());
+        this.worldToScreenP = new SimpleObjectProperty<>(new Affine());
         createSceneGraph();
-        addListeners();
         addBindings();
+        addListeners();
         addMouseEventsManager();
-
-
-
     }
 
     /**
@@ -103,32 +95,32 @@ public final class ElevationProfileManager {
     }
     private void addListeners() {
         rectangle2DP.addListener((p, o, n) -> {
+            screenToWorldP.set(screenToWorld());
             try {
-                screenToWorldP.set(screenToWorld());
                 worldToScreenP.set(worldToScreen());
-                displayProfile();
-                createPane();
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
+            displayProfile();
+            createPane();
         });
         elevationProfileP.addListener((p, o, n) -> {
+            screenToWorldP.set(screenToWorld());
             try {
-                screenToWorldP.set(screenToWorld());
                 worldToScreenP.set(worldToScreen());
-                displayProfile();
-                createPane();
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
+            displayProfile();
+            createPane();
         });
-    }
 
+    }
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
         // largeur et la longueur du panneau central
-        Insets insets = new Insets(10, 10, 20, 40);
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
+            Insets insets = new Insets(10, 10, 20, 40);
             double width = Math2.clamp(0,
                     centerPane.getWidth() - insets.getRight() - insets.getLeft(),
                     centerPane.getWidth());
@@ -137,16 +129,15 @@ public final class ElevationProfileManager {
                     centerPane.getHeight());
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
+
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+            Transform worldToScreen = worldToScreenP.get();
+            return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
+        }, worldToScreenP, highlightedPositionP));
+
         line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
         line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
-        line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-            Transform worldToScreen = worldToScreenP.get();
-            //if(worldToScreen != null)
-                return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
-            //return Double.NaN;
-        }, highlightedPositionP));
-
     }
 
     private void addMouseEventsManager() {
@@ -230,7 +221,7 @@ public final class ElevationProfileManager {
         // Lignes verticales
         int horizontalKilometers = 0;
         for (double x = minX; x <= maxX; x += horizontalStep) {
-            Text txt = new Text(x, maxY, String.valueOf(horizontalKilometers++));
+            Text txt = new Text(x, maxY, String.valueOf(horizontalKilometers));
             txt.getStyleClass().addAll("grid_label", "horizontal");
             txt.textOriginProperty().set(VPos.TOP);
             txt.setFont(Font.font("Avenir", 10));
@@ -238,6 +229,7 @@ public final class ElevationProfileManager {
             texts.add(txt);
             lines.add(new MoveTo(x, maxY));
             lines.add(new LineTo(x, minY));
+            horizontalKilometers += computeHorizontalStep() / 1000;
         }
         double minElevation = elevationProfileP.get().minElevation();
         int verticalKey = Math2.ceilDiv((int) minElevation, computeVerticalStep())
@@ -269,9 +261,9 @@ public final class ElevationProfileManager {
         // texte contenant les statistiques du profil
         ElevationProfile profile = elevationProfileP.get();
         textVbox.setText(String.format("Longueur : %.1f km" +
-                "     Montée : %.0f m" +
-                "     Descente : %.0f m" +
-                "     Altitude : de %.0f m à %.0f m",
+                        "     Montée : %.0f m" +
+                        "     Descente : %.0f m" +
+                        "     Altitude : de %.0f m à %.0f m",
                 profile.length() / 1000.0,
                 profile.totalAscent(),
                 profile.totalDescent(),
@@ -295,6 +287,6 @@ public final class ElevationProfileManager {
     }
 
     private Transform worldToScreen() throws NonInvertibleTransformException {
-         return screenToWorld().createInverse();
+        return screenToWorld().createInverse();
     }
 }
