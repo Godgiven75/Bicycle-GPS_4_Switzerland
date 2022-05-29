@@ -15,7 +15,7 @@ import static ch.epfl.javelo.routing.Edge.of;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
-public class RouteComputer {
+public final class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
     private static final int START_POSITION = 0;
@@ -51,6 +51,7 @@ public class RouteComputer {
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
+
         record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
             @Override
             public int compareTo(WeightedNode that) {
@@ -66,7 +67,6 @@ public class RouteComputer {
 
         Queue<WeightedNode> discoveredNodes = new PriorityQueue<>();
         discoveredNodes.add(new WeightedNode(startNodeId, distance[startNodeId]));
-
 
         while (!discoveredNodes.isEmpty()) {
             WeightedNode node = discoveredNodes.remove();

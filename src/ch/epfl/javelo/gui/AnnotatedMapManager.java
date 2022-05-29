@@ -98,7 +98,6 @@ public final class AnnotatedMapManager {
     private void createBindings() {
         mousePositionOnRouteP.bind(Bindings.createDoubleBinding(() -> {
             Route route = routeBean.route();
-            System.out.println("dqqfsd");
             if (route == null || mousePositionP.get() == null)
                 return Double.NaN;
             Point2D mousePosition = mousePositionP.get();
