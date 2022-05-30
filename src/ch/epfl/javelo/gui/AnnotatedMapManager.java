@@ -38,6 +38,7 @@ public final class AnnotatedMapManager {
 
     /**
      * Construit un gestionnaire de carte "annotée".
+     *
      * @param graph le graphe du réseau routier
      * @param tileManager le gestionnaire de tuile
      * @param routeBean le "bean" JavaFX correspondant à la route

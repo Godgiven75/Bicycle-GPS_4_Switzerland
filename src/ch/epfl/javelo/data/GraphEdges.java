@@ -191,7 +191,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         }
     }
 
-    // Retourne le type de profil d' l'arête d'identité edgeId
+    // Retourne le type de profil de l'arête d'identité edgeId
     private ProfileTypes profileType(int edgeId) {
         int profileTypeValueStartOfRange = 30;
         int profileTypeValueRangeLength = 2;

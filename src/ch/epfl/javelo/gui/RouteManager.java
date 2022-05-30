@@ -30,6 +30,7 @@ public final class RouteManager {
 
     /**
      * Construit une nouvelle instance de RouteManger.
+     *
      * @param routeBean le bean JavaFX de l'intinéraire
      * @param mapViewParametersReadOnlyObjectProperty une propriété accessible
      * en lecture seule contenant les paramètres d'affichage de la carte

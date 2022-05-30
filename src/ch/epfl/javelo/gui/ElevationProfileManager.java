@@ -62,6 +62,7 @@ public final class ElevationProfileManager {
 
     /**
      * Retourne le panneau contenant le dessin du profil.
+     *
      * @return le panneau contenant le dessin du profil
      */
     public Pane pane() {
@@ -72,6 +73,7 @@ public final class ElevationProfileManager {
      * Retourne une propriété en lecture seule contenant la position du pointeur
      * de la souris le long du profil, ou NaN si le pointeur de la souris ne
      * se trouve pas au-dessus du profil.
+     *
      * @return une propriété en lecture seule contenant la position du pointeur
      * de la souris le long du profil, ou NaN si le pointeur de la souris ne
      * se trouve pas au-dessus du profil
@@ -156,6 +158,7 @@ public final class ElevationProfileManager {
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }
 
+
     private int computeVerticalStep() {
         final int minVerticalDistance = 25;
         int[] ELE_STEPS =
@@ -218,7 +221,8 @@ public final class ElevationProfileManager {
         Point2D p = new Point2D(computeHorizontalStep(), -computeVerticalStep());
         double horizontalStep = worldToScreen.deltaTransform(p).getX();
         double verticalStep = worldToScreen.deltaTransform(p).getY();
-        // Lignes verticales
+
+        // Lignes et légende verticales
         int horizontalKilometers = 0;
         for (double x = minX; x <= maxX; x += horizontalStep) {
             Text txt = new Text(x, maxY, String.valueOf(horizontalKilometers));
@@ -231,6 +235,7 @@ public final class ElevationProfileManager {
             lines.add(new LineTo(x, minY));
             horizontalKilometers += computeHorizontalStep() / 1000;
         }
+
         double minElevation = elevationProfileP.get().minElevation();
         int verticalKey = Math2.ceilDiv((int) minElevation, computeVerticalStep())
                 * computeVerticalStep();
@@ -255,8 +260,6 @@ public final class ElevationProfileManager {
 
         // Les étiquettes de la grille :
         group.getStyleClass().add("grid_label.horizontal");
-        // le graphe du profil
-        // la position mise en évidence
 
         // texte contenant les statistiques du profil
         ElevationProfile profile = elevationProfileP.get();
@@ -286,6 +289,9 @@ public final class ElevationProfileManager {
         return transform;
     }
 
+    // Inverse la transformation précédente en faisant passer du système de
+    // coordonnées du "monde réel" au système de coordonnées du panneau JavaFX
+    // contenant la grille.
     private Transform worldToScreen() throws NonInvertibleTransformException {
         return screenToWorld().createInverse();
     }
