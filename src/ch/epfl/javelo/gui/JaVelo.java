@@ -4,7 +4,10 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -83,16 +86,17 @@ public final class JaVelo extends Application {
 
         routeBean.routeProperty().addListener((p, o, n) -> {
             if (n != null) {
-                ReadOnlyObjectProperty<ElevationProfile> elevationProfileP =
-                        routeBean.elevationProfileP();
+                ElevationProfile profile = ElevationProfileComputer
+                        .elevationProfile(n, MAX_STEP_LENGTH);
 
-                ElevationProfile profile = elevationProfileP.get();
+                ObjectProperty<ElevationProfile> profileProperty =
+                        new SimpleObjectProperty<>(profile);
 
                 DoubleProperty highlightedPositionOnProfileProperty =
                         new SimpleDoubleProperty();
 
                 ElevationProfileManager elevationProfileManager =
-                        new ElevationProfileManager(elevationProfileP,
+                        new ElevationProfileManager(profileProperty,
                                 highlightedPositionOnProfileProperty);
 
                 highlightedPositionOnProfileProperty.bind(
@@ -101,13 +105,15 @@ public final class JaVelo extends Application {
                 DoubleProperty mapP = annotatedMapManager.mousePositionOnRouteProperty();
                 DoubleProperty profP = (DoubleProperty) elevationProfileManager.mousePositionOnProfileProperty();
                 routeBean.highlightedPositionProperty().bind(Bindings.when(
-                        mapP.greaterThan(0d))
+                                mapP.greaterThan(0d))
                         .then(mapP)
                         .otherwise(profP));
+
                 if (mapAndProfilePane.getItems().size() > 1)
                     mapAndProfilePane.getItems().set(1, elevationProfileManager.pane());
                 else
                     mapAndProfilePane.getItems().add(1, elevationProfileManager.pane());
+
                 menu.setOnAction(e -> {
                     GpxGenerator.createGpx(routeBean.route(), profile);
                     try {

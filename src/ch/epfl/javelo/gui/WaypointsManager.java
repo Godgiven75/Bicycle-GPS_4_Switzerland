@@ -63,6 +63,33 @@ public final class WaypointsManager {
         addMouseEventsManager();
     }
 
+    /**
+     * Prend les coordonnées x et y d'un point et ajoute un nouveau point de
+     * passage au noeud du graphe qui en est le plus proche (dans un rayon de
+     * 500m).
+     *
+     * @param x la coordonnée x du point
+     * @param y la coordonnée y du point
+     */
+    public void addWayPoint(double x, double y) {
+        PointCh p = (new PointWebMercator(x, y)).toPointCh();
+        int closestNodeId = graph.nodeClosestTo(p, 500);
+        if (closestNodeId == -1) {
+            errorConsumer.accept("Aucune route à proximité !");
+        } else {
+            waypoints.add(new Waypoint(p, closestNodeId));
+        }
+    }
+
+    /**
+     * Retourne le panneau contenant les points de passage.
+     *
+     * @return le panneau contenant les points de passage
+     */
+    public Pane pane() {
+        return pane;
+    }
+
     // Ajoute les gestionnaires d'événement détectant le déplacement de la souris
     // lorsque le bouton gauche est maintenu pressé sur un marqueur, et le clic
     // sur un marqueur de point de passage qui permet de le supprimer.
@@ -70,17 +97,13 @@ public final class WaypointsManager {
         MapViewParameters mvp = mapViewParametersP.get();
 
         for (Node group : pane.getChildren()) {
+            int markerIndex = pane.getChildren().indexOf(group);
 
             group.setOnMousePressed(m -> {
-                int markerIndex = pane.getChildren().indexOf(group);
                 Point2D mousePosition = new Point2D(m.getX(), m.getY());
                 mousePositionP.set(mousePosition);
                 PointWebMercator pwm = PointWebMercator.ofPointCh(waypoints.get(markerIndex).p());
                 previousMarkerPositionP.set(new Point2D(mvp.viewX(pwm), mvp.viewY(pwm)));
-                if (m.isStillSincePress()) {
-                    pane.getChildren().remove(group);
-                    waypoints.remove(markerIndex);
-                }
             });
 
             group.setOnMouseDragged(m -> {
@@ -89,8 +112,7 @@ public final class WaypointsManager {
             });
 
             group.setOnMouseReleased(m -> {
-                if(!m.isStillSincePress()) {
-                    int markerIndex = pane.getChildren().indexOf(group);
+                if (!m.isStillSincePress()) {
                     PointWebMercator mousePWM = mvp.pointAt(
                             group.getLayoutX() + m.getX() - mousePositionP.get().getX(),
                             group.getLayoutY() + m.getY() - mousePositionP.get().getY());
@@ -105,36 +127,16 @@ public final class WaypointsManager {
                         previousMarkerPositionP
                                 .set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
                     } else {
+                        errorConsumer.accept("Aucune route à proximité !");
                         group.setLayoutX(previousMarkerPositionP.get().getX());
                         group.setLayoutY(previousMarkerPositionP.get().getY());
                     }
+                } else {
+                    pane.getChildren().remove(group);
+                    waypoints.remove(markerIndex);
                 }
             });
         }
-    }
-
-    // Ajoute les listeners sur les paramètres de la carte et la liste des points
-    // de passage.
-    private void addListeners() {
-        mapViewParametersP.addListener(mvp -> {
-            createMarkers();
-            addMouseEventsManager();
-            positionMarkers();
-        });
-        waypoints.addListener((Observable o) -> {
-            createMarkers();
-            addMouseEventsManager();
-            positionMarkers();
-        });
-    }
-
-    /**
-     * Retourne le panneau contenant les points de passage.
-     *
-     * @return le panneau contenant les points de passage
-     */
-    public Pane pane() {
-        return pane;
     }
 
     // Création des marqueurs
@@ -177,22 +179,18 @@ public final class WaypointsManager {
         }
     }
 
-    /**
-     * Prend les coordonnées x et y d'un point et ajoute un nouveau point de
-     * passage au noeud du graphe qui en est le plus proche (dans un rayon de
-     * 500m).
-     *
-     * @param x la coordonnée x du point
-     * @param y la coordonnée y du point
-     */
-    public void addWayPoint(double x, double y) {
-        PointCh p = (new PointWebMercator(x, y)).toPointCh();
-        int closestNodeId = graph.nodeClosestTo(p, 500);
-        if (closestNodeId == -1) {
-            errorConsumer.accept("Aucune route à proximité !");
-        } else {
-            waypoints.add(new Waypoint(p, closestNodeId));
-        }
+    // Ajoute les listeners sur les paramètres de la carte et la liste des points
+    // de passage.
+    private void addListeners() {
+        mapViewParametersP.addListener(mvp -> {
+            createMarkers();
+            addMouseEventsManager();
+            positionMarkers();
+        });
+        waypoints.addListener((Observable o) -> {
+            createMarkers();
+            addMouseEventsManager();
+            positionMarkers();
+        });
     }
-
 }

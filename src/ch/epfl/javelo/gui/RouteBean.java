@@ -43,13 +43,9 @@ public final class RouteBean {
         addListeners();
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileP() {
-        return elevationProfileP;
-    }
-
     private void addListeners() {
         // Syntaxe ?
-        waypoints.addListener((Observable o) -> {
+        waypoints.addListener((ListChangeListener<Waypoint>) c -> {
             Route itinerary = computeItinerary();
             if (itinerary == null) {
                 routeP.set(null);
@@ -80,7 +76,6 @@ public final class RouteBean {
         return routeP.get();
     }
 
-
     /**
      * Retourne la propriété contenant la position mise en évidence.
      *
@@ -88,6 +83,10 @@ public final class RouteBean {
      */
     public DoubleProperty highlightedPositionProperty() {
         return highlightedPositionP;
+    }
+
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileP() {
+        return elevationProfileP;
     }
 
     /**

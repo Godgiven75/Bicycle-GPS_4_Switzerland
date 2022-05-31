@@ -147,6 +147,8 @@ public final class RouteManager {
 
     private void highlightPosition(MapViewParameters mvp) {
         double highlightedPosition = routeBean.highlightedPositionProperty().get();
+        if (Double.isNaN(highlightedPosition))
+            return;
         PointWebMercator highlightedPoint =
                 PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
         highlightedPositionC.setCenterX(mvp.viewX(highlightedPoint));
