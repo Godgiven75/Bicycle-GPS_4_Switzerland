@@ -87,7 +87,6 @@ public final class RouteManager {
 
     private void addListeners() {
         routeBean.routeProperty().addListener(p -> {
-            // Devrait-on mettre le booléen dans RouteBean ?
             if (!hasItinerary()) {
                 routePolyline.setVisible(false);
                 highlightedPositionC.setVisible(false);
@@ -109,14 +108,13 @@ public final class RouteManager {
             routePolyline.setVisible(true);
             // Pas entièrement sûr de la modularisation highlightPosition
             highlightPosition(mapViewParametersP.get());
-
         });
+
         mapViewParametersP.addListener((p, o, n) -> {
-            //-mapviewparameters
             int oldZoomLevel = o.zoomLevel();
             int newZoomLevel = n.zoomLevel();
 
-            if(newZoomLevel == oldZoomLevel) {
+            if (newZoomLevel == oldZoomLevel) {
                 Point2D oldTopLeft = o.topLeft();
                 Point2D newTopLeft = n.topLeft();
                 Point2D offset = newTopLeft.subtract(oldTopLeft);
@@ -124,8 +122,10 @@ public final class RouteManager {
                 routePolyline.setLayoutY(routePolyline.getLayoutY() - offset.getY());
                 highlightedPositionC.setCenterX(highlightedPositionC.getCenterX() - offset.getX());
                 highlightedPositionC.setCenterY(highlightedPositionC.getCenterY() - offset.getY());
+                highlightedPositionC.setVisible(true);
             } else {
                 if (hasItinerary()) {
+                    highlightedPositionC.setVisible(false);
                     List<Double> pointsAtNewZoomLevel = new ArrayList<>();
                     routeBean.route().points().forEach(pointCh -> {
                         PointWebMercator pwm = PointWebMercator.ofPointCh(pointCh);

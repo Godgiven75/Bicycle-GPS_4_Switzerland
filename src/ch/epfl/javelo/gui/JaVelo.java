@@ -4,10 +4,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -84,28 +81,27 @@ public final class JaVelo extends Application {
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
 
-        routeBean.routeProperty().addListener((p, o, n) -> {
+        ReadOnlyObjectProperty<ElevationProfile> elevationProfileP =
+                routeBean.elevationProfileP();
+
+        ElevationProfile profile = elevationProfileP.get();
+
+        routeBean.elevationProfileP().addListener((p, o, n) -> {
             if (n != null) {
-                ElevationProfile profile = ElevationProfileComputer
-                        .elevationProfile(n, MAX_STEP_LENGTH);
-
-                ObjectProperty<ElevationProfile> profileProperty =
-                        new SimpleObjectProperty<>(profile);
-
                 DoubleProperty highlightedPositionOnProfileProperty =
                         new SimpleDoubleProperty();
 
                 ElevationProfileManager elevationProfileManager =
-                        new ElevationProfileManager(profileProperty,
+                        new ElevationProfileManager(elevationProfileP,
                                 highlightedPositionOnProfileProperty);
 
-                highlightedPositionOnProfileProperty.bind(
-                        elevationProfileManager.mousePositionOnProfileProperty());
+                highlightedPositionOnProfileProperty
+                        .bind(elevationProfileManager.mousePositionOnProfileProperty());
 
                 DoubleProperty mapP = annotatedMapManager.mousePositionOnRouteProperty();
                 DoubleProperty profP = (DoubleProperty) elevationProfileManager.mousePositionOnProfileProperty();
-                routeBean.highlightedPositionProperty().bind(Bindings.when(
-                                mapP.greaterThan(0d))
+                routeBean.highlightedPositionProperty().bind(
+                        Bindings.when(mapP.greaterThan(0d))
                         .then(mapP)
                         .otherwise(profP));
 
