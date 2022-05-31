@@ -20,6 +20,10 @@ import static java.nio.file.Files.newBufferedWriter;
 /**
  * Classe publique non instanciable représentant un générateur d'itinéraire au
  * format GPX.
+ *
+ * @author Tanguy Dieudonné (326618)
+ * @author Nathanaël Girod (329987)
+ * @author M. Schinz (classe privée créant le nouveau document)
  */
 public class GpxGenerator {
     private GpxGenerator() {}
@@ -58,8 +62,6 @@ public class GpxGenerator {
         Element rte = doc.createElement("rte");
         root.appendChild(rte);
 
-        // Il faudrait plutôt un itérateur pour l'élégance
-
         double position = 0.0;
         for (int i = 0; i < route.edges().size(); i++) {
 
@@ -79,26 +81,7 @@ public class GpxGenerator {
 
             position += e.length();
         }
-        /*Edge lastEdge = route.edges().get(route.edges().size() - 1);
-        Element rtept = doc.createElement("rtept");
-        rte.appendChild(rtept);
-        rtept.setAttribute("lat", String.valueOf(lastEdge.toPoint().lat()));
-        rtept.setAttribute("lon", String.valueOf(lastEdge.toPoint().lon()));
-        Element ele = doc.createElement("ele");
-        rtept.appendChild(ele);
-        ele.setTextContent(String.valueOf(profile.elevationAt(position + lastEdge.length())));*/
-
         return doc;
-    }
-    private static Document newDocument() {
-        try {
-            return DocumentBuilderFactory
-                    .newDefaultInstance()
-                    .newDocumentBuilder()
-                    .newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new Error(e); // Ne devrait jamais se produire
-        }
     }
 
     /**
@@ -123,8 +106,19 @@ public class GpxGenerator {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
-
         } catch(TransformerException e) {
+            throw new Error(e); // Ne devrait jamais se produire
+        }
+    }
+
+    // Crée un nouveau document.
+    private static Document newDocument() {
+        try {
+            return DocumentBuilderFactory
+                    .newDefaultInstance()
+                    .newDocumentBuilder()
+                    .newDocument();
+        } catch (ParserConfigurationException e) {
             throw new Error(e); // Ne devrait jamais se produire
         }
     }

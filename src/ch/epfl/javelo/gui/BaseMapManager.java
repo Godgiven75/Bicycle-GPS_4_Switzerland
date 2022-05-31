@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Gère l'affichage et l'interaction avec le fond de carte
+ * Gère l'affichage et l'interaction avec le fond de carte.
+ *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
+ * @author M. Schinz (méthode privée de redessin au prochain "battement")
  */
 public final class BaseMapManager {
     private final TileManager tileManager;
@@ -50,17 +52,18 @@ public final class BaseMapManager {
 
     /**
      * Retourne le panneau JavaFX affichant le fond de carte
+     *
      * @return le panneau JavaFX affichant le fond de carte
      */
     public Pane pane() {
         return pane;
     }
 
+    // Redessine si nécessaire le fond de carte.
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
         try {
-
             MapViewParameters mvp = mapViewParametersP.get();
 
             double xImage = mvp.xImage();
@@ -80,7 +83,7 @@ public final class BaseMapManager {
             double topLeftY = mvp.topLeft().getY();
 
             // Coordonnées du pixel correspondant au coin en haut à gauche de la
-            // première tuile à dessiner sur le canevas
+            // première tuile à dessiner sur le canevas.
             double firstX = firstXIndex * PIXELS_IN_TILE - topLeftX;
             double firstY = firstYIndex * PIXELS_IN_TILE - topLeftY;
 
@@ -103,18 +106,20 @@ public final class BaseMapManager {
         } catch (IOException ignored) {}  // Ne devrait jamais se produire
 
     }
+    // Signale que le redessin peut se faire au prochain "battement" JavaFX.
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
+    // Ajoute les liens entre les hauteurs et largeurs du canevas et du panneau.
     private void addBindings() {
         canvas.widthProperty()
                 .bind(pane.widthProperty());
         canvas.heightProperty()
                 .bind(pane.heightProperty());
     }
-    private void addMouseEventsManager() {
 
+    private void addMouseEventsManager() {
         pane.setOnMouseDragged(e -> {
             Point2D previousPosition = mousePositionP.get();
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
@@ -128,11 +133,10 @@ public final class BaseMapManager {
             }
         });
         // On enregistre dans une propriété la position de la souris lors de
-        // l'appui afin de pouvoir calculer le défilement
+        // l'appui afin de pouvoir calculer le défilement.
         pane.setOnMousePressed(event -> {
             Point2D currentPosition = new Point2D(event.getX(), event.getY());
             mousePositionP.set(currentPosition);
-
         });
 
         pane.setOnMouseReleased(event -> {
@@ -165,7 +169,7 @@ public final class BaseMapManager {
             currentZoomLevel = newZoomLevel;
         });
     }
-
+    // Ajoute les listeners sur le canevas et les paramètres de la carte.
     private void addListeners() {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;

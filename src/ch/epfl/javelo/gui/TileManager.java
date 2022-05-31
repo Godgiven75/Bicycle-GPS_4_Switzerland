@@ -43,10 +43,12 @@ public final class TileManager {
 
         /**
          * Retourne vrai si les paramètres passés en argument correspondent à une
-         * tuile valide, et faux sinon
+         * tuile valide, et faux sinon.
          *
          * @param zoomLevel le niveau de zoom
+         *
          * @param xTileIndex l'index x de la tuile
+         *
          * @param yTileIndex l'index y de la tuile
          *
          * @return vrai si les paramètres passés en argument correspondent à une
@@ -62,9 +64,12 @@ public final class TileManager {
     /**
      * Crée un nouveau gestionnaire de tuiles, avec un cache disque
      * au chemin spécifié, et qui charge les tuiles depuis le serveur de tuile
-     * passé en argument
+     * passé en argument.
+     *
      * @param path chemin du cache disque
+     *
      * @param tileServer nom serveur de tuile
+     *
      * @throws IOException si le chemin pour le cache-disque est invalide
      */
     public TileManager(Path path, String tileServer) throws IOException {
@@ -76,8 +81,10 @@ public final class TileManager {
      * Retourne une image à partir de l'identité de la tuile.
      *
      * @param tileId l'identité de la tuile
-     * @return son image
+     *
      * @throws IOException si l'URL ne correspond pas à une tuile connue
+     *
+     * @return son image
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
         //preconditions ?

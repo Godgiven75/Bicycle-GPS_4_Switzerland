@@ -34,7 +34,19 @@ public final class WaypointsManager {
     private final ObjectProperty<Point2D> previousMarkerPositionP;
     private final static double SEARCH_DISTANCE = 500d;
 
-
+    /**
+     * Construit le réseau routier, les paramètres de la carte, une liste
+     * observable de tous les points de passage et un objet permettant de signaler
+     * les erreurs.
+     *
+     * @param graph le réseau routier
+     *
+     * @param mapViewParametersP la propriété contenant les paramètres de la carte
+     *
+     * @param waypoints la liste observable des points de passage
+     *
+     * @param errorConsumer l'objet permettant de signaler les erreurs
+     */
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> mapViewParametersP,
                             ObservableList<Waypoint> waypoints, Consumer<String> errorConsumer) {
         this.graph = graph;
@@ -51,10 +63,14 @@ public final class WaypointsManager {
         addMouseEventsManager();
     }
 
+    // Ajoute les gestionnaires d'événement détectant le déplacement de la souris
+    // lorsque le bouton gauche est maintenu pressé sur un marqueur, et le clic
+    // sur un marqueur de point de passage qui permet de le supprimer.
     private void addMouseEventsManager() {
         MapViewParameters mvp = mapViewParametersP.get();
 
         for (Node group : pane.getChildren()) {
+
             group.setOnMousePressed(m -> {
                 int markerIndex = pane.getChildren().indexOf(group);
                 Point2D mousePosition = new Point2D(m.getX(), m.getY());
@@ -78,15 +94,16 @@ public final class WaypointsManager {
                     PointWebMercator mousePWM = mvp.pointAt(
                             group.getLayoutX() + m.getX() - mousePositionP.get().getX(),
                             group.getLayoutY() + m.getY() - mousePositionP.get().getY());
-                    System.out.println(mousePWM);
                     PointCh mousePointCh = mousePWM.toPointCh();
                     int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
                     // nodeClosestTo est -1 si aucun noeud n'a été trouvé
                     if (nodeClosestTo != -1) {
                         Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
                         waypoints.set(markerIndex, newWayPoint);
-                        PointWebMercator tempP = PointWebMercator.ofPointCh(graph.nodePoint(nodeClosestTo));
-                        previousMarkerPositionP.set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
+                        PointWebMercator tempP =
+                                PointWebMercator.ofPointCh(graph.nodePoint(nodeClosestTo));
+                        previousMarkerPositionP
+                                .set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
                     } else {
                         group.setLayoutX(previousMarkerPositionP.get().getX());
                         group.setLayoutY(previousMarkerPositionP.get().getY());
@@ -96,6 +113,8 @@ public final class WaypointsManager {
         }
     }
 
+    // Ajoute les listeners sur les paramètres de la carte et la liste des points
+    // de passage.
     private void addListeners() {
         mapViewParametersP.addListener(mvp -> {
             createMarkers();
@@ -109,10 +128,16 @@ public final class WaypointsManager {
         });
     }
 
+    /**
+     * Retourne le panneau contenant les points de passage.
+     *
+     * @return le panneau contenant les points de passage
+     */
     public Pane pane() {
         return pane;
     }
 
+    // Création des marqueurs
     private void createMarkers() {
         List<Node> markers = new ArrayList<>();
         for (int i = 0; i < waypoints.size(); i++) {
@@ -138,6 +163,7 @@ public final class WaypointsManager {
         pane.getChildren().setAll(markers);
     }
 
+    // Positionnement des marqueurs
     private void positionMarkers() {
         for (int i = 0; i < pane.getChildren().size(); i++) {
             Waypoint w = waypoints.get(i);

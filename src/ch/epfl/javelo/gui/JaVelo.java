@@ -4,10 +4,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -50,7 +47,6 @@ public final class JaVelo extends Application {
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
 
-
         ErrorManager errorManager = new ErrorManager();
 
         Consumer<String> errorConsumer = errorManager::displayError;
@@ -87,42 +83,39 @@ public final class JaVelo extends Application {
 
         routeBean.routeProperty().addListener((p, o, n) -> {
             if (n != null) {
-                    ElevationProfile profile = ElevationProfileComputer
-                            .elevationProfile(n, MAX_STEP_LENGTH);
+                ReadOnlyObjectProperty<ElevationProfile> elevationProfileP =
+                        routeBean.elevationProfileP();
 
-                    ObjectProperty<ElevationProfile> profileProperty =
-                            new SimpleObjectProperty<>(profile);
+                ElevationProfile profile = elevationProfileP.get();
 
-                    DoubleProperty highlightedPositionOnProfileProperty =
-                            new SimpleDoubleProperty();
+                DoubleProperty highlightedPositionOnProfileProperty =
+                        new SimpleDoubleProperty();
 
-                    ElevationProfileManager elevationProfileManager =
-                            new ElevationProfileManager(profileProperty,
-                                    highlightedPositionOnProfileProperty);
+                ElevationProfileManager elevationProfileManager =
+                        new ElevationProfileManager(elevationProfileP,
+                                highlightedPositionOnProfileProperty);
 
-                    highlightedPositionOnProfileProperty.bind(
-                            elevationProfileManager.mousePositionOnProfileProperty());
+                highlightedPositionOnProfileProperty.bind(
+                        elevationProfileManager.mousePositionOnProfileProperty());
 
-                    DoubleProperty mapP = annotatedMapManager.mousePositionOnRouteProperty();
-                    DoubleProperty profP = (DoubleProperty) elevationProfileManager.mousePositionOnProfileProperty();
-                    routeBean.highlightedPositionProperty().bind(Bindings.when(
-                            mapP.greaterThan(0d))
-                            .then(mapP)
-                            .otherwise(profP));
-
-                    if (mapAndProfilePane.getItems().size() > 1)
-                        mapAndProfilePane.getItems().set(1, elevationProfileManager.pane());
-                    else
-                        mapAndProfilePane.getItems().add(1, elevationProfileManager.pane());
-
-                    menu.setOnAction(e -> {
-                        GpxGenerator.createGpx(routeBean.route(), profile);
-                        try {
-                            GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), profile);
-                        } catch (IOException ex) {
-                            throw new UncheckedIOException(ex);
-                        }
-                    });
+                DoubleProperty mapP = annotatedMapManager.mousePositionOnRouteProperty();
+                DoubleProperty profP = (DoubleProperty) elevationProfileManager.mousePositionOnProfileProperty();
+                routeBean.highlightedPositionProperty().bind(Bindings.when(
+                        mapP.greaterThan(0d))
+                        .then(mapP)
+                        .otherwise(profP));
+                if (mapAndProfilePane.getItems().size() > 1)
+                    mapAndProfilePane.getItems().set(1, elevationProfileManager.pane());
+                else
+                    mapAndProfilePane.getItems().add(1, elevationProfileManager.pane());
+                menu.setOnAction(e -> {
+                    GpxGenerator.createGpx(routeBean.route(), profile);
+                    try {
+                        GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), profile);
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                });
             }
             else {
                 if (mapAndProfilePane.getItems().size() > 1)

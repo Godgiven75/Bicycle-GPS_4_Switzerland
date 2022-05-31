@@ -81,6 +81,7 @@ public final class ElevationProfileManager {
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePositionOnProfileP;
     }
+
     private void createSceneGraph() {
         mainPane.getStylesheets().add("elevation_profile.css");
         VBox bottomPane = new VBox();
@@ -157,7 +158,6 @@ public final class ElevationProfileManager {
         });
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }
-
 
     private int computeVerticalStep() {
         final int minVerticalDistance = 25;

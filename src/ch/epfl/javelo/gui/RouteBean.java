@@ -43,6 +43,10 @@ public final class RouteBean {
         addListeners();
     }
 
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileP() {
+        return elevationProfileP;
+    }
+
     private void addListeners() {
         // Syntaxe ?
         waypoints.addListener((Observable o) -> {

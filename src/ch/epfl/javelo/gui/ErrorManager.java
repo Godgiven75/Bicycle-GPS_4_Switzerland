@@ -17,10 +17,19 @@ import java.util.List;
  * @author Nathanaël Girod (329987)
  */
 public final class ErrorManager {
+    public static final int APPEARANCE_DURATION = 200;
+    public static final int PAUSE_DURATION = 2000;
+    public static final int DISAPPEARANCE_DURATION = 500;
+    public static final int TOTALLY_TRANSPARENT = 0;
+    public static final double ALMOST_OPAQUE = 0.8;
     private final VBox pane;
     private final Text errorMessage = new Text();
     private final SequentialTransition sequentialTransition;
 
+    /**
+     * Construit le panneau contenant le message d'erreur ainsi que l'animation
+     * d'affichage du message à l'écran.
+     */
     public ErrorManager() {
         this.pane = new VBox(errorMessage);
         pane.getStylesheets().add("error.css");
@@ -28,16 +37,16 @@ public final class ErrorManager {
         this.sequentialTransition = new SequentialTransition(pane);
 
         FadeTransition raiseOpacity =
-                new FadeTransition(Duration.millis(3000), pane);
-        raiseOpacity.setFromValue(0);
-        raiseOpacity.setToValue(0.8);
-        raiseOpacity.setDuration(new Duration(200));
-        PauseTransition pause = new PauseTransition(Duration.millis(2000));
+                new FadeTransition(Duration.millis(APPEARANCE_DURATION), pane);
+        raiseOpacity.setFromValue(TOTALLY_TRANSPARENT);
+        raiseOpacity.setToValue(ALMOST_OPAQUE);
+
+        PauseTransition pause = new PauseTransition(Duration.millis(PAUSE_DURATION));
         FadeTransition lowerOpacity =
-                new FadeTransition(Duration.millis(500), pane);
-        lowerOpacity.setFromValue(0.8);
-        lowerOpacity.setToValue(0);
-        lowerOpacity.setDuration(new Duration(500));
+                new FadeTransition(Duration.millis(DISAPPEARANCE_DURATION), pane);
+        lowerOpacity.setFromValue(ALMOST_OPAQUE);
+        lowerOpacity.setToValue(TOTALLY_TRANSPARENT);
+
         sequentialTransition.getChildren()
                 .setAll(List.of(raiseOpacity, pause, lowerOpacity));
     }
