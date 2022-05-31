@@ -47,9 +47,11 @@ public final class ElevationProfileManager {
 
     /**
      * Construit un nouveau gestionnaire de profil.
-     * @param elevationProfileP Propriété (lecture seule) contenant le profil
+     *
+     * @param elevationProfileP la propriété (lecture seule) contenant le profil
      * à afficher (contient null s'il n'y a pas de profil à afficher)
-     * @param highlightedPositionP Propriété (lecture seule) contenant la position
+     *
+     * @param highlightedPositionP la propriété (lecture seule) contenant la position
      * à mettre en évidence (contient NaN si aucune position n'est à mettre en
      * évidence)
      */
