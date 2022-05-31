@@ -1,7 +1,6 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -85,7 +84,7 @@ public final class RouteBean {
         return highlightedPositionP;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileP() {
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
         return elevationProfileP;
     }
 

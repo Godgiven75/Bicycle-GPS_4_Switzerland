@@ -45,7 +45,14 @@ public final class ElevationProfileManager {
     private final Text textVbox = new Text();
     private final Line line = new Line();
 
-
+    /**
+     * Construit un nouveau gestionnaire de profil.
+     * @param elevationProfileP Propriété (lecture seule) contenant le profil
+     * à afficher (contient null s'il n'y a pas de profil à afficher)
+     * @param highlightedPositionP Propriété (lecture seule) contenant la position
+     * à mettre en évidence (contient NaN si aucune position n'est à mettre en
+     * évidence)
+     */
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> elevationProfileP,
                                    ReadOnlyDoubleProperty highlightedPositionP) {
         this.elevationProfileP = elevationProfileP;
@@ -54,8 +61,9 @@ public final class ElevationProfileManager {
         this.mousePositionOnProfileP = new SimpleDoubleProperty();
         this.screenToWorldP = new SimpleObjectProperty<>(new Affine());
         this.worldToScreenP = new SimpleObjectProperty<>(new Affine());
-        createSceneGraph();
+
         addBindings();
+        createSceneGraph();
         addListeners();
         addMouseEventsManager();
     }
@@ -98,26 +106,33 @@ public final class ElevationProfileManager {
     }
     private void addListeners() {
         rectangle2DP.addListener((p, o, n) -> {
-            screenToWorldP.set(screenToWorld());
             try {
+                screenToWorldP.set(screenToWorld());
                 worldToScreenP.set(worldToScreen());
+                displayProfile();
+                createPane();
+                updateProfileStatistics();
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
-            displayProfile();
-            createPane();
-        });
-        elevationProfileP.addListener((p, o, n) -> {
-            screenToWorldP.set(screenToWorld());
-            try {
-                worldToScreenP.set(worldToScreen());
-            } catch (NonInvertibleTransformException error) {
-                throw new Error(error);
-            }
-            displayProfile();
-            createPane();
+
         });
 
+        elevationProfileP.addListener((p, o, n) -> {
+            try {
+                if (elevationProfileP.get() != null) {
+                    if (rectangle2DP.get().getHeight() == 0 || rectangle2DP.get().getWidth() == 0)
+                        return;
+                    screenToWorldP.set(screenToWorld());
+                    worldToScreenP.set(worldToScreen());
+                    updateProfileStatistics();
+                    displayProfile();
+                    createPane();
+                }
+            } catch(NonInvertibleTransformException error){
+                throw new Error(error);
+            }
+        });
     }
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
@@ -137,7 +152,6 @@ public final class ElevationProfileManager {
             Transform worldToScreen = worldToScreenP.get();
             return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
         }, worldToScreenP, highlightedPositionP));
-
         line.startYProperty().bind(Bindings.select(rectangle2DP, "minY"));
         line.endYProperty().bind(Bindings.select(rectangle2DP, "maxY"));
         line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
@@ -261,7 +275,9 @@ public final class ElevationProfileManager {
         // Les étiquettes de la grille :
         group.getStyleClass().add("grid_label.horizontal");
 
-        // texte contenant les statistiques du profil
+    }
+    // Affiche les statistiques du profil
+    private void updateProfileStatistics() {
         ElevationProfile profile = elevationProfileP.get();
         textVbox.setText(String.format("Longueur : %.1f km" +
                         "     Montée : %.0f m" +

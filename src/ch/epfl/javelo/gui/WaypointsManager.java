@@ -11,7 +11,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-
 import javafx.scene.shape.SVGPath;
 
 import java.util.ArrayList;
@@ -73,12 +72,14 @@ public final class WaypointsManager {
      */
     public void addWayPoint(double x, double y) {
         PointCh p = (new PointWebMercator(x, y)).toPointCh();
-        int closestNodeId = graph.nodeClosestTo(p, 500);
-        if (closestNodeId == -1) {
-            errorConsumer.accept("Aucune route à proximité !");
-        } else {
-            waypoints.add(new Waypoint(p, closestNodeId));
+        if (p != null) {
+            int closestNodeId = graph.nodeClosestTo(p, 500);
+            if (closestNodeId != -1) {
+                waypoints.add(new Waypoint(p, closestNodeId));
+                return;
+            }
         }
+        errorConsumer.accept("Aucune route à proximité !");
     }
 
     /**

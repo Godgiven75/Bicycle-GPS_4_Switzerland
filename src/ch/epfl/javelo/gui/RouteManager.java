@@ -140,9 +140,8 @@ public final class RouteManager {
             }
         });
 
-        routeBean.highlightedPositionProperty().addListener((p, o, n) -> {
-            highlightPosition(mapViewParametersP.get());
-        });
+        routeBean.highlightedPositionProperty().addListener((p, o, n) ->
+                highlightPosition(mapViewParametersP.get()));
     }
 
     private void highlightPosition(MapViewParameters mvp) {

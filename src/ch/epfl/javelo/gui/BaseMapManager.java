@@ -11,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Gère l'affichage et l'interaction avec le fond de carte.
