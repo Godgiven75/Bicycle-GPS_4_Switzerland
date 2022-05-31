@@ -10,8 +10,8 @@ import javafx.util.Pair;
 import java.util.*;
 
 /**
- * Classe finale regroupant les propriétés relatives aux points de passage et à l'itinéraire
- * correspondant.
+ * Classe finale regroupant les propriétés relatives aux points de passage et à
+ * l'itinéraire correspondant.
  *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
@@ -42,6 +42,89 @@ public final class RouteBean {
         addListeners();
     }
 
+    /**
+     * Retourne la propriété contenant l'itinéraire calculé.
+     *
+     * @return la proproété contenant l'itinéraire calculé
+     */
+    public ReadOnlyObjectProperty<Route> routeProperty() {
+        return routeP;
+    }
+
+    /**
+     * Retourne l'itinéraire calculé.
+     *
+     * @return l'itinéraire calculé
+     */
+    public Route route() {
+        return routeP.get();
+    }
+
+    /**
+     * Retourne la propriété contenant la position mise en évidence.
+     *
+     * @return la propriété contenant  la position mise en évidence
+     */
+    public DoubleProperty highlightedPositionProperty() {
+        return highlightedPositionP;
+    }
+
+    /**
+     * Retourne la propriété contenant le profil d'élévation.
+     *
+     * @return la propriété contenant le profil d'élévation
+     */
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
+        return elevationProfileP;
+    }
+
+    /**
+     * Retourne la position mise en évidence.
+     *
+     * @return la position mise en évidence
+     */
+    public double highlightedPosition() {
+        return highlightedPositionP.get();
+    }
+
+    /**
+     * Assigne la propriété contenant la position mise en évidence à la valeur
+     * passée en argument.
+     *
+     * @param newHighlightedPosition nouvelle valeur de la propriété contenant
+     *
+     * la position mise en évidence
+     */
+    public void setHighlightedPositionP(double newHighlightedPosition) {
+        this.highlightedPositionP.set(newHighlightedPosition);
+    }
+
+    /**
+     * Retourne la liste des points de passage de l'itinéraire.
+     *
+     * @return la liste des points de passage de l'itinéraire
+     */
+    public ObservableList<Waypoint> waypoints() {
+        return waypoints;
+    }
+
+    /**
+     * Retourne l'indice du segment non vide à la position passée en argument.
+     *
+     * @param position position le long de l'itinéraire
+     *
+     * @return l'indice du segment non vide à la position passée en argument
+     */
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i++) {
+            int n1 = waypoints.get(i).closestNodeId();
+            int n2 = waypoints.get(i + 1).closestNodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
+    }
+
     private void addListeners() {
         // Syntaxe ?
         waypoints.addListener((ListChangeListener<Waypoint>) c -> {
@@ -58,78 +141,7 @@ public final class RouteBean {
         });
     }
 
-    /**
-     * Retourne la propriété contenant l'itinéraire calculé.
-     *
-     * @return la proproété contenant l'itinéraire calculé
-     */
-    public ReadOnlyObjectProperty<Route> routeProperty() {
-        return routeP;
-    }
-
-    /**
-     * Retourne l'itinéraire calculé.
-     * @return l'itinéraire calculé
-     */
-    public Route route() {
-        return routeP.get();
-    }
-
-    /**
-     * Retourne la propriété contenant la position mise en évidence.
-     *
-     * @return la propriété contenant  la position mise en évidence
-     */
-    public DoubleProperty highlightedPositionProperty() {
-        return highlightedPositionP;
-    }
-
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty() {
-        return elevationProfileP;
-    }
-
-    /**
-     * Retourne la position mise en évidence.
-     * @return la position mise en évidence
-     */
-    public double highlightedPosition() {
-        return highlightedPositionP.get();
-    }
-
-    /**
-     * Assigne la propriété contenant la position mise en évidence à la valeur
-     * passée en argument.
-     * @param newHighlightedPosition nouvelle valeur de la propriété contenant
-     * la position mise en évidence
-     */
-    public void setHighlightedPositionP(double newHighlightedPosition) {
-        this.highlightedPositionP.set(newHighlightedPosition);
-    }
-
-    /**
-     * Retourne la liste des points de passage de l'itinéraire
-     * @return la liste des points de passage de l'itinéraire
-     */
-    public ObservableList<Waypoint> waypoints() {
-        return waypoints;
-    }
-
-    /**
-     * Retourne l'indice du segment non vide à la position passée en argument.
-     * @param position position le long de l'itinéraire
-     * @return l'indice du segment non vide à la position passée en argument
-     */
-    public int indexOfNonEmptySegmentAt(double position) {
-        int index = route().indexOfSegmentAt(position);
-        for (int i = 0; i <= index; i++) {
-            int n1 = waypoints.get(i).closestNodeId();
-            int n2 = waypoints.get(i + 1).closestNodeId();
-            if (n1 == n2) index += 1;
-        }
-        return index;
-    }
-
-    // Crée la route correspondant à l'itinéraire
+    // Crée la route correspondant à l'itinéraire.
     private Route computeItinerary() {
         List<Route> singleRoutes = new ArrayList<>();
 

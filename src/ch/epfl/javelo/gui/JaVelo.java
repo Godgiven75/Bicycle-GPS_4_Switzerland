@@ -98,7 +98,6 @@ public final class JaVelo extends Application {
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();
 
-
         routeBean.elevationProfileProperty().addListener((p, o, n) -> {
             if (n != null) {
                 if (mapAndProfilePane.getItems().size() > 1 )
@@ -110,7 +109,5 @@ public final class JaVelo extends Application {
                     mapAndProfilePane.getItems().remove(1);
             }
         });
-
-
     }
 }
