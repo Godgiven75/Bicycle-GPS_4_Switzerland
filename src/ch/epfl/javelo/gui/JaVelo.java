@@ -9,6 +9,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -49,11 +50,10 @@ public final class JaVelo extends Application {
         TileManager tileManager =
                 new TileManager(cacheBasePath, tileServerHost);
 
-        // Carte affichée au démarrage
-        Consumer<String> errorConsumer = new ErrorConsumer();
 
-        ErrorManager errorManager =
-                new ErrorManager();
+        ErrorManager errorManager = new ErrorManager();
+
+        Consumer<String> errorConsumer = errorManager::displayError;
 
         RouteBean routeBean =
                 new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
@@ -65,11 +65,11 @@ public final class JaVelo extends Application {
                         errorConsumer);
 
         mainPane.getStylesheets().add("map.css");
-
         mapAndProfilePane.getItems().add(0, annotatedMapManager.pane());
         mapAndProfilePane.setOrientation(Orientation.VERTICAL);
-        mainPane.setCenter(new StackPane(mapAndProfilePane,errorManager.pane()));
-
+        StackPane mapAndProfileAndErrorPane =
+                new StackPane(mapAndProfilePane, errorManager.pane());
+        mainPane.setCenter(mapAndProfileAndErrorPane);
         Menu menu = new Menu("Fichier");
         MenuItem menuItem = new MenuItem("Exporter GPX");
         menuItem.disableProperty().bind(routeBean.routeProperty().isNull());
@@ -130,11 +130,4 @@ public final class JaVelo extends Application {
             }
         });
     }
-
-    private static final class ErrorConsumer
-            implements Consumer<String> {
-        @Override
-        public void accept(String s) { System.out.println(s); }
-    }
-
 }

@@ -103,9 +103,9 @@ public final class SingleRoute implements Route {
     public PointCh pointAt(double position) {
         double clampedPosition = Math2.clamp(0.0, position, length());
         int binarySearchResult = Arrays.binarySearch(nodePositions, clampedPosition);
-        if(binarySearchResult == 0)
+        if (binarySearchResult == 0)
             return points().get(binarySearchResult);
-        if(binarySearchResult > 0)
+        if (binarySearchResult > 0)
             return points().get(binarySearchResult);
         int actualIndex = - binarySearchResult - 2;
         return edges
