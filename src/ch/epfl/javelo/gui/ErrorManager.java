@@ -17,11 +17,11 @@ import java.util.List;
  * @author Nathanaël Girod (329987)
  */
 public final class ErrorManager {
-    public static final int APPEARANCE_DURATION = 200;
-    public static final int PAUSE_DURATION = 2000;
-    public static final int DISAPPEARANCE_DURATION = 500;
-    public static final int TOTALLY_TRANSPARENT = 0;
-    public static final double ALMOST_OPAQUE = 0.8;
+    private static final int APPEARANCE_DURATION = 200;
+    private static final int PAUSE_DURATION = 2000;
+    private static final int DISAPPEARANCE_DURATION = 500;
+    private static final int TOTALLY_TRANSPARENT = 0;
+    private static final double ALMOST_OPAQUE = 0.8;
     private final VBox pane;
     private final Text errorMessage = new Text();
     private final SequentialTransition sequentialTransition;

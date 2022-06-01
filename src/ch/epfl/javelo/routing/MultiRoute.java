@@ -77,27 +77,6 @@ public final class MultiRoute implements Route {
         return l;
     }
 
-    private int findRouteIndex(double position) {
-        int tempPosition = 0;
-        int index = 0;
-        for (Route r : segments) {
-            tempPosition += r.length();
-            if (tempPosition >= position)
-                return index;
-            ++index;
-        }
-        return segments.size() - 1;
-    }
-
-    private double positionOnRoute(double position) {
-        int index = findRouteIndex(position);
-        double lengthOfPreviousRoutes = 0;
-        for (int i = 0; i < index; i++) {
-            lengthOfPreviousRoutes += segments.get(i).length();
-        }
-        return position - lengthOfPreviousRoutes;
-    }
-
     @Override
     public PointCh pointAt(double position) {
         int routeIndex = findRouteIndex(position);
@@ -132,5 +111,26 @@ public final class MultiRoute implements Route {
             tempPosition += r.length();
         }
         return closestPoint;
+    }
+
+    private int findRouteIndex(double position) {
+        int tempPosition = 0;
+        int index = 0;
+        for (Route r : segments) {
+            tempPosition += r.length();
+            if (tempPosition >= position)
+                return index;
+            ++index;
+        }
+        return segments.size() - 1;
+    }
+
+    private double positionOnRoute(double position) {
+        int index = findRouteIndex(position);
+        double lengthOfPreviousRoutes = 0;
+        for (int i = 0; i < index; i++) {
+            lengthOfPreviousRoutes += segments.get(i).length();
+        }
+        return position - lengthOfPreviousRoutes;
     }
 }
