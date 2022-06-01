@@ -24,8 +24,11 @@ public final class Ch1903 {
         double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
         double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);
 
-        return 2600072.37 + 211455.93 * l1 - 10938.51 * l1 * phi1
-                - 0.36 * l1 * phi1 * phi1 - 44.54 * l1 * l1 * l1;
+        return 2600072.37
+                + 211455.93 * l1
+                - 10938.51 * l1 * phi1
+                - 0.36 * l1 * phi1 * phi1
+                - 44.54 * l1 * l1 * l1;
     }
     /**
      * Retourne la coordonnée nord (N) (dans le système (CH1903+) d'un point donné
@@ -41,8 +44,12 @@ public final class Ch1903 {
         double l1 = (1e-4) * (3600 * Math.toDegrees(lon) - 26782.5);
         double phi1 = (1e-4) * (3600 * Math.toDegrees(lat) - 169028.66);
 
-        return 1200147.07 + 308807.95 * phi1 + 3745.25 * l1 *l1 + 76.63 * phi1 *phi1
-                - 194.56 * l1 * l1 * phi1 + 119.79 * phi1 * phi1 * phi1;
+        return 1200147.07 +
+                308807.95 * phi1
+                + 3745.25 * l1 * l1
+                + 76.63 * phi1 * phi1
+                - 194.56 * l1 * l1 * phi1
+                + 119.79 * phi1 * phi1 * phi1;
     }
 
     /**
@@ -75,8 +82,12 @@ public final class Ch1903 {
     public static double lat(double e, double n) {
         double x = 1e-6 * (e - 2600000.0);
         double y = 1e-6 * (n - 1200000.0);
-        double phi0 = 16.9023_892  + 3.238272 * y - 0.270978 * x * x
-                - 0.002528 * y * y - 0.0447 * x * x * y - 0.0140 * y * y * y;
+        double phi0 = 16.9023_892
+                + 3.238272 * y
+                - 0.270978 * x * x
+                - 0.002528 * y * y
+                - 0.0447 * x * x * y
+                - 0.0140 * y * y * y;
 
         return Math.toRadians(phi0 * 100.0/36.0);
     }

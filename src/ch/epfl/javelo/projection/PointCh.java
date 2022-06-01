@@ -47,7 +47,7 @@ public record PointCh(double e, double n ) {
      * @return la distance entre ce PointCh et un autre PointCh
      */
     public double distanceTo(PointCh that) {
-        return Math.hypot(that.e - this.e, that.n - this.n);
+        return Math.sqrt(squaredDistanceTo(that));
     }
 
     /**

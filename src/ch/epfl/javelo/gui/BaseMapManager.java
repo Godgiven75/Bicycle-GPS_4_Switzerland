@@ -158,6 +158,7 @@ public final class BaseMapManager {
             minScrollTime.set(currentTime + 200);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
+            // Le niveau de zoom est compris entre 8 et 19
             if (!(MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL))
                 return;
             Point2D mousePoint = new Point2D(e.getX(), e.getY());
@@ -180,5 +181,4 @@ public final class BaseMapManager {
         canvas.heightProperty().addListener((p) -> redrawOnNextPulse());
         mapViewParametersP.addListener((p) -> redrawOnNextPulse());
     }
-
 }

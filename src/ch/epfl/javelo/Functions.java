@@ -52,13 +52,11 @@ public final class Functions {
 
     private static class Sampled implements DoubleUnaryOperator {
 
-        private float[] samples;
-        private double xMax;
-        private double step;
+        private final float[] samples;
+        private final double step;
 
         public Sampled(float[] samples, double xMax) {
             this.samples = samples.clone();
-            this.xMax = xMax;
             step = xMax / (samples.length - 1);
         }
 

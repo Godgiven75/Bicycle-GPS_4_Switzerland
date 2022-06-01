@@ -24,7 +24,7 @@ public record AttributeSet(long bits) {
      * ne correspondant à aucun attribut valide
      */
     public AttributeSet {
-        Preconditions.checkArgument((bits >>> Attribute.values().length) == 0L);
+        Preconditions.checkArgument((bits >>> Attribute.COUNT) == 0L);
     }
 
     /**
@@ -53,7 +53,7 @@ public record AttributeSet(long bits) {
      * l'attribut donné
      */
     public boolean contains(Attribute attribute) {
-        return ( ( this.bits >>> attribute.ordinal() & 1 ) == 1);
+        return ( (this.bits >>> attribute.ordinal() & 1 ) == 1);
     }
 
     /**
@@ -81,8 +81,8 @@ public record AttributeSet(long bits) {
     @Override
     public String toString() {
         StringJoiner j = new StringJoiner(",", "{", "}");
-        for (int i = 0; i < 64; i++) {
-            if ( ( ((bits >> i) & 1) == 1 ) ) {
+        for (int i = 0; i < Attribute.COUNT; i++) {
+            if ((((bits >> i) & 1) == 1)) {
                 j.add(Attribute.ALL.get(i).keyValue());
             }
         }

@@ -27,8 +27,8 @@ import java.util.function.Consumer;
  * @author Nathanaël Girod (329987)
  */
 public final class JaVelo extends Application {
-    public static final int MIN_WIDTH = 800;
-    public static final int MIN_HEIGHT = 600;
+    private static final int MIN_WIDTH = 800;
+    private static final int MIN_HEIGHT = 600;
     private final BorderPane mainPane = new BorderPane();
     private final SplitPane mapAndProfilePane = new SplitPane();
 
