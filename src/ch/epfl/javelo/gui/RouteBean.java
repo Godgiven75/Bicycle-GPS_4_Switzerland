@@ -10,7 +10,7 @@ import javafx.util.Pair;
 import java.util.*;
 
 /**
- * Classe finale regroupant les propriétés relatives aux points de passage et à
+ * Classe finale du Bean JavaFX regroupant les propriétés relatives aux points de passage et à
  * l'itinéraire correspondant.
  *
  * @author Tanguy Dieudonné (326618)
@@ -24,6 +24,7 @@ public final class RouteBean {
     private final ObjectProperty<ElevationProfile> elevationProfileP;
     private static final int MAX_ENTRIES = 50;
     private static final double MAX_STEP_LENGTH = 5d;
+    // Le cache mémoire a une capacité de 50 routes
     private final Map<Pair<Integer, Integer>, Route> cacheMemory =
             new LinkedHashMap<>(MAX_ENTRIES, .75f, true);
 
@@ -125,8 +126,8 @@ public final class RouteBean {
         return index;
     }
 
+    // Ajoute les listeners sur la liste observable des points de passage.
     private void addListeners() {
-        // Syntaxe ?
         waypoints.addListener((ListChangeListener<Waypoint>) c -> {
             Route itinerary = computeItinerary();
             if (itinerary == null) {
@@ -148,19 +149,18 @@ public final class RouteBean {
         for (int i = 0; i < waypoints.size() - 1; i++) {
             int predecessorWaypointNodeId = waypoints.get(i).closestNodeId();
             int successorWaypointNodeId = waypoints.get(i + 1).closestNodeId();
-            // Si les noeuds sont indentiques, on ne fait pas de tentative de
+            // Si les noeuds sont identiques, on ne fait pas de tentative de
             // calcul d'itinéraire
             if (predecessorWaypointNodeId == successorWaypointNodeId)
                 return null;
             Pair<Integer, Integer> pair = new Pair<>(predecessorWaypointNodeId,
                     successorWaypointNodeId);
-            // Faudrait-il mettre cela dans le if qui suit ?
             if (cacheMemory.size() >= MAX_ENTRIES) {
                 Iterator<Pair<Integer, Integer>> it = cacheMemory.keySet().iterator();
                 cacheMemory.remove(it.next());
             }
             // Si la mémoire cache contient une route entre les deux points,
-            // on l'ajoute directement aux segments de l'itinérarire multiple
+            // on l'ajoute directement aux segments de l'itinéraire multiple
             if (cacheMemory.containsKey(pair)) {
                 singleRoutes.add(cacheMemory.get(pair));
                 continue;
