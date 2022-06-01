@@ -62,11 +62,12 @@ public final class JaVelo extends Application {
                 = new ElevationProfileManager(
                 routeBean.elevationProfileProperty(), highlightedPositionOnProfile);
         ReadOnlyDoubleProperty profP = elevationProfileManager.mousePositionOnProfileProperty();
-        highlightedPositionOnProfile.bind(profP);
+
+        highlightedPositionOnProfile.bind(routeBean.highlightedPositionProperty());
         ReadOnlyDoubleProperty mapP = annotatedMapManager.mousePositionOnRouteProperty();
         routeBean.highlightedPositionProperty().bind(
                 Bindings.when(
-                                mapP.greaterThanOrEqualTo(0))
+                            mapP.greaterThanOrEqualTo(0d))
                         .then(mapP)
                         .otherwise(profP));
 

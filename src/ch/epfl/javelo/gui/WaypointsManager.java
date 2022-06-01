@@ -3,9 +3,11 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.SwissBounds;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -118,20 +120,22 @@ public final class WaypointsManager {
                             group.getLayoutX() + m.getX() - mousePositionP.get().getX(),
                             group.getLayoutY() + m.getY() - mousePositionP.get().getY());
                     PointCh mousePointCh = mousePWM.toPointCh();
-                    int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
-                    // nodeClosestTo est -1 si aucun noeud n'a été trouvé
-                    if (nodeClosestTo != -1) {
-                        Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
-                        waypoints.set(markerIndex, newWayPoint);
-                        PointWebMercator tempP =
-                                PointWebMercator.ofPointCh(graph.nodePoint(nodeClosestTo));
-                        previousMarkerPositionP
-                                .set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
-                    } else {
+                    if (mousePointCh != null) {
+                        int nodeClosestTo = graph.nodeClosestTo(mousePointCh, SEARCH_DISTANCE);
+                        // nodeClosestTo est -1 si aucun noeud n'a été trouvé
+                        if (nodeClosestTo != -1) {
+                            Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
+                            waypoints.set(markerIndex, newWayPoint);
+                            PointWebMercator tempP =
+                                    PointWebMercator.ofPointCh(graph.nodePoint(nodeClosestTo));
+                            previousMarkerPositionP
+                                    .set(new Point2D(mvp.viewX(tempP), mvp.viewY(tempP)));
+                            return;
+                            }
+                        }
                         errorConsumer.accept("Aucune route à proximité !");
                         group.setLayoutX(previousMarkerPositionP.get().getX());
                         group.setLayoutY(previousMarkerPositionP.get().getY());
-                    }
                 } else {
                     pane.getChildren().remove(group);
                     waypoints.remove(markerIndex);
@@ -180,7 +184,7 @@ public final class WaypointsManager {
         }
     }
 
-    // Ajoute les listeners sur les paramètres de la carte et la liste des points
+    // Ajoute les auditeurs sur les paramètres de la carte et la liste des points
     // de passage.
     private void addListeners() {
         mapViewParametersP.addListener(mvp -> {
@@ -188,7 +192,7 @@ public final class WaypointsManager {
             addMouseEventsManager();
             positionMarkers();
         });
-        waypoints.addListener((Observable o) -> {
+        waypoints.addListener((ListChangeListener<Waypoint>) c -> {
             createMarkers();
             addMouseEventsManager();
             positionMarkers();

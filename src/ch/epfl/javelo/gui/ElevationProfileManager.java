@@ -60,7 +60,7 @@ public final class ElevationProfileManager {
         this.elevationProfileP = elevationProfileP;
         this.highlightedPositionP = highlightedPositionP;
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
-        this.mousePositionOnProfileP = new SimpleDoubleProperty();
+        this.mousePositionOnProfileP = new SimpleDoubleProperty(Double.NaN);
         this.screenToWorldP = new SimpleObjectProperty<>(new Affine());
         this.worldToScreenP = new SimpleObjectProperty<>(new Affine());
 
@@ -131,7 +131,7 @@ public final class ElevationProfileManager {
                     displayProfile();
                     createPane();
                 }
-            } catch(NonInvertibleTransformException error){
+            } catch (NonInvertibleTransformException error){
                 throw new Error(error);
             }
         });
@@ -170,6 +170,8 @@ public final class ElevationProfileManager {
                 return;
             }
             double position = screenToWorld.transform(e.getX(), e.getY()).getX();
+            // On arrondit la position pour éviter un appel trop fréquen des
+            // auditeurs JavaFX sensibles aux changements de la propriété
             mousePositionOnProfileP.set(Math.round(position));
         });
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));

@@ -91,7 +91,6 @@ public final class AnnotatedMapManager {
     private void addMouseEventsManager() {
         pane.setOnMouseMoved(e ->
                 mousePositionP.set(new Point2D(e.getX(), e.getY())));
-
         pane.setOnMouseExited(e -> mousePositionP.set(null));
     }
 

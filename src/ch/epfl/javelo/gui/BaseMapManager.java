@@ -154,10 +154,8 @@ public final class BaseMapManager {
             minScrollTime.set(currentTime + 200);
             double zoomDelta = Math.signum(e.getDeltaY());
             int newZoomLevel = currentZoomLevel + (int) zoomDelta;
-
             if (!(MIN_ZOOM_LEVEL <= newZoomLevel && newZoomLevel <= MAX_ZOOM_LEVEL))
                 return;
-
             Point2D mousePoint = new Point2D(e.getX(), e.getY());
             MapViewParameters mvp = mapViewParametersP.get();
             double scaleFactor = Math.scalb(1, (int) zoomDelta);
