@@ -46,7 +46,7 @@ public final class BaseMapManager {
 
         addBindings();
         addListeners();
-        addMouseEventsManager();
+        addMouseEventsHandler();
     }
 
     /**
@@ -118,7 +118,8 @@ public final class BaseMapManager {
                 .bind(pane.heightProperty());
     }
 
-    private void addMouseEventsManager() {
+    // Ajoute le gestionnaire d'événements de souris.
+    private void addMouseEventsHandler() {
         pane.setOnMouseDragged(e -> {
             Point2D previousPosition = mousePositionP.get();
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
