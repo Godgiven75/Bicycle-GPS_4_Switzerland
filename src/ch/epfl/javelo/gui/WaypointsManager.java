@@ -3,8 +3,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.SwissBounds;
-import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -61,7 +59,7 @@ public final class WaypointsManager {
         createMarkers();
         positionMarkers();
         addListeners();
-        addMouseEventsManager();
+        addMouseEventsHandler();
     }
 
     /**
@@ -96,7 +94,7 @@ public final class WaypointsManager {
     // Ajoute les gestionnaires d'événement détectant le déplacement de la souris
     // lorsque le bouton gauche est maintenu pressé sur un marqueur, et le clic
     // sur un marqueur de point de passage qui permet de le supprimer.
-    private void addMouseEventsManager() {
+    private void addMouseEventsHandler() {
         MapViewParameters mvp = mapViewParametersP.get();
 
         for (Node group : pane.getChildren()) {
@@ -189,12 +187,12 @@ public final class WaypointsManager {
     private void addListeners() {
         mapViewParametersP.addListener(mvp -> {
             createMarkers();
-            addMouseEventsManager();
+            addMouseEventsHandler();
             positionMarkers();
         });
         waypoints.addListener((ListChangeListener<Waypoint>) c -> {
             createMarkers();
-            addMouseEventsManager();
+            addMouseEventsHandler();
             positionMarkers();
         });
     }

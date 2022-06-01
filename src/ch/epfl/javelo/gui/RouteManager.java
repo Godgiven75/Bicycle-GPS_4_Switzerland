@@ -12,7 +12,6 @@ import javafx.scene.shape.Polyline;
 import java.util.*;
 import java.util.List;
 
-
 /**
  * Classe publique finale gérant l'affichage de l'itinéraire et (une partie de)
  * l'interaction avec lui.
@@ -29,9 +28,10 @@ public final class RouteManager {
     private static final float CIRCLE_RADIUS = 5f;
 
     /**
-     * Construit une nouvelle instance de RouteManger.
+     * Construit une nouvelle instance de RouteManager.
      *
      * @param routeBean le bean JavaFX de l'intinéraire
+     *
      * @param mapViewParametersReadOnlyObjectProperty une propriété accessible
      * en lecture seule contenant les paramètres d'affichage de la carte
      */
@@ -44,8 +44,8 @@ public final class RouteManager {
         routePolyline = new Polyline();
         highlightedPositionC = new Circle();
         highlightedPositionC.setVisible(false);
-        addGUIElements();
-        addMouseEventsManager();
+        createSceneGraph();
+        addMouseEventsHandler();
         addListeners();
     }
 
@@ -60,10 +60,9 @@ public final class RouteManager {
         return pane;
     }
 
-    // Méthode permettant d'ajouter la polyligne de l'initéraire ainsi que
-    // le cercle correspondant à la position mise en évidence (méthode au nom
-    // trop équivoque ? )
-    private void addGUIElements() {
+    // Méthode permettant d'ajouter la polyligne de l'itinéraire ainsi que
+    // le cercle correspondant à la position mise en évidence.
+    private void createSceneGraph() {
         routePolyline.setId("route");
         highlightedPositionC.setId("highlight");
         highlightedPositionC.setRadius(CIRCLE_RADIUS);
@@ -71,7 +70,8 @@ public final class RouteManager {
         pane.getChildren().add(highlightedPositionC);
     }
 
-    private void addMouseEventsManager() {
+    // Ajoute le gestionnaire d'événements de souris
+    private void addMouseEventsHandler() {
         highlightedPositionC.setOnMousePressed(e -> {
             Point2D localToParent = highlightedPositionC.localToParent(e.getX(), e.getY());
             PointCh p = mapViewParametersP.get()
@@ -85,17 +85,15 @@ public final class RouteManager {
         });
     }
 
+    // Ajoute les listeners sur la propriété contenant la route.
     private void addListeners() {
         routeBean.routeProperty().addListener(p -> {
-            // Devrait-on mettre le booléen dans RouteBean ?
-            if (!hasItinerary()) {
+            highlightPosition(mapViewParametersP.get());
+            if (routeBean.route() == null) {
                 routePolyline.setVisible(false);
-                highlightedPositionC.setVisible(false);
                 return;
             }
-            highlightedPositionC.setVisible(true);
             Route route = routeBean.route();
-            // L'emballage des doubles est-il un problème ?
             List<Double> points = new ArrayList<>();
             route.points().forEach(pointCh -> {
                 MapViewParameters mvp = mapViewParametersP.get();
@@ -107,32 +105,30 @@ public final class RouteManager {
             routePolyline.setLayoutY(0);
             routePolyline.getPoints().setAll(points);
             routePolyline.setVisible(true);
-            // Pas entièrement sûr de la modularisation highlightPosition
-            highlightPosition(mapViewParametersP.get());
-
         });
-        mapViewParametersP.addListener((p, o, n) -> {
-            //-mapviewparameters
-            int oldZoomLevel = o.zoomLevel();
-            int newZoomLevel = n.zoomLevel();
+
+        mapViewParametersP.addListener((p, oldMVP, newMVP) -> {
+            int oldZoomLevel = oldMVP.zoomLevel();
+            int newZoomLevel = newMVP.zoomLevel();
 
             if(newZoomLevel == oldZoomLevel) {
-                Point2D oldTopLeft = o.topLeft();
-                Point2D newTopLeft = n.topLeft();
+                Point2D oldTopLeft = oldMVP.topLeft();
+                Point2D newTopLeft = newMVP.topLeft();
                 Point2D offset = newTopLeft.subtract(oldTopLeft);
                 routePolyline.setLayoutX(routePolyline.getLayoutX() - offset.getX());
                 routePolyline.setLayoutY(routePolyline.getLayoutY() - offset.getY());
                 highlightedPositionC.setCenterX(highlightedPositionC.getCenterX() - offset.getX());
                 highlightedPositionC.setCenterY(highlightedPositionC.getCenterY() - offset.getY());
             } else {
-                if (hasItinerary()) {
+                // S'il existe un itinéraire...
+                if (routeBean.route() != null) {
                     List<Double> pointsAtNewZoomLevel = new ArrayList<>();
                     routeBean.route().points().forEach(pointCh -> {
                         PointWebMercator pwm = PointWebMercator.ofPointCh(pointCh);
-                        pointsAtNewZoomLevel.add(n.viewX(pwm));
-                        pointsAtNewZoomLevel.add(n.viewY(pwm));
+                        pointsAtNewZoomLevel.add(newMVP.viewX(pwm));
+                        pointsAtNewZoomLevel.add(newMVP.viewY(pwm));
                     });
-                    highlightPosition(n);
+                    highlightPosition(newMVP);
                     routePolyline.setLayoutX(0);
                     routePolyline.setLayoutY(0);
                     routePolyline.getPoints().setAll(pointsAtNewZoomLevel);
@@ -140,13 +136,14 @@ public final class RouteManager {
             }
         });
 
-        routeBean.highlightedPositionProperty().addListener((p, o, n) -> {
-            highlightPosition(mapViewParametersP.get());
-        });
+        routeBean.highlightedPositionProperty().addListener((p, o, n) ->
+                highlightPosition(mapViewParametersP.get()));
     }
 
+    // Gère l'affichage de la position mise en évidence sur l'itinéraire.
     private void highlightPosition(MapViewParameters mvp) {
         double highlightedPosition = routeBean.highlightedPositionProperty().get();
+
         if (routeBean.route() == null || Double.isNaN(highlightedPosition)) {
             highlightedPositionC.setVisible(false);
         } else {
@@ -156,9 +153,5 @@ public final class RouteManager {
             highlightedPositionC.setCenterY(mvp.viewY(highlightedPoint));
             highlightedPositionC.setVisible(true);
         }
-    }
-
-    private boolean hasItinerary() {
-        return routeBean.route() != null;
     }
 }

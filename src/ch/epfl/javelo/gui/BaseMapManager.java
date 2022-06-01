@@ -46,7 +46,7 @@ public final class BaseMapManager {
 
         addBindings();
         addListeners();
-        addMouseEventsManager();
+        addMouseEventsHandler();
     }
 
     /**
@@ -121,7 +121,8 @@ public final class BaseMapManager {
                 .bind(pane.heightProperty());
     }
 
-    private void addMouseEventsManager() {
+    // Ajoute le gestionnaire d'événements de souris.
+    private void addMouseEventsHandler() {
         pane.setOnMouseDragged(e -> {
             Point2D previousPosition = mousePositionP.get();
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
@@ -169,7 +170,7 @@ public final class BaseMapManager {
             currentZoomLevel = newZoomLevel;
         });
     }
-    // Ajoute les listeners sur le canevas et les paramètres de la carte.
+    // Ajoute les auditeurs sur le canevas et les paramètres de la carte.
     private void addListeners() {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;

@@ -45,15 +45,20 @@ public final class AnnotatedMapManager {
      * @param routeBean le "bean" JavaFX correspondant à la route
      * @param errorConsumer le consommateur d'erreur
      */
-    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean, Consumer<String> errorConsumer) {
+    public AnnotatedMapManager(Graph graph, TileManager tileManager,
+                               RouteBean routeBean, Consumer<String> errorConsumer) {
         this.routeBean = routeBean;
 
         mapViewParametersP = new SimpleObjectProperty<>(INIT_MVP);
-        WaypointsManager waypointsManager = new WaypointsManager(graph, mapViewParametersP, routeBean.waypoints(), errorConsumer);
+        WaypointsManager waypointsManager =
+                new WaypointsManager(graph, mapViewParametersP,
+                        routeBean.waypoints(), errorConsumer);
 
-        BaseMapManager baseMapManager = new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
+        BaseMapManager baseMapManager =
+                new BaseMapManager(tileManager, waypointsManager, mapViewParametersP);
 
-        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP);
+        RouteManager routeManager =
+                new RouteManager(routeBean, mapViewParametersP);
 
         pane = new StackPane();
         pane.getStyleClass().add("map.css");
@@ -67,11 +72,11 @@ public final class AnnotatedMapManager {
 
         addMouseEventsManager();
         createBindings();
-
     }
 
     /**
      * Retourne le panneau principal du gestionnaire de carte "annotée".
+     *
      * @return le panneau principal du gestionnaire de carte "annotée"
      */
     public Pane pane() {
@@ -81,6 +86,7 @@ public final class AnnotatedMapManager {
     /**
      * Retourne une propriété JavaFX contenant la position le long de l'itinéraire
      * correspondant à la position de la souris.
+     *
      * @return une propriété JavaFX contenant la position le long de l'itinéraire
      * correspondant à la position de la souris
      */
@@ -88,12 +94,16 @@ public final class AnnotatedMapManager {
         return mousePositionOnRouteP;
     }
 
+    // Ajoute le gestionnaire d'événements de souris sur le panneau.
     private void addMouseEventsManager() {
         pane.setOnMouseMoved(e ->
                 mousePositionP.set(new Point2D(e.getX(), e.getY())));
         pane.setOnMouseExited(e -> mousePositionP.set(null));
     }
 
+    // Création des liens entre la propriété contenant la position de la souris
+    // sur le profil et celles contenant les paramètres de la carte, la position
+    // de la souris et la route.
     private void createBindings() {
         mousePositionOnRouteP.bind(Bindings.createDoubleBinding(() -> {
             Route route = routeBean.route();
@@ -118,7 +128,4 @@ public final class AnnotatedMapManager {
             return Double.NaN;
         }, mousePositionP, mapViewParametersP, routeBean.routeProperty()));
     }
-
-
-
 }
