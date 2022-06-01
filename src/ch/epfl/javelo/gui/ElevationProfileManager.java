@@ -277,19 +277,24 @@ public final class ElevationProfileManager {
 
         int elevationStep = computeElevationStep();
         double minElevation = elevationProfileP.get().minElevation();
-        // verticalKey correspond à la distance (dans le monde réel) séparant l'axe
-        // des abscisses de la première ligne horizontale (dans le repère de l'affichage
-        // du profil).
-        int verticalKey = Math2.ceilDiv((int) minElevation, elevationStep)
-                * elevationStep;
-        // minVertical correspond à l'ordonnée (en pixels) de la première ligne
+
+        // realWorldStepOfFirstHorizontalLine correspond à la distance (dans le
+        // monde réel) séparant l'axe des abscisses de la première ligne
         // horizontale (dans le repère de l'affichage du profil).
-        double minVertical = maxY - worldToScreen.transform(0, verticalKey).getY();
-        int nbOfIterations = (int) ((maxY - minVertical) / verticalStep);
+        int realWorldStepOfFirstHorizontalLine =
+                Math2.ceilDiv((int) minElevation, elevationStep)
+                * elevationStep;
+
+        // stepInPixelsOfFirstHoritonzalLine correspond à l'ordonnée (en pixels)
+        // de la première ligne horizontale (dans le repère de l'affichage du profil).
+        double stepInPixelsOfFirstHoritonzalLine = maxY
+                - worldToScreen.transform(0, realWorldStepOfFirstHorizontalLine).getY();
+        int nbOfIterations = (int) ((maxY - stepInPixelsOfFirstHoritonzalLine) / verticalStep);
+
         // Lignes et légende horizontales
-        for (double y = minVertical; y <= maxY; y+= verticalStep) {
+        for (double y = stepInPixelsOfFirstHoritonzalLine; y <= maxY; y+= verticalStep) {
             Text txt = new Text(minX, y, String.valueOf(
-                    verticalKey
+                    realWorldStepOfFirstHorizontalLine
                     + nbOfIterations
                     * elevationStep));
             txt.getStyleClass().addAll("grid_label", "vertical");
@@ -299,8 +304,9 @@ public final class ElevationProfileManager {
             texts.add(txt);
             lines.add(new MoveTo(minX, y));
             lines.add(new LineTo(maxX, y));
-            verticalKey -= elevationStep;
+            realWorldStepOfFirstHorizontalLine -= elevationStep;
         }
+
         // Màj des lignes de la grille à chaque redimensionnement
         path.getElements().setAll(lines);
         // Màj des légendes d'abscisses et ordonnées
