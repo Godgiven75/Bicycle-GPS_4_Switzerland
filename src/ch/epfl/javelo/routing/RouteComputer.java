@@ -16,6 +16,7 @@ import static ch.epfl.javelo.routing.Edge.of;
  * @author Nathanaël Girod (329987)
  */
 public final class RouteComputer {
+    private static final float UNIVISITED_NODE = Float.NEGATIVE_INFINITY;
     private final Graph graph;
     private final CostFunction costFunction;
     private static final int START_POSITION = 0;
@@ -71,7 +72,7 @@ public final class RouteComputer {
         while (!discoveredNodes.isEmpty()) {
             WeightedNode node = discoveredNodes.remove();
             int nodeId = node.nodeId();
-            if (distance[nodeId] == Float.NEGATIVE_INFINITY)
+            if (distance[nodeId] == UNIVISITED_NODE)
                 continue;
 
             if (nodeId == endNodeId)
@@ -111,7 +112,8 @@ public final class RouteComputer {
         int toNodeId = endNodeId;
         while (toNodeId != startNodeId) {
             int edgeIdAndNodeId = predecessors[toNodeId];
-            int fromNodeId = Bits.extractUnsigned(edgeIdAndNodeId, OFFSET_EDGE, NODE_BIT_RANGE_LENGTH);
+            int fromNodeId = Bits.extractUnsigned(edgeIdAndNodeId, OFFSET_EDGE,
+                    NODE_BIT_RANGE_LENGTH);
             int edgeId = graph.nodeOutEdgeId(
                     fromNodeId,
                     Bits.extractUnsigned(edgeIdAndNodeId, START_POSITION, OFFSET_EDGE));

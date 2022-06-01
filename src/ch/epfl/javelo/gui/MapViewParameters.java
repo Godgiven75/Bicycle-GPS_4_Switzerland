@@ -4,25 +4,25 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 
-
-
-
 /**
  * Représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
- * @param zoomLevel le niveau de zoom
- * @param xImage la coordonnée x du coin haut-gauche de la portion de carte affichée
- * dans le système Web Mercator, au niveau de zoom donné
- * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
- * dans le système Web Mercator, au niveau de zoom donné
- *
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
+ *
+ * @param zoomLevel le niveau de zoom
+ *
+ * @param xImage la coordonnée x du coin haut-gauche de la portion de carte affichée
+ *                  dans le système Web Mercator, au niveau de zoom donné
+ *
+ * @param yImage la coordonnée y du coin haut-gauche de la portion de carté affichée
+ *                  dans le système Web Mercator, au niveau de zoom donné
  */
 public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
     /**
-     * Retourne un Point2D correspondant au coin en haut à gauche de l'image
+     * Retourne un Point2D correspondant au coin en haut à gauche de l'image.
+     *
      * @return un point2D correspondant au coin en haut à gauche de l'image
      */
     public Point2D topLeft() {
@@ -31,9 +31,12 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
 
     /**
      * Retourne une nouvelle instance de MapViewParameters, avec les nouvelles
-     * coordonnées du coin en haut à gauche de l'image, passées en arguments
+     * coordonnées du coin en haut à gauche de l'image, passées en arguments.
+     *
      * @param newXImage la nouvelle coordonnée x du coin en haut à gauche
+     *
      * @param newYImage la nouvelle coordonnée y du coin en haut à gauche
+     *
      * @return une nouvelle instance de MapViewParameters, avec les nouvelles
      * coordonnées du coin en haut à gauche de l'image
      */
@@ -48,6 +51,7 @@ public record MapViewParameters(int zoomLevel, double xImage, double yImage) {
      *
      * @param x la coordonnée x du point par rapport au point en haut à gauche
      *          de l'image
+     *
      * @param y la coordonnée y du point par rapport au point en haut à gauche
      *          de l'image
      *
