@@ -256,6 +256,8 @@ public final class ElevationProfileManager {
         // On prend l'opposé de l'écart pour la 2e coordonnée car l'axe des ordonnées
         // du repère du monde est opposé à celui de JavaFX.
         Point2D p = new Point2D(computePositionStep(), -computeElevationStep());
+        // Mise à l'échelle des distances de séparation des lignes dans le repère
+        // de l'écran.
         double horizontalStep = worldToScreen.deltaTransform(p).getX();
         double verticalStep = worldToScreen.deltaTransform(p).getY();
 
@@ -273,14 +275,23 @@ public final class ElevationProfileManager {
             horizontalKilometers += computePositionStep() / KILOMETERS_TO_METERS;
         }
 
+        int elevationStep = computeElevationStep();
         double minElevation = elevationProfileP.get().minElevation();
-        int verticalKey = Math2.ceilDiv((int) minElevation, computeElevationStep())
-                * computeElevationStep();
+        // verticalKey correspond à la distance (dans le monde réel) séparant l'axe
+        // des abscisses de la première ligne horizontale (dans le repère de l'affichage
+        // du profil).
+        int verticalKey = Math2.ceilDiv((int) minElevation, elevationStep)
+                * elevationStep;
+        // minVertical correspond à l'ordonnée (en pixels) de la première ligne
+        // horizontale (dans le repère de l'affichage du profil).
         double minVertical = maxY - worldToScreen.transform(0, verticalKey).getY();
         int nbOfIterations = (int) ((maxY - minVertical) / verticalStep);
         // Lignes et légende horizontales
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
-            Text txt = new Text(minX, y, String.valueOf(verticalKey + nbOfIterations * computeElevationStep()));
+            Text txt = new Text(minX, y, String.valueOf(
+                    verticalKey
+                    + nbOfIterations
+                    * elevationStep));
             txt.getStyleClass().addAll("grid_label", "vertical");
             txt.textOriginProperty().set(VPos.CENTER);
             txt.setFont(Font.font("Avenir", FONT_SIZE));
@@ -288,7 +299,7 @@ public final class ElevationProfileManager {
             texts.add(txt);
             lines.add(new MoveTo(minX, y));
             lines.add(new LineTo(maxX, y));
-            verticalKey -= computeElevationStep();
+            verticalKey -= elevationStep;
         }
         // Màj des lignes de la grille à chaque redimensionnement
         path.getElements().setAll(lines);
@@ -297,8 +308,8 @@ public final class ElevationProfileManager {
 
         // Les étiquettes de la grille :
         group.getStyleClass().add("grid_label.horizontal");
-
     }
+
     // Affiche les statistiques du profil
     private void updateProfileStatistics() {
         ElevationProfile profile = elevationProfileP.get();
