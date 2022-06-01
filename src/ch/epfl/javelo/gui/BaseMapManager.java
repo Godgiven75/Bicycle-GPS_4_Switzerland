@@ -92,11 +92,14 @@ public final class BaseMapManager {
                 int yIndex = firstYIndex;
                 double y = firstY;
                 for (int j = 0; j <= tilesInHeight; j += 1) {
-                    TileManager.TileId tileId =
-                            new TileManager.TileId(currentZoomLevel, xIndex, yIndex++);
-                    Image image = tileManager.imageForTileAt(tileId);
-                    canvas.getGraphicsContext2D()
-                            .drawImage(image, x, y);
+                    if (TileManager.TileId.isValid(currentZoomLevel, xIndex, yIndex)) {
+                        TileManager.TileId tileId =
+                                new TileManager.TileId(currentZoomLevel, xIndex, yIndex);
+                        Image image = tileManager.imageForTileAt(tileId);
+                        canvas.getGraphicsContext2D()
+                                .drawImage(image, x, y);
+                        yIndex++;
+                    }
                     y += PIXELS_IN_TILE;
                 }
                 xIndex++;

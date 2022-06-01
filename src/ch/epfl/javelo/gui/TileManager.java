@@ -114,15 +114,10 @@ public final class TileManager {
                 .resolve(Path.of(String.valueOf(tileId.zoomLevel())))
                 .resolve(Path.of(String.valueOf(tileId.xTileIndex()))));
 
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append("https://")
-                .append(tileServer).append("/")
-                .append(tileId.zoomLevel()).append("/")
-                .append(tileId.xTileIndex()).append("/")
-                .append(tileId.yTileIndex())
-                .append(".png");
+        String url = String.format("https://%s/%d/%d/%d.png",
+                tileServer, tileId.zoomLevel, tileId.xTileIndex, tileId.yTileIndex);
 
-        URL u = new URL(urlBuilder.toString());
+        URL u = new URL(url);
 
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
