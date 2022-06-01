@@ -36,7 +36,8 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Rectangle2D> rectangle2DP;
     private final ObjectProperty<Transform> screenToWorldP;
     private final ObjectProperty<Transform> worldToScreenP;
-    private final DoubleProperty mousePositionOnProfileP; // contient la position du curseur sur le profil
+    private final DoubleProperty mousePositionOnProfileP; // contient la position
+    // du curseur sur le profil
     private final BorderPane mainPane = new BorderPane();
     private final Pane centerPane = new Pane();
     private final Polygon polygon = new Polygon();
@@ -44,6 +45,9 @@ public final class ElevationProfileManager {
     private final Group group = new Group();
     private final Text textVbox = new Text();
     private final Line line = new Line();
+    private static final int FONT_SIZE = 10;
+    private static final int TEXT_OFFSET = 2;
+    private static final double KILOMETERS_TO_METERS = 1000.0;
 
     /**
      * Construit un nouveau gestionnaire de profil.
@@ -67,7 +71,7 @@ public final class ElevationProfileManager {
         addBindings();
         createSceneGraph();
         addListeners();
-        addMouseEventsManager();
+        addMouseEventsHandler();
     }
 
     /**
@@ -92,6 +96,7 @@ public final class ElevationProfileManager {
         return mousePositionOnProfileP;
     }
 
+    // Crée le graphe de scène.
     private void createSceneGraph() {
         mainPane.getStylesheets().add("elevation_profile.css");
         VBox bottomPane = new VBox();
@@ -106,6 +111,8 @@ public final class ElevationProfileManager {
         centerPane.getChildren().add(group);
         bottomPane.getChildren().add(textVbox);
     }
+
+    // Ajoute les auditeurs sur les propriétés contenant le rectangle et le profil.
     private void addListeners() {
         rectangle2DP.addListener((p, o, n) -> {
             try {
@@ -117,7 +124,6 @@ public final class ElevationProfileManager {
             } catch (NonInvertibleTransformException error) {
                 throw new Error(error);
             }
-
         });
 
         elevationProfileP.addListener((p, o, n) -> {
@@ -136,9 +142,10 @@ public final class ElevationProfileManager {
             }
         });
     }
+
     private void addBindings() {
         // Lie la propriété contenant le rectangle aux propriétés contenant la
-        // largeur et la longueur du panneau central
+        // largeur et la longueur du panneau central.
         rectangle2DP.bind(Bindings.createObjectBinding(() -> {
             Insets insets = new Insets(10, 10, 20, 40);
             double width = Math2.clamp(0,
@@ -150,6 +157,8 @@ public final class ElevationProfileManager {
             return new Rectangle2D(insets.getLeft(), insets.getTop(), width, height);
         }, centerPane.heightProperty(), centerPane.widthProperty()));
 
+        // Lie la propriété contenant la ligne verticale à la position mise en
+        // évidence le long du profil.
         line.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
             Transform worldToScreen = worldToScreenP.get();
             return worldToScreen.transform(highlightedPositionP.get(), 0).getX();
@@ -159,9 +168,9 @@ public final class ElevationProfileManager {
         line.visibleProperty().bind(highlightedPositionP.greaterThanOrEqualTo(0));
     }
 
-    private void addMouseEventsManager() {
+    private void addMouseEventsHandler() {
         // Assigne dynamiquement la propriété contenant la position le long du
-        // profil correspondant à la position de la souris
+        // profil correspondant à la position de la souris.
         centerPane.setOnMouseMoved(e -> {
             Transform screenToWorld = screenToWorldP.get();
             Rectangle2D rec = rectangle2DP.get();
@@ -170,42 +179,49 @@ public final class ElevationProfileManager {
                 return;
             }
             double position = screenToWorld.transform(e.getX(), e.getY()).getX();
-            // On arrondit la position pour éviter un appel trop fréquen des
-            // auditeurs JavaFX sensibles aux changements de la propriété
+            // On arrondit la position pour éviter un appel trop fréquent des
+            // auditeurs JavaFX sensibles aux changements de la propriété.
             mousePositionOnProfileP.set(Math.round(position));
         });
         centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
     }
 
-    private int computeVerticalStep() {
-        final int minVerticalDistance = 25;
+    // Retourne la valeur utilisée pour séparer les lignes horizontales.
+    private int computeElevationStep() {
+        final int minElevationDistance = 25;
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
         double height = rectangle2DP.get().getHeight();
-        double maxElevation = elevationProfileP.get().maxElevation() - elevationProfileP.get().minElevation();
+        double deltaElevation = elevationProfileP.get().maxElevation()
+                - elevationProfileP.get().minElevation();
         for (int step : ELE_STEPS) {
-            double temp = (step * height) / maxElevation;
-            if (temp >= minVerticalDistance) {
+            // Règle de trois pour mettre à l'échelle l'élévation dans le repère
+            // de l'écran
+            double temp = (step * height) / deltaElevation;
+            if (temp >= minElevationDistance) {
                 return step;
             }
         }
         return ELE_STEPS[ELE_STEPS.length - 1];
     }
-    private int computeHorizontalStep() {
-        final int minHorizontalDistance = 50;
+
+    // Retourne la valeur utilisée pour séparer les lignes verticales.
+    private int computePositionStep() {
+        final int minPositionDistance = 50;
         int[] POS_STEPS =
                 { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
         double width = rectangle2DP.get().getWidth();
         double length = elevationProfileP.get().length();
         for (int step : POS_STEPS) {
             double temp = (step * width) / length;
-            if (temp >= minHorizontalDistance) {
+            if (temp >= minPositionDistance) {
                 return step;
             }
         }
         return POS_STEPS[POS_STEPS.length - 1];
     }
 
+    // Affiche le profil sans la grille
     private void displayProfile() {
         List<Double> points = new ArrayList<>();
         Rectangle2D r = rectangle2DP.get();
@@ -226,6 +242,7 @@ public final class ElevationProfileManager {
         polygon.getPoints().setAll(points);
     }
 
+    // Crée le panneau contenant le profil d'élévation avec sa grille légendée.
     private void createPane() {
         // Chemin représentant la grille :
         List<PathElement> lines = new ArrayList<>();
@@ -236,7 +253,9 @@ public final class ElevationProfileManager {
         double maxX = r.getMaxX();
         double maxY = r.getMaxY();
         Transform worldToScreen = worldToScreenP.get();
-        Point2D p = new Point2D(computeHorizontalStep(), -computeVerticalStep());
+        // On prend l'opposé de l'écart pour la 2e coordonnée car l'axe des ordonnées
+        // du repère du monde est opposé à celui de JavaFX.
+        Point2D p = new Point2D(computePositionStep(), -computeElevationStep());
         double horizontalStep = worldToScreen.deltaTransform(p).getX();
         double verticalStep = worldToScreen.deltaTransform(p).getY();
 
@@ -246,30 +265,30 @@ public final class ElevationProfileManager {
             Text txt = new Text(x, maxY, String.valueOf(horizontalKilometers));
             txt.getStyleClass().addAll("grid_label", "horizontal");
             txt.textOriginProperty().set(VPos.TOP);
-            txt.setFont(Font.font("Avenir", 10));
+            txt.setFont(Font.font("Avenir", FONT_SIZE));
             txt.setX(txt.getX() - txt.prefWidth(0) / 2);
             texts.add(txt);
             lines.add(new MoveTo(x, maxY));
             lines.add(new LineTo(x, minY));
-            horizontalKilometers += computeHorizontalStep() / 1000;
+            horizontalKilometers += computePositionStep() / KILOMETERS_TO_METERS;
         }
 
         double minElevation = elevationProfileP.get().minElevation();
-        int verticalKey = Math2.ceilDiv((int) minElevation, computeVerticalStep())
-                * computeVerticalStep();
+        int verticalKey = Math2.ceilDiv((int) minElevation, computeElevationStep())
+                * computeElevationStep();
         double minVertical = maxY - worldToScreen.transform(0, verticalKey).getY();
         int nbOfIterations = (int) ((maxY - minVertical) / verticalStep);
         // Lignes et légende horizontales
         for (double y = minVertical; y <= maxY; y+= verticalStep) {
-            Text txt = new Text(minX, y, String.valueOf(verticalKey + nbOfIterations * computeVerticalStep()));
+            Text txt = new Text(minX, y, String.valueOf(verticalKey + nbOfIterations * computeElevationStep()));
             txt.getStyleClass().addAll("grid_label", "vertical");
             txt.textOriginProperty().set(VPos.CENTER);
-            txt.setFont(Font.font("Avenir", 10));
-            txt.setX(txt.getX() - (txt.prefWidth(0) + 2));
+            txt.setFont(Font.font("Avenir", FONT_SIZE));
+            txt.setX(txt.getX() - (txt.prefWidth(0) + TEXT_OFFSET));
             texts.add(txt);
             lines.add(new MoveTo(minX, y));
             lines.add(new LineTo(maxX, y));
-            verticalKey -= computeVerticalStep();
+            verticalKey -= computeElevationStep();
         }
         // Màj des lignes de la grille à chaque redimensionnement
         path.getElements().setAll(lines);
@@ -287,7 +306,7 @@ public final class ElevationProfileManager {
                         "     Montée : %.0f m" +
                         "     Descente : %.0f m" +
                         "     Altitude : de %.0f m à %.0f m",
-                profile.length() / 1000.0,
+                profile.length() / KILOMETERS_TO_METERS,
                 profile.totalAscent(),
                 profile.totalDescent(),
                 profile.minElevation(),

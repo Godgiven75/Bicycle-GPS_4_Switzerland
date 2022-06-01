@@ -136,9 +136,8 @@ public final class RouteManager {
             }
         });
 
-        routeBean.highlightedPositionProperty().addListener((p, o, n) -> {
-            highlightPosition(mapViewParametersP.get());
-        });
+        routeBean.highlightedPositionProperty().addListener((p, o, n) ->
+                highlightPosition(mapViewParametersP.get()));
     }
 
     // Gère l'affichage de la position mise en évidence sur l'itinéraire.

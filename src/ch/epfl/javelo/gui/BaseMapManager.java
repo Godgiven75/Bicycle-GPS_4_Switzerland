@@ -167,7 +167,7 @@ public final class BaseMapManager {
             currentZoomLevel = newZoomLevel;
         });
     }
-    // Ajoute les listeners sur le canevas et les paramètres de la carte.
+    // Ajoute les auditeurs sur le canevas et les paramètres de la carte.
     private void addListeners() {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
