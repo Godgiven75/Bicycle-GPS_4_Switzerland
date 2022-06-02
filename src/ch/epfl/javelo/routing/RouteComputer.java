@@ -16,12 +16,13 @@ import static ch.epfl.javelo.routing.Edge.of;
  * @author Nathanaël Girod (329987)
  */
 public final class RouteComputer {
-    private static final float UNIVISITED_NODE = Float.NEGATIVE_INFINITY;
     private final Graph graph;
     private final CostFunction costFunction;
     private static final int START_POSITION = 0;
     private static final int OFFSET_EDGE = 4 + START_POSITION;
     private static final int NODE_BIT_RANGE_LENGTH = 28;
+    private static final float VISITED_NODE = Float.NEGATIVE_INFINITY;
+    private static final float UNVISITED_NODE = Float.POSITIVE_INFINITY;
 
     /**
      * Construit un planificateur d'itinéraire pour le graphe et la fonction
@@ -62,7 +63,7 @@ public final class RouteComputer {
         
         float[] distance = new float[graph.nodeCount()];
         int[] predecessorsEdgeAndNode = new int[distance.length];
-        Arrays.fill(distance, Float.POSITIVE_INFINITY);
+        Arrays.fill(distance, UNVISITED_NODE);
         PointCh endPoint = graph.nodePoint(endNodeId);
         distance[startNodeId] =  (float) endPoint.distanceTo(graph.nodePoint(startNodeId));
 
@@ -72,7 +73,7 @@ public final class RouteComputer {
         while (!discoveredNodes.isEmpty()) {
             WeightedNode node = discoveredNodes.remove();
             int nodeId = node.nodeId();
-            if (distance[nodeId] == UNIVISITED_NODE)
+            if (distance[nodeId] == VISITED_NODE)
                 continue;
 
             if (nodeId == endNodeId)
@@ -101,7 +102,8 @@ public final class RouteComputer {
                                     + distanceToEndPoint)));
                 }
             }
-            distance[nodeId] = Float.NEGATIVE_INFINITY;
+            distance[nodeId] = VISITED_NODE;
+
         }
         return null;
     }
