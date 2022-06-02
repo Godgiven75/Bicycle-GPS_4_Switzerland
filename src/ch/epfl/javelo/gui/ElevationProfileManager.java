@@ -36,8 +36,7 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Rectangle2D> rectangle2DP;
     private final ObjectProperty<Transform> screenToWorldP;
     private final ObjectProperty<Transform> worldToScreenP;
-    private final DoubleProperty mousePositionOnProfileP; // contient la position
-    // du curseur sur le profil
+    private final DoubleProperty mousePositionOnProfileP;
     private final BorderPane mainPane = new BorderPane();
     private final Pane centerPane = new Pane();
     private final Polygon polygon = new Polygon();
@@ -128,6 +127,7 @@ public final class ElevationProfileManager {
 
         elevationProfileP.addListener((p, o, n) -> {
             try {
+                // Si aucun profil n'a été calculé ou affiché, on ne fait rien
                 if (elevationProfileP.get() != null) {
                     if (rectangle2DP.get().getHeight() == 0 || rectangle2DP.get().getWidth() == 0)
                         return;

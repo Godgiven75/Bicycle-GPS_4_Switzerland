@@ -80,6 +80,14 @@ public final class RouteBean {
     }
 
     /**
+     * Retourne le profil d'élévation de l'itinéraire.
+     * @return le profil d'élévation de l'itinéraire
+     */
+    public ElevationProfile elevationProfile() {
+        return elevationProfileP.get();
+    }
+
+    /**
      * Retourne la position mise en évidence.
      *
      * @return la position mise en évidence
@@ -96,7 +104,7 @@ public final class RouteBean {
      *
      * la position mise en évidence
      */
-    public void setHighlightedPositionP(double newHighlightedPosition) {
+    public void setHighlightedPositionProperty(double newHighlightedPosition) {
         this.highlightedPositionP.set(newHighlightedPosition);
     }
 
@@ -155,11 +163,9 @@ public final class RouteBean {
                 return null;
             Pair<Integer, Integer> pair = new Pair<>(predecessorWaypointNodeId,
                     successorWaypointNodeId);
-            if (cacheMemory.size() >= MAX_ENTRIES) {
-                Iterator<Pair<Integer, Integer>> it = cacheMemory.keySet().iterator();
-                cacheMemory.remove(it.next());
-            }
-            // Si la mémoire cache contient une route entre les deux points,
+
+
+            // Si le cache mémoire  contient déjà une route entre les deux points,
             // on l'ajoute directement aux segments de l'itinéraire multiple
             if (cacheMemory.containsKey(pair)) {
                 singleRoutes.add(cacheMemory.get(pair));
@@ -173,6 +179,12 @@ public final class RouteBean {
                 return null;
 
             singleRoutes.add(singleRoute);
+
+            // Si le cache mémoire est plein, alors on retire la route calculée
+            // le moins récemment
+            if (cacheMemory.size() >= MAX_ENTRIES)
+                cacheMemory.remove(cacheMemory.keySet().iterator().next());
+            // Ajout de la dernière route calculée au cache mémoire
             cacheMemory.put(pair, singleRoute);
         }
         //S'il y a moins de deux points de passage, on retourne également null

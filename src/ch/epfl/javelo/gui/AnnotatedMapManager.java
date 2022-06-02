@@ -119,12 +119,16 @@ public final class AnnotatedMapManager {
                     PointWebMercator onRoute = PointWebMercator.ofPointCh(closestPoint.point());
                     double routeX = mvp.viewX(onRoute);
                     double routeY = mvp.viewY(onRoute);
+                    // Si la distance euclidienne entre la position de la souris
+                    // et l'itinéraire est inférieure ou égale à 15 unités JavaFX,
+                    // alors on met la position à jour
                     if (Math2.norm(routeX - mouseX, routeY - mouseY) <=
                             MOUSE_ON_ROUTE_DISTANCE) {
                         return closestPoint.position();
                     }
                 }
             }
+            // Sinon, on retourne NaN
             return Double.NaN;
         }, mousePositionP, mapViewParametersP, routeBean.routeProperty()));
     }

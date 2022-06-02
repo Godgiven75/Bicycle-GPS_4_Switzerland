@@ -108,7 +108,7 @@ public final class BaseMapManager {
         } catch (IOException ignored) {}  // Ne devrait jamais se produire
 
     }
-    // Signale que le redessin peut se faire au prochain "battement" JavaFX.
+    // Signale que le redessin doit se faire au prochain "battement" JavaFX.
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
@@ -142,11 +142,11 @@ public final class BaseMapManager {
             mousePositionP.set(currentPosition);
         });
 
-        pane.setOnMouseReleased(event -> {
-            if (event.isStillSincePress()) {
+        pane.setOnMouseReleased(e -> {
+            if (e.isStillSincePress()) {
                 MapViewParameters mvp = mapViewParametersP.get();
                 PointWebMercator pwm = mvp.pointAt(
-                        event.getX(), event.getY());
+                        e.getX(), e.getY());
                 waypointsManager.addWayPoint(pwm.x(), pwm.y());
             }
         });
@@ -167,7 +167,8 @@ public final class BaseMapManager {
             Point2D newTopLeft = (mvp.topLeft().add(mousePoint)
                     .multiply(scaleFactor)
                     .subtract(mousePoint));
-            mapViewParametersP.set(new MapViewParameters(newZoomLevel, newTopLeft.getX(), newTopLeft.getY()));
+            mapViewParametersP.set(new MapViewParameters(newZoomLevel,
+                    newTopLeft.getX(), newTopLeft.getY()));
             currentZoomLevel = newZoomLevel;
         });
     }

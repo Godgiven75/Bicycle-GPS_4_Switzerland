@@ -112,8 +112,7 @@ public final class JaVelo extends Application {
         // Création du gestionnaire d'évènements du menu
         menu.setOnAction(e -> {
             try {
-                GpxGenerator.createGpx(routeBean.route(), routeBean.elevationProfileProperty().get());
-                GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), routeBean.elevationProfileProperty().get());
+                GpxGenerator.writeGpx("javelo.gpx", routeBean.route(), routeBean.elevationProfile());
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }

@@ -29,8 +29,6 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorConsumer;
     private final Pane pane;
-    private final ObjectProperty<Point2D> mousePositionP;
-    private final ObjectProperty<Point2D> previousMarkerPositionP;
     private final static double SEARCH_DISTANCE = 500d;
 
     /**
@@ -52,9 +50,7 @@ public final class WaypointsManager {
         this.mapViewParametersP = mapViewParametersP;
         this.waypoints = waypoints;
         this.errorConsumer = errorConsumer;
-        this.previousMarkerPositionP = new SimpleObjectProperty<>(new Point2D(0, 0));
-        this.mousePositionP = new SimpleObjectProperty<>(new Point2D(0, 0));
-        this.pane = new Pane();
+        pane = new Pane();
         pane.setPickOnBounds(false);
         createMarkers();
         positionMarkers();
@@ -95,15 +91,23 @@ public final class WaypointsManager {
     // lorsque le bouton gauche est maintenu pressé sur un marqueur, et le clic
     // sur un marqueur de point de passage qui permet de le supprimer.
     private void addMouseEventsHandler() {
+        // Propriété à usage interne contenant la dernière position de la souris
+        ObjectProperty<Point2D> mousePositionP =
+                new SimpleObjectProperty<>(new Point2D(0, 0));
+        // Propriété à usage interne contenant la position de la souris au
+        // moment du dernier clic sur un point de passage
+        ObjectProperty<Point2D> previousMarkerPositionP =
+                new SimpleObjectProperty<>(new Point2D(0, 0));
+
         MapViewParameters mvp = mapViewParametersP.get();
 
-        for (Node group : pane.getChildren()) {
-            int markerIndex = pane.getChildren().indexOf(group);
-
+        for (int i = 0; i < pane.getChildren().size(); i += 1) {
+            Node group = pane.getChildren().get(i);
+            int finalI = i;
             group.setOnMousePressed(m -> {
                 Point2D mousePosition = new Point2D(m.getX(), m.getY());
                 mousePositionP.set(mousePosition);
-                PointWebMercator pwm = PointWebMercator.ofPointCh(waypoints.get(markerIndex).p());
+                PointWebMercator pwm = PointWebMercator.ofPointCh(waypoints.get(finalI).p());
                 previousMarkerPositionP.set(new Point2D(mvp.viewX(pwm), mvp.viewY(pwm)));
             });
 
@@ -123,7 +127,7 @@ public final class WaypointsManager {
                         // nodeClosestTo est -1 si aucun noeud n'a été trouvé
                         if (nodeClosestTo != -1) {
                             Waypoint newWayPoint = new Waypoint(mousePointCh, nodeClosestTo);
-                            waypoints.set(markerIndex, newWayPoint);
+                            waypoints.set(finalI, newWayPoint);
                             PointWebMercator tempP =
                                     PointWebMercator.ofPointCh(graph.nodePoint(nodeClosestTo));
                             previousMarkerPositionP
@@ -136,7 +140,7 @@ public final class WaypointsManager {
                         group.setLayoutY(previousMarkerPositionP.get().getY());
                 } else {
                     pane.getChildren().remove(group);
-                    waypoints.remove(markerIndex);
+                    waypoints.remove(finalI);
                 }
             });
         }

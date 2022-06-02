@@ -41,7 +41,7 @@ public final class Stage9Test extends Application {
 
         RouteBean routeBean =
                 new RouteBean(new RouteComputer(graph, new CityBikeCF(graph)));
-        routeBean.setHighlightedPositionP(1000);
+        routeBean.setHighlightedPositionProperty(1000);
 
         RouteManager routeManager =
                 new RouteManager(routeBean, mapViewParametersP);
