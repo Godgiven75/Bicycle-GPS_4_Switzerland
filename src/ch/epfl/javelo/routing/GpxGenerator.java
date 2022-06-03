@@ -25,7 +25,7 @@ import static java.nio.file.Files.newBufferedWriter;
  * @author Nathanaël Girod (329987)
  * @author M. Schinz (classe privée créant le nouveau document)
  */
-public class GpxGenerator {
+public final class GpxGenerator {
     private GpxGenerator() {}
 
     /**

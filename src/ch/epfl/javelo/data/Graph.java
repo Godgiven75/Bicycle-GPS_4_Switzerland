@@ -17,7 +17,7 @@ import java.util.function.DoubleUnaryOperator;
  * @author Tanguy Dieudonné (326618)
  * @author Nathanaël Girod (329987)
  */
-public class Graph {
+public final  class Graph {
     private final GraphNodes nodes;
     private final GraphSectors sectors;
     private final GraphEdges edges;
