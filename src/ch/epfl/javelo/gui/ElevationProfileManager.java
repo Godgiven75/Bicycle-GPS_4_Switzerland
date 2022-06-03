@@ -46,6 +46,7 @@ public final class ElevationProfileManager {
     private final Line line = new Line();
     private static final int FONT_SIZE = 10;
     private static final int TEXT_OFFSET = 2;
+    private static final double NOT_ON_PROFILE = Double.NaN;
     private static final double KILOMETERS_TO_METERS = 1000.0;
 
     /**
@@ -63,7 +64,7 @@ public final class ElevationProfileManager {
         this.elevationProfileP = elevationProfileP;
         this.highlightedPositionP = highlightedPositionP;
         this.rectangle2DP = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
-        this.mousePositionOnProfileP = new SimpleDoubleProperty(Double.NaN);
+        this.mousePositionOnProfileP = new SimpleDoubleProperty(NOT_ON_PROFILE);
         this.screenToWorldP = new SimpleObjectProperty<>(new Affine());
         this.worldToScreenP = new SimpleObjectProperty<>(new Affine());
 
@@ -175,7 +176,7 @@ public final class ElevationProfileManager {
             Transform screenToWorld = screenToWorldP.get();
             Rectangle2D rec = rectangle2DP.get();
             if (!(rec.contains(e.getX(), e.getY()))) {
-                mousePositionOnProfileP.set(Double.NaN);
+                mousePositionOnProfileP.set(NOT_ON_PROFILE);
                 return;
             }
             double position = screenToWorld.transform(e.getX(), e.getY()).getX();
@@ -183,7 +184,7 @@ public final class ElevationProfileManager {
             // auditeurs JavaFX sensibles aux changements de la propriété.
             mousePositionOnProfileP.set(Math.round(position));
         });
-        centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(Double.NaN));
+        centerPane.setOnMouseExited(e -> mousePositionOnProfileP.set(NOT_ON_PROFILE));
     }
 
     // Retourne la valeur utilisée pour séparer les lignes horizontales.

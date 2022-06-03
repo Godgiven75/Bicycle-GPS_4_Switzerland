@@ -120,6 +120,8 @@ public final class RouteBean {
     /**
      * Retourne l'indice du segment non vide à la position passée en argument.
      *
+     * @author M. Schinz
+     *
      * @param position position le long de l'itinéraire
      *
      * @return l'indice du segment non vide à la position passée en argument

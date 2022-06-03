@@ -34,6 +34,7 @@ public final class AnnotatedMapManager {
     private static final int INITIAL_ZOOM_LEVEL = 12;
     private static final int INITIAL_X = 543200;
     private static final int INITIAL_Y = 370650;
+    private final static double NOT_ON_ROUTE = Double.NaN;
     private static final MapViewParameters INIT_MVP =
             new MapViewParameters(INITIAL_ZOOM_LEVEL, INITIAL_X, INITIAL_Y);
 
@@ -129,7 +130,7 @@ public final class AnnotatedMapManager {
                 }
             }
             // Sinon, on retourne NaN
-            return Double.NaN;
+            return NOT_ON_ROUTE;
         }, mousePositionP, mapViewParametersP, routeBean.routeProperty()));
     }
 }
