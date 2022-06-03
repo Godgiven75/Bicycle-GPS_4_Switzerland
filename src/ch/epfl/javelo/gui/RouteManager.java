@@ -142,16 +142,20 @@ public final class RouteManager {
 
     // Gère l'affichage de la position mise en évidence sur l'itinéraire.
     private void highlightPosition(MapViewParameters mvp) {
-        double highlightedPosition = routeBean.highlightedPositionProperty().get();
-
-        if (routeBean.route() == null || Double.isNaN(highlightedPosition)) {
+        // Si la route est null ou si aucune position n'est mise en évidence,
+        // on rend le cercle représentant la position invisible
+        if (routeBean.route() == null || !isPositionHighlighted()) {
             highlightedPositionC.setVisible(false);
         } else {
             PointWebMercator highlightedPoint =
-                    PointWebMercator.ofPointCh(routeBean.route().pointAt(highlightedPosition));
+                    PointWebMercator.ofPointCh(
+                            routeBean.route().pointAt(routeBean.highlightedPosition()));
             highlightedPositionC.setCenterX(mvp.viewX(highlightedPoint));
             highlightedPositionC.setCenterY(mvp.viewY(highlightedPoint));
             highlightedPositionC.setVisible(true);
         }
+    }
+    private boolean isPositionHighlighted() {
+        return !Double.isNaN(routeBean.highlightedPosition());
     }
 }
